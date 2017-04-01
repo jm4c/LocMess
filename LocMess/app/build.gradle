@@ -28,5 +28,12 @@ dependencies {
     compile 'com.android.support:design:23.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-maps:10.2.1'
+    compile(name:'Termite-WifiP2P-API', ext:'aar')
     testCompile 'junit:junit:4.12'
+}
+
+repositories{
+    flatDir{
+        dirs 'libs'
+    }
 }
