@@ -23,7 +23,9 @@
     <string name="title_activity_maps">Map</string>
 
     <string name="button_undo">Undo</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="owner">Owner</string>
+    <string name="title">Insert Title here</string>
+    <string name="content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut placerat nec augue nec faucibus. Vivamus et viverra est. Pellentesque ac mi tellus. Maecenas nunc sapien, laoreet eget enim quis, tincidunt auctor purus. In sed nunc id elit vulputate blandit. Proin tincidunt mollis nulla id viverra. Curabitur mollis auctor ante, ac bibendum nulla rhoncus vitae. Nulla ultrices venenatis finibus.</string>
+    <string name="location_example">Arco do Cego Park</string>
+    <string name="coordinates_example">[38.734383, -9.1403882, 20m]</string>
 </resources>

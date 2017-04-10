@@ -29,7 +29,7 @@ public class Location extends ListItem {
         this.ssid = ssid;
 
         setTitle(name);
-        setSubTitle(ssid);
+        setSubTitle("{ " + ssid+ " }");
 
     }
 

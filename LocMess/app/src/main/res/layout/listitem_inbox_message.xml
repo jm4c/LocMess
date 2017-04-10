@@ -5,41 +5,71 @@
     android:layout_height="72dp"
     android:background="@drawable/background_state_drawable"
     android:clickable="true"
-    >
+    android:paddingBottom="@dimen/padding_list_row"
+    android:paddingStart="?listPreferredItemPaddingLeft"
+    android:paddingEnd="?listPreferredItemPaddingRight"
+    android:paddingTop="@dimen/padding_list_row">
 
     <ImageView
         android:id="@+id/im_item_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:paddingLeft="16dp"
+        android:paddingStart="@dimen/padding_list_row"
         android:src="@drawable/ic_location_on_black_36dp" />
 
-    <TextView
-        android:id="@+id/lbl_item_location_name"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/message_container"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/im_item_icon"
-        android:layout_marginStart="72dp"
-        android:layout_marginEnd="48dp"
-        android:ellipsize="end"
-        android:fontFamily="sans-serif"
-        android:text="TagusPark"
-        android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        android:clickable="true"
+        android:orientation="vertical"
+        android:paddingLeft="72dp"
+        android:paddingRight="@dimen/padding_list_row">
+
+        <TextView
+            android:id="@+id/owner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="@string/owner"
+            android:textColor="@color/from"
+            android:textSize="@dimen/msg_text_primary"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_primary"
+            android:text="@string/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/subject"
+            android:textSize="@dimen/msg_text_secondary"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_secondary"
+            android:text="@string/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textColor="@color/message"
+            android:textSize="@dimen/msg_text_secondary" />
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/lbl_item_location_position"
-        android:layout_width="match_parent"
+        android:id="@+id/timestamp"
+        android:text="Timestamp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/lbl_item_location_name"
-        android:layout_marginStart="72dp"
-        android:layout_marginEnd="48dp"
-        android:ellipsize="end"
-        android:fontFamily="sans-serif"
-        android:maxLines="1"
-        android:text="coordinates or ssid here"
-        android:textSize="14sp" />
+        android:layout_alignParentRight="true"
+        android:textColor="@color/timestamp"
+        android:textSize="@dimen/timestamp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/undo_button"

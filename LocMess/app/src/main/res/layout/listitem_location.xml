@@ -16,7 +16,7 @@
         android:src="@drawable/ic_location_on_black_36dp" />
 
     <TextView
-        android:id="@+id/lbl_item_location_name"
+        android:id="@+id/lbl_item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/im_item_icon"
@@ -24,21 +24,21 @@
         android:layout_marginEnd="48dp"
         android:ellipsize="end"
         android:fontFamily="sans-serif"
-        android:text="TagusPark"
+        android:text="@string/location_example"
         android:textColor="@android:color/black"
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/lbl_item_location_position"
+        android:id="@+id/lbl_item_subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/lbl_item_location_name"
+        android:layout_below="@+id/lbl_item_title"
         android:layout_marginStart="72dp"
         android:layout_marginEnd="48dp"
         android:ellipsize="end"
         android:fontFamily="sans-serif"
         android:maxLines="1"
-        android:text="coordinates or ssid here"
+        android:text="@string/coordinates_example"
         android:textSize="14sp" />
 
     <Button

@@ -12,7 +12,7 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 
 public class TestData {
 
-    private static final String[] titles = {"Nothingness cannot be defined",
+    private static final String[] contentExamples = {"Nothingness cannot be defined",
             "Time is like a river made up of the events which happen, and a violent stream; " +
                     "for as soon as a thing has been seen, it is carried away, and another comes" +
                     " in its place, and this will be carried away too,",
@@ -29,7 +29,7 @@ public class TestData {
                     " seasons, or the wind, but you can change yourself. That is something you" +
                     " have charge of."
     };
-    private static final String[] subTitles = {"Bruce Lee",
+    private static final String[] owners = {"Bruce Lee",
             "Marcus Aurelius",
             "Meng Tzu",
             "Ajahn Chah",
@@ -57,10 +57,8 @@ public class TestData {
         List<Message> data = new ArrayList<>();
 
         for (int x = 0; x < 4; x++) {
-            for (int i = 0; i < titles.length && i < subTitles.length; i++) {
-                Message item = new Message(titles[i], null, subTitles[i],false);
-                item.setTitle(titles[i]);
-                item.setSubTitle(subTitles[i]);
+            for (int i = 0; i < contentExamples.length && i < owners.length; i++) {
+                Message item = new Message("Title " + (i + x * contentExamples.length), contentExamples[i], owners[i], null, false);
                 data.add(item);
             }
 
@@ -69,32 +67,11 @@ public class TestData {
         return data;
     }
 
-    public static List<Message> getListData(String[] titles, String[] subTitles) {
-        List<Message> data = new ArrayList<>();
-        for (int x = 0; x < 4; x++) {
-            for (int i = 0; i < titles.length && i < subTitles.length; i++) {
-                Message item = new Message(titles[i], null, subTitles[i],false);
-                item.setTitle(titles[i]);
-                item.setSubTitle(subTitles[i]);
-                data.add(item);
-            }
-        }
-        return data;
-    }
 
-    public static List<Message> getLocationsData(){
-        return getListData(locations, coordinates);
-    }
+
 
     public static Message getRandomMessage(){
         int rand = new Random().nextInt(6);
-
-        Message item = new Message(titles[rand], null, subTitles[rand],false);
-
-
-        item.setTitle(titles[rand]);
-        item.setSubTitle(subTitles[rand]);
-
-        return item;
+        return new Message("Title " + (String.valueOf(rand)), contentExamples[rand],owners[rand], null, false);
     }
 }

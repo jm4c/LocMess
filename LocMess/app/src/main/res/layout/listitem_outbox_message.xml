@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:paddingStart="16dp"
-        android:src="@drawable/ic_settings_input_antenna_black_36dp" />
+        android:src="@drawable/ic_cloud_black_36dp" />
 
     <TextView
-        android:id="@+id/lbl_item_location_name"
+        android:id="@+id/lbl_item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/im_item_icon"
@@ -24,22 +24,31 @@
         android:layout_marginEnd="48dp"
         android:ellipsize="end"
         android:fontFamily="sans-serif"
-        android:text="TagusPark"
+        android:text="@string/title"
         android:textColor="@android:color/black"
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/lbl_item_location_position"
+        android:id="@+id/lbl_item_subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/lbl_item_location_name"
+        android:layout_below="@+id/lbl_item_title"
         android:layout_marginStart="72dp"
         android:layout_marginEnd="48dp"
         android:ellipsize="end"
         android:fontFamily="sans-serif"
         android:maxLines="1"
-        android:text="coordinates or ssid here"
+        android:text="@string/content"
         android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/timestamp"
+        android:textSize="@dimen/timestamp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/undo_button"

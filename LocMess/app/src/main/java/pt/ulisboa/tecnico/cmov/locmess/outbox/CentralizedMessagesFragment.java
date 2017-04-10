@@ -21,19 +21,20 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.adapters.OutboxAdapter;
+import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
+import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
 
-public class CentralizedMessagesFragment extends Fragment implements OutboxAdapter.activityCallback {
+public class CentralizedMessagesFragment extends Fragment implements RecyclerListsAdapter.activityCallback {
 
     public CentralizedMessagesFragment() {
         // Required empty public constructor
     }
 
     private RecyclerView recView;
-    private OutboxAdapter adapter;
+    private RecyclerListsAdapter adapter;
     private ArrayList listData;
     private View view;
 
@@ -47,7 +48,7 @@ public class CentralizedMessagesFragment extends Fragment implements OutboxAdapt
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.fragment_centralized_messages, container, false);
+        view = inflater.inflate(R.layout.fragment_outbox_messages, container, false);
 
         listData = (ArrayList) TestData.getListData();
 
@@ -68,7 +69,8 @@ public class CentralizedMessagesFragment extends Fragment implements OutboxAdapt
         //LayoutManager: GridLayout or StaggeredGridLayoutManager
         recView = (RecyclerView) view.findViewById(R.id.rec_list);
         recView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        adapter = new OutboxAdapter(listData, this.getActivity(), R.layout.listitem_location, true);
+        adapter = new RecyclerListsAdapter(listData, this.getActivity(), R.layout.listitem_outbox_message, true);
+        recView.addItemDecoration(new SimpleDividerItemDecoration(this.getActivity()));
         recView.setAdapter(adapter);
         adapter.setActivityCallback(this);
 
@@ -208,7 +210,7 @@ public class CentralizedMessagesFragment extends Fragment implements OutboxAdapt
                     @Override
                     public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                         int position = viewHolder.getAdapterPosition();
-                        OutboxAdapter adapter = (OutboxAdapter) recyclerView.getAdapter();
+                        RecyclerListsAdapter adapter = (RecyclerListsAdapter) recyclerView.getAdapter();
                         if (adapter.isPendingRemoval(position)) {
                             return 0;
                         }

@@ -1,15 +1,5 @@
 package pt.ulisboa.tecnico.cmov.locmess.model;
 
-import android.content.Context;
-import android.text.style.TtsSpan;
-import android.view.View;
-import android.widget.ImageView;
-
-import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
-
-import java.util.Date;
-
 /**
  * Created by joaod on 02-Apr-17.
  */
@@ -17,16 +7,20 @@ import java.util.Date;
 public class Message extends ListItem {
 
     private String owner;
-
     private Location location;
-
     private String content;
-    private boolean centralized;
-    public Message(String owner, Location location, String content, boolean centralized) {
+    private boolean isCentralized;
+    private boolean isRead;
+
+    public Message(String title, String content, String owner, Location location, boolean isCentralized) {
+        setTitle(title);
+        this.content = content;
         this.owner = owner;
         this.location = location;
-        this.content = content;
-        this.centralized = centralized;
+        this.isCentralized = isCentralized;
+        this.isRead = false;
+
+        setSubTitle(owner + " — " + content);
     }
 
     public String getOwner() {
@@ -38,11 +32,11 @@ public class Message extends ListItem {
     }
 
     public boolean isCentralized() {
-        return centralized;
+        return isCentralized;
     }
 
     public void setCentralized(boolean centralized) {
-        this.centralized = centralized;
+        this.isCentralized = centralized;
     }
 
     public String getContent() {
@@ -60,5 +54,13 @@ public class Message extends ListItem {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
     }
 }
