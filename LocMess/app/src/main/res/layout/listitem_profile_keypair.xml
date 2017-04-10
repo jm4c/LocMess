@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cont_item_root"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:background="@drawable/background_state_drawable"
+    android:clickable="true"
+    >
+
+    <TextView
+        android:id="@+id/lbl_keypair"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif"
+        android:text="Key=Value"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/undo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_undo"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:padding="16dp"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        />
+</RelativeLayout>
