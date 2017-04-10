@@ -18,18 +18,11 @@ public class Location extends ListItem {
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
-
-        setTitle(name);
-        setSubTitle("[" + latitude + ", " + longitude + ", " + radius + "]");
     }
-
 
     public Location(String name, String ssid) {
         this.name = name;
         this.ssid = ssid;
-
-        setTitle(name);
-        setSubTitle("{ " + ssid+ " }");
 
     }
 

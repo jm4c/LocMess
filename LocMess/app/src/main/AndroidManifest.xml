@@ -22,13 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="icon">
-        <activity android:name=".login.LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".login.LoginActivity"></activity>
         <activity android:name=".login.NewUserActivity" />
         <activity
             android:name=".MainMenuActivity"
@@ -44,7 +38,12 @@
         <activity android:name=".outbox.WriteMessageActivity" />
         <activity android:name=".outbox.EditMessageActivity" />
         <activity android:name=".profile.ProfileActivity" />
-        <activity android:name=".outbox.PolicyActivity" />
+        <activity android:name=".outbox.PolicyActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".location.LocationActivity" />
         <activity android:name=".location.NewLocationActivity" />
         <!--

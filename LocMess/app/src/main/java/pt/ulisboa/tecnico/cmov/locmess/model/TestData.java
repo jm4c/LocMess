@@ -51,6 +51,18 @@ public class TestData {
             "[38,734383, -9.140388, 20m]",
     };
 
+    private static final String [] keys = {
+            "club",
+            "course",
+            "school"
+    };
+
+    private static final String [] values = {
+            "Real Madrid",
+            "MEIC",
+            "IST"
+    };
+
     private static final int icon = R.drawable.ic_wifi_black_36dp;
 
     public static List<Message> getListData() {
@@ -63,6 +75,15 @@ public class TestData {
             }
 
         }
+
+        return data;
+    }
+
+    public static List<ProfileKeypair> getProfileKeyPairs(){
+        List<ProfileKeypair> data = new ArrayList<>();
+
+        for (int i = 0; i < keys.length; i++)
+            data.add(new ProfileKeypair(keys[i], values[i]));
 
         return data;
     }

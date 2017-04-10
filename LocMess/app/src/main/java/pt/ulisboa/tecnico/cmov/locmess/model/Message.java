@@ -5,7 +5,7 @@ package pt.ulisboa.tecnico.cmov.locmess.model;
  */
 
 public class Message extends ListItem {
-
+    private String title;
     private String owner;
     private Location location;
     private String content;
@@ -19,8 +19,6 @@ public class Message extends ListItem {
         this.location = location;
         this.isCentralized = isCentralized;
         this.isRead = false;
-
-        setSubTitle(owner + " — " + content);
     }
 
     public String getOwner() {
@@ -62,5 +60,13 @@ public class Message extends ListItem {
 
     public void setRead(boolean read) {
         isRead = read;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

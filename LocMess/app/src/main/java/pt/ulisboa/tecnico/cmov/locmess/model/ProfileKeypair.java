@@ -4,18 +4,16 @@ package pt.ulisboa.tecnico.cmov.locmess.model;
  * Created by joaod on 10-Apr-17.
  */
 
-public class ProfileKey extends ListItem {
+public class ProfileKeypair extends ListItem {
     private String key;
     private String value;
 
-    public ProfileKey(String key, String value) {
+    public ProfileKeypair(String key, String value) {
         this.key = key;
         this.value = value;
-        setTitle(key + " = " + value);
     }
 
     public String getKey() {
-
         return key;
     }
 

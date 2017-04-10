@@ -16,7 +16,7 @@
         android:fontFamily="sans-serif"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:text="Key=Value"
+        android:text="Key = Value"
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:textSize="24sp" />

@@ -23,6 +23,7 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.model.ListItem;
 import pt.ulisboa.tecnico.cmov.locmess.model.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
 
 public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdapter.OutboxHolder> {
 
@@ -104,20 +105,27 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 break;
             case R.layout.listitem_location:
                 Location location = (Location) item;
-                holder.title.setText(location.getTitle());
-                holder.subtitle.setText(location.getSubTitle());
+                holder.title.setText(location.getName());
+                holder.subtitle.setText("[" + location.getLatitude() + ", "
+                        + location.getLongitude() + ", "
+                        + location.getRadius() + "m]");
 
-                if(location.getSsid() == null)
+                if (location.getSsid() == null) {
                     //means its based on gps location
+                    holder.subtitle.setText("[" + location.getLatitude() + ", "
+                            + location.getLongitude() + ", "
+                            + location.getRadius() + "m]");
                     holder.thumbnail.setImageResource(R.drawable.ic_location_on_black_36dp);
-                else
+                } else {
                     //means its based on ssid
+                    holder.subtitle.setText("{ " + location.getSsid() + " }");
                     holder.thumbnail.setImageResource(R.drawable.ic_wifi_black_36dp);
 
-
+                }
                 break;
             case R.layout.listitem_profile_keypair:
-
+                ProfileKeypair profileKeypair = (ProfileKeypair) item;
+                holder.title.setText(profileKeypair.getKey() + " = " + profileKeypair.getValue());
                 break;
         }
 
@@ -198,10 +206,6 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                     subtitle = (TextView) itemView.findViewById(R.id.txt_secondary);
                     thumbnail = (ImageView) itemView.findViewById(R.id.im_item_icon);
                     timestamp = (TextView) itemView.findViewById(R.id.timestamp);
-                    container = itemView.findViewById(R.id.cont_item_root);
-                    container.setOnClickListener(this);
-                    undoButton = (Button) itemView.findViewById(R.id.undo_button);
-
                     break;
                 case R.layout.listitem_outbox_message:
 
@@ -209,17 +213,18 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                     subtitle = (TextView) itemView.findViewById(R.id.lbl_item_subtitle);
                     thumbnail = (ImageView) itemView.findViewById(R.id.im_item_icon);
                     timestamp = (TextView) itemView.findViewById(R.id.timestamp);
-                    container = itemView.findViewById(R.id.cont_item_root);
-                    container.setOnClickListener(this);
-                    undoButton = (Button) itemView.findViewById(R.id.undo_button);
                     break;
                 case R.layout.listitem_location:
                     //TODO location resources
                     break;
                 case R.layout.listitem_profile_keypair:
-                    //TODO profile resources
+                    title = (TextView) itemView.findViewById(R.id.lbl_keypair);
                     break;
             }
+
+            container = itemView.findViewById(R.id.cont_item_root);
+            container.setOnClickListener(this);
+            undoButton = (Button) itemView.findViewById(R.id.undo_button);
 
         }
 

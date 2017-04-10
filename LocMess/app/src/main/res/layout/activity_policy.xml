@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:orientation="vertical"
-    tools:context="pt.ulisboa.tecnico.cmov.locmess.outbox.OutboxMessagesFragment">
+    tools:context="pt.ulisboa.tecnico.cmov.locmess.outbox.PolicyActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rec_list"

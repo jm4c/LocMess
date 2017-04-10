@@ -12,11 +12,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.model.ListItem;
+import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 
 public class OutboxActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private List<Message> centralizedMessages;
+    private List<Message> decentralizedMessages;
+
+    public List<Message> getCentralizedMessages() {
+        return centralizedMessages;
+    }
+
+    public void setCentralizedMessages(List<Message> centralizedMessages) {
+        this.centralizedMessages = centralizedMessages;
+    }
+
+    public List<Message> getDecentralizedMessages() {
+        return decentralizedMessages;
+    }
+
+    public void setDecentralizedMessages(List<Message> decentralizedMessages) {
+        this.decentralizedMessages = decentralizedMessages;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +52,21 @@ public class OutboxActivity extends AppCompatActivity {
 
 
     private void setupViewPager(ViewPager viewPager) {
+        Bundle centralizedBundle = new Bundle();
+        centralizedBundle.putBoolean("isCentralized", true);
+        Fragment centralizedTab = new OutboxMessagesFragment();
+        centralizedTab.setArguments(centralizedBundle);
+
+        Bundle decentralizedBundle = new Bundle();
+        decentralizedBundle.putBoolean("isCentralized", false);
+        Fragment decentralizedTab = new OutboxMessagesFragment();
+        decentralizedTab.setArguments(decentralizedBundle);
+
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new CentralizedMessagesFragment(), "Centralized");
-        adapter.addFragment(new CentralizedMessagesFragment(), "Decentralized");
+
+        adapter.addFragment(centralizedTab, "Centralized");
+        adapter.addFragment(decentralizedTab, "Decentralized");
+
         viewPager.setAdapter(adapter);
     }
 

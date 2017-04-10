@@ -27,9 +27,9 @@ import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
 
-public class CentralizedMessagesFragment extends Fragment implements RecyclerListsAdapter.activityCallback {
+public class OutboxMessagesFragment extends Fragment implements RecyclerListsAdapter.activityCallback {
 
-    public CentralizedMessagesFragment() {
+    public OutboxMessagesFragment() {
         // Required empty public constructor
     }
 
@@ -37,12 +37,12 @@ public class CentralizedMessagesFragment extends Fragment implements RecyclerLis
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
     private View view;
+    private boolean isCentralized;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        isCentralized = getArguments().getBoolean("isCentralized");
     }
 
     @Override
@@ -184,9 +184,9 @@ public class CentralizedMessagesFragment extends Fragment implements RecyclerLis
 
                     private void init() {
                         background = new ColorDrawable(Color.RED);
-                        xMark = ContextCompat.getDrawable(CentralizedMessagesFragment.this.getActivity(), R.drawable.ic_clear_24dp);
+                        xMark = ContextCompat.getDrawable(OutboxMessagesFragment.this.getActivity(), R.drawable.ic_clear_24dp);
                         xMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-                        xMarkMargin = (int) CentralizedMessagesFragment.this.getResources().getDimension(R.dimen.ic_clear_margin);
+                        xMarkMargin = (int) OutboxMessagesFragment.this.getResources().getDimension(R.dimen.ic_clear_margin);
                         initiated = true;
                     }
 
@@ -285,5 +285,13 @@ public class CentralizedMessagesFragment extends Fragment implements RecyclerLis
     @Override
     public void onUndoTimeout(int p) {
         deleteItem(p);
+    }
+
+    public boolean isCentralized() {
+        return isCentralized;
+    }
+
+    public void setCentralized(boolean centralized) {
+        isCentralized = centralized;
     }
 }
