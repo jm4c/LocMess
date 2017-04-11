@@ -28,4 +28,8 @@
     <string name="content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut placerat nec augue nec faucibus. Vivamus et viverra est. Pellentesque ac mi tellus. Maecenas nunc sapien, laoreet eget enim quis, tincidunt auctor purus. In sed nunc id elit vulputate blandit. Proin tincidunt mollis nulla id viverra. Curabitur mollis auctor ante, ac bibendum nulla rhoncus vitae. Nulla ultrices venenatis finibus.</string>
     <string name="location_example">Arco do Cego Park</string>
     <string name="coordinates_example">[38.734383, -9.1403882, 20m]</string>
+
+    <string name="whitelist">Whitelist</string>
+    <string name="blacklist">Blacklist</string>
+
 </resources>

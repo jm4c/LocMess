@@ -1,30 +1,27 @@
 package pt.ulisboa.tecnico.cmov.locmess.outbox;
 
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
 public class PolicyActivity extends AppCompatActivity implements RecyclerListsAdapter.activityCallback{
@@ -32,6 +29,7 @@ public class PolicyActivity extends AppCompatActivity implements RecyclerListsAd
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
+    private boolean isWhitelist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +62,17 @@ public class PolicyActivity extends AppCompatActivity implements RecyclerListsAd
 
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
+
+        setUpPolicyModeButton();
+    }
+
+    private void setUpPolicyModeButton() {
+        ToggleButton toggle = (ToggleButton) findViewById(R.id.btn_policy_mode);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                setWhitelist(isChecked);
+            }
+        });
     }
 
     /**
@@ -278,4 +287,13 @@ public class PolicyActivity extends AppCompatActivity implements RecyclerListsAd
         deleteItem(p);
     }
 
+
+
+    public boolean isWhitelist() {
+        return isWhitelist;
+    }
+
+    public void setWhitelist(boolean whitelist) {
+        isWhitelist = whitelist;
+    }
 }

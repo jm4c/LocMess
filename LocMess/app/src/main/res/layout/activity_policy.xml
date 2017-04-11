@@ -9,6 +9,21 @@
     android:orientation="vertical"
     tools:context="pt.ulisboa.tecnico.cmov.locmess.outbox.PolicyActivity">
 
+    <ToggleButton
+        android:id="@+id/btn_policy_mode"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@drawable/background_toggle_policy"
+        android:checked="true"
+        android:fontFamily="sans-serif-smallcaps"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@drawable/text_toggle_policy"
+        android:textOff="@string/blacklist"
+        android:textOn="@string/whitelist"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rec_list"
         android:layout_width="match_parent"
