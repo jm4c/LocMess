@@ -1,30 +1,39 @@
 package pt.ulisboa.tecnico.cmov.locmess.outbox;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
+import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
-public class PolicyActivity extends AppCompatActivity implements RecyclerListsAdapter.activityCallback{
+public class PolicyActivity extends AppCompatActivity implements RecyclerListsAdapter.activityCallback {
 
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
@@ -42,10 +51,10 @@ public class PolicyActivity extends AppCompatActivity implements RecyclerListsAd
 
         Button addItem = (Button) findViewById(R.id.btn_add_item);
         addItem.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
-                addItemToList();
+                Dialog dialog = createNewKeypairDialog();
+                dialog.show();
             }
         });
     }
@@ -250,11 +259,13 @@ public class PolicyActivity extends AppCompatActivity implements RecyclerListsAd
         return simpleItemTouchCallback;
     }
 
-    private void addItemToList() {
+    private void addKeyPair(String key, String value) {
         Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_LONG).show();
-//        Message item = TestData.getRandomMessage();
-//        listData.add(item);
-//        adapter.notifyItemInserted(listData.indexOf(item));
+        ProfileKeypair item = new ProfileKeypair(key, value);
+        listData.add(item);
+        adapter.notifyItemInserted(listData.indexOf(item));
+
+        //TODO existing keys?
     }
 
 
@@ -288,7 +299,6 @@ public class PolicyActivity extends AppCompatActivity implements RecyclerListsAd
     }
 
 
-
     public boolean isWhitelist() {
         return isWhitelist;
     }
@@ -296,4 +306,66 @@ public class PolicyActivity extends AppCompatActivity implements RecyclerListsAd
     public void setWhitelist(boolean whitelist) {
         isWhitelist = whitelist;
     }
+
+    public Dialog createNewKeypairDialog() {
+
+        final View view = setupAutoCompleteKeys();
+
+        // Use the Builder class for convenient dialog construction
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.new_keypair)
+                .setView(view)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        addKeyPair(String.valueOf(((TextView) view.findViewById(R.id.profile_value)).getText()),
+                                String.valueOf(((TextView) view.findViewById(R.id.profile_value)).getText()));
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        // Create the AlertDialog object and return it
+        return builder.create();
+    }
+
+    private View setupAutoCompleteKeys() {
+        View view = getLayoutInflater().inflate(R.layout.dialog_new_keypair, null);
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, getExistingKeys());
+
+        final AutoCompleteTextView textView = (AutoCompleteTextView) view.findViewById(R.id.profile_key);
+
+        textView.setAdapter(adapter);
+
+        textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                    textView.showDropDown();
+
+            }
+        });
+
+        textView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                textView.showDropDown();
+                return false;
+            }
+        });
+
+        return view;
+    }
+
+    private List<String> getExistingKeys(){
+        return TestData.getExistingKeys();
+    }
+
+
 }

@@ -95,4 +95,13 @@ public class TestData {
         int rand = new Random().nextInt(6);
         return new Message("Title " + (String.valueOf(rand)), contentExamples[rand],owners[rand], null, false);
     }
+
+    public static List<String> getExistingKeys() {
+        List<String> existingKeys = new ArrayList<>();
+        for (String key:
+             keys) {
+            existingKeys.add(key);
+        }
+        return existingKeys;
+    }
 }

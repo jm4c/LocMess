@@ -32,4 +32,11 @@
     <string name="whitelist">Whitelist</string>
     <string name="blacklist">Blacklist</string>
 
+    <string name="new_keypair">New keypair</string>
+    <string name="profile_key">Key</string>
+    <string name="profile_value">Value</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
 </resources>
