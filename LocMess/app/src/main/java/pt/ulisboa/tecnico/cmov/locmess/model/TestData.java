@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.locmess.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -88,6 +89,15 @@ public class TestData {
         return data;
     }
 
+    public static List<String> getLocations(){
+        List<String> locations = new ArrayList<>(Arrays.asList(TestData.locations));
+
+        for (int i = 0; i < 40; i++) {
+            locations.add("location " + i);
+        }
+        return locations;
+    }
+
 
 
 
@@ -98,10 +108,9 @@ public class TestData {
 
     public static List<String> getExistingKeys() {
         List<String> existingKeys = new ArrayList<>();
-        for (String key:
-             keys) {
+        for (String key: keys)
             existingKeys.add(key);
-        }
+
         return existingKeys;
     }
 }

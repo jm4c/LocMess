@@ -39,4 +39,17 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
+    <string name="centralized">Centralized</string>
+    <string name="decentralized">Decentralized</string>
+
+    <string name="content_hint">Type content here.</string>
+
+    <string name="create">Create</string>
+
+    <string name="mode_server">Server</string>
+    <string name="mode_wifi_direct">WiFi Direct</string>
+
+    <string name="pick_location">Pick the message\'s location</string>
+
+
 </resources>

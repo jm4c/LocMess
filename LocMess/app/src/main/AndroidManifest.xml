@@ -24,26 +24,21 @@
         tools:replace="icon">
         <activity android:name=".login.LoginActivity"></activity>
         <activity android:name=".login.NewUserActivity" />
-        <activity
-            android:name=".MainMenuActivity"
-            android:label="@string/title_activity_main_menu"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".MainMenuActivity" />
         <activity android:name=".inbox.InboxActivity" />
         <activity android:name=".outbox.OutboxActivity" />
-        <activity
-            android:name=".outbox.NewMessageActivity"
-            android:label="@string/title_activity_new_message"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".inbox.ReadMessageActivity" />
-        <activity android:name=".outbox.WriteMessageActivity" />
-        <activity android:name=".outbox.EditMessageActivity" />
-        <activity android:name=".profile.ProfileActivity" />
-        <activity android:name=".outbox.PolicyActivity">
+        <activity android:name=".outbox.NewMessageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".inbox.ReadMessageActivity" />
+        <activity android:name=".outbox.WriteMessageActivity" />
+        <activity android:name=".outbox.EditMessageActivity" />
+        <activity android:name=".profile.ProfileActivity" />
+        <activity android:name=".outbox.PolicyActivity" />
+
         <activity android:name=".location.LocationActivity" />
         <activity android:name=".location.NewLocationActivity" />
         <!--

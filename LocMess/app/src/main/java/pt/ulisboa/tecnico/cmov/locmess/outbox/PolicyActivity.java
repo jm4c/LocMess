@@ -317,7 +317,7 @@ public class PolicyActivity extends AppCompatActivity implements RecyclerListsAd
                 .setView(view)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        addKeyPair(String.valueOf(((TextView) view.findViewById(R.id.profile_value)).getText()),
+                        addKeyPair(String.valueOf(((TextView) view.findViewById(R.id.profile_key)).getText()),
                                 String.valueOf(((TextView) view.findViewById(R.id.profile_value)).getText()));
                     }
                 })
