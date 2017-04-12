@@ -27,15 +27,15 @@
         <activity android:name=".MainMenuActivity" />
         <activity android:name=".inbox.InboxActivity" />
         <activity android:name=".outbox.OutboxActivity" />
-        <activity android:name=".outbox.NewMessageActivity">
+        <activity android:name=".outbox.PostMessageActivity"/>
+        <activity android:name=".inbox.ReadMessageActivity" />
+        <activity android:name=".outbox.WriteMessageActivity" />
+        <activity android:name=".outbox.EditMessageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".inbox.ReadMessageActivity" />
-        <activity android:name=".outbox.WriteMessageActivity" />
-        <activity android:name=".outbox.EditMessageActivity" />
         <activity android:name=".profile.ProfileActivity" />
         <activity android:name=".outbox.PolicyActivity" />
 

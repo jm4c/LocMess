@@ -10,8 +10,6 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
-import pt.ulisboa.tecnico.cmov.locmess.R;
-
 public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener {
 
@@ -33,18 +31,18 @@ public class TimePickerFragment extends DialogFragment
         DialogFragment dialogFragment;
 
         if(getTag().equals("timeStartPicker")){
-            ((NewMessageActivity) getActivity()).getTimeWindow().setStartTime(hourOfDay, minute);
+            ((PostMessageActivity) getActivity()).getTimeWindow().setStartTime(hourOfDay, minute);
             dialogFragment = new DatePickerFragment();
             dialogFragment.show(this.getFragmentManager(), "dateEndPicker");
         }else {
-            ((NewMessageActivity) getActivity()).getTimeWindow().setEndTime(hourOfDay, minute);
-            ((NewMessageActivity) getActivity()).getTimeWindow().setTimeWindowSet(true);
-            ((NewMessageActivity) getActivity()).refreshButtons();
+            ((PostMessageActivity) getActivity()).getTimeWindow().setEndTime(hourOfDay, minute);
+            ((PostMessageActivity) getActivity()).getTimeWindow().setTimeWindowSet(true);
+            ((PostMessageActivity) getActivity()).refreshButtons();
 
             Toast.makeText(getActivity(),
                     "Message Duration\n"
-                            + "From: " + ((NewMessageActivity) getActivity()).getTimeWindow().getFormattedStartTime() + "\n"
-                            + "To: " + ((NewMessageActivity) getActivity()).getTimeWindow().getFormattedEndTime(),
+                            + "From: " + ((PostMessageActivity) getActivity()).getTimeWindow().getFormattedStartTime() + "\n"
+                            + "To: " + ((PostMessageActivity) getActivity()).getTimeWindow().getFormattedEndTime(),
                     Toast.LENGTH_LONG).show();
 
         }

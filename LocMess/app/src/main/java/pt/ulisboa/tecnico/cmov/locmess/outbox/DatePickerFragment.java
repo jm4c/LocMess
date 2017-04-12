@@ -34,11 +34,11 @@ public class DatePickerFragment extends DialogFragment
         // Do something with the date chosen by the user
         DialogFragment dialogFragment;
         if(getTag().equals("dateStartPicker")){
-            ((NewMessageActivity) getActivity()).getTimeWindow().setStartDate(day, month, year);
+            ((PostMessageActivity) getActivity()).getTimeWindow().setStartDate(day, month, year);
             dialogFragment = new TimePickerFragment();
             dialogFragment.show(this.getFragmentManager(), "timeStartPicker");
         }else{
-            ((NewMessageActivity) getActivity()).getTimeWindow().setEndDate(day, month, year);
+            ((PostMessageActivity) getActivity()).getTimeWindow().setEndDate(day, month, year);
             dialogFragment = new TimePickerFragment();
             dialogFragment.show(this.getFragmentManager(), "timeEndPicker");
         }
