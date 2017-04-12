@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:padding="15dp"
-            android:background="@drawable/background_icon_button"
+            android:background="@drawable/background_icon_enabled_button"
             android:src="@drawable/ic_location_on_white_48dp"/>
 
         <ImageButton
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:padding="15dp"
-            android:background="@drawable/background_icon_button"
+            android:background="@drawable/background_icon_enabled_button"
             android:src="@drawable/ic_filter_list_white_48dp"/>
 
         <ImageButton
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:padding="15dp"
-            android:background="@drawable/background_icon_button"
+            android:background="@drawable/background_icon_enabled_button"
             android:src="@drawable/ic_schedule_white_48dp"/>
     </LinearLayout>
 
@@ -60,10 +60,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_marginBottom="0dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="0dp"
-            android:text="@string/mode_wifi_direct"
+            android:checked="true"
+            android:text="@string/mode_server"
             android:textSize="14sp" />
     </RelativeLayout>
 
@@ -87,11 +88,4 @@
         android:text="@string/create"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
-
-    <Spinner
-        android:id="@+id/spinner_location"
-        android:layout_width="0dp"
-        android:layout_height="0dp">
-
-    </Spinner>
 </LinearLayout>
