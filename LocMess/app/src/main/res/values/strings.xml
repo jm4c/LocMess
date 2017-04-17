@@ -2,6 +2,7 @@
     <string name="app_name">LocMess</string>
 
     <!-- Strings related to login -->
+    <string name="noaccount">No account yet? Create one</string>
     <string name="account">Create Account</string>
     <string name="memberlogin">Already a member? Login</string>
     <string name="name">Name</string>
