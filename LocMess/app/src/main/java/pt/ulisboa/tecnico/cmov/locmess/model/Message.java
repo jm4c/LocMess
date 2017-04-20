@@ -9,10 +9,12 @@ public class Message extends ListItem {
     private String owner;
     private Location location;
     private String content;
+    private TimeWindow timeWindow;
     private boolean isCentralized;
     private boolean isRead;
 
-    public Message(String title, String content, String owner, Location location, boolean isCentralized) {
+    public Message(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized) {
+        this.timeWindow = timeWindow;
         setTitle(title);
         this.content = content;
         this.owner = owner;
@@ -68,5 +70,13 @@ public class Message extends ListItem {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public TimeWindow getTimeWindow() {
+        return timeWindow;
+    }
+
+    public void setTimeWindow(TimeWindow timeWindow) {
+        this.timeWindow = timeWindow;
     }
 }
