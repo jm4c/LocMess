@@ -54,14 +54,6 @@ public class OutboxMessagesFragment extends Fragment implements RecyclerListsAda
 
         setUpRecyclerView();
 
-        Button addItem = (Button) view.findViewById(R.id.btn_add_item);
-        addItem.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                addItemToList();
-            }
-        });
         return view;
     }
 
@@ -253,11 +245,7 @@ public class OutboxMessagesFragment extends Fragment implements RecyclerListsAda
         return simpleItemTouchCallback;
     }
 
-    private void addItemToList() {
-        Message item = TestData.getRandomMessage();
-        listData.add(item);
-        adapter.notifyItemInserted(listData.indexOf(item));
-    }
+
 
 
     private void deleteItem(int pos) {

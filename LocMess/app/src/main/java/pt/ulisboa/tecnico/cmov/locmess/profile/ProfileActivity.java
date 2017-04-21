@@ -288,7 +288,7 @@ public class ProfileActivity extends AppCompatActivity implements RecyclerListsA
         deleteItem(p);
     }
 
-    
+
 
     public Dialog createNewKeypairDialog() {
 

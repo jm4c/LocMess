@@ -25,14 +25,13 @@
         <activity android:name=".login.LoginActivity"></activity>
         <activity android:name=".login.NewUserActivity" />
         <activity android:name=".MainMenuActivity" />
-        <activity android:name=".inbox.InboxActivity" >
+        <activity android:name=".inbox.InboxActivity" />
+        <activity android:name=".outbox.OutboxActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".outbox.OutboxActivity" />
         <activity android:name=".outbox.PostMessageActivity"/>
         <activity android:name=".inbox.ReadMessageActivity" />
         <activity android:name=".outbox.EditMessageActivity" />
