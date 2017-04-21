@@ -5,10 +5,7 @@
     android:layout_height="72dp"
     android:background="@drawable/background_state_drawable"
     android:clickable="true"
-    android:paddingBottom="@dimen/padding_list_row"
-    android:paddingStart="?listPreferredItemPaddingLeft"
-    android:paddingEnd="?listPreferredItemPaddingRight"
-    android:paddingTop="@dimen/padding_list_row">
+    >
 
     <ImageView
         android:id="@+id/im_item_icon"
@@ -22,7 +19,6 @@
         android:id="@+id/message_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
         android:orientation="vertical"
         android:paddingLeft="72dp"
         android:paddingRight="@dimen/padding_list_row">

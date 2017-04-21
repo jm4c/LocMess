@@ -3,7 +3,9 @@ package pt.ulisboa.tecnico.cmov.locmess.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,6 +89,14 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
 
                 holder.owner.setText(owner);
                 holder.title.setText(message.getTitle());
+                if(message.isRead()){
+                    holder.title.setTypeface(null, Typeface.NORMAL);
+                    holder.owner.setTypeface(null, Typeface.NORMAL);
+
+                }else{
+                    holder.title.setTypeface(null, Typeface.BOLD);
+                    holder.owner.setTypeface(null, Typeface.BOLD);
+                }
                 holder.subtitle.setText(message.getContent());
                 holder.timestamp.setText("9:44"); //TODO
                 holder.thumbnail.setImageDrawable(
