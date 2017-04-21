@@ -37,7 +37,7 @@
         android:layout_height="72dp"
         android:background="@drawable/background_state_drawable"
         android:padding="16dp"
-        android:text="Add Item"
+        android:text="@string/add_key_value"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
 

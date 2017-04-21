@@ -55,5 +55,7 @@
 
     <string name="pick_location">Pick the message\'s location</string>
 
+    <string name="add_key_value">Add Key/Value</string>
+
 
 </resources>
