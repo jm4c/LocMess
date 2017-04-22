@@ -61,5 +61,11 @@
 
     <!-- Menu. -->
     <string name="menu">Menu</string>
+    <string name="inbox">Inbox</string>
+    <string name="outbox">Outbox</string>
+    <string name="locations">Locations</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
+
 
 </resources>
