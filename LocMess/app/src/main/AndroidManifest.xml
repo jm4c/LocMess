@@ -22,15 +22,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="icon">
-        <activity android:name=".login.LoginActivity"></activity>
-        <activity android:name=".login.NewUserActivity" />
-        <activity android:name=".MainMenuActivity" />
-        <activity android:name=".inbox.InboxActivity" />
-        <activity android:name=".outbox.OutboxActivity" >
+        <activity android:name=".login.LoginActivity"
+            android:label="LocMess">
+            android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".login.NewUserActivity" />
+        <activity android:name=".MainMenuActivity" />
+        <activity android:name=".inbox.InboxActivity" />
+        <activity android:name=".outbox.OutboxActivity" >
+
         </activity>
         <activity android:name=".outbox.PostMessageActivity"/>
         <activity android:name=".inbox.ReadMessageActivity" />
