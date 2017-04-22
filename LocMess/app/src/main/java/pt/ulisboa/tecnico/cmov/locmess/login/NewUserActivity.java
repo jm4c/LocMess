@@ -104,8 +104,8 @@ public class NewUserActivity extends AppCompatActivity {
 
 
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            passwordText.setError("between 4 and 10 characters");
+        if (password.isEmpty() || password.length() < 4) {
+            passwordText.setError("larger than 4 characters");
             valid = false;
         } else {
             passwordText.setError(null);
