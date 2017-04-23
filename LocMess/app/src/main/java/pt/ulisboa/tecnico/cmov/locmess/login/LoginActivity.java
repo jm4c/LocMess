@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import pt.ulisboa.tecnico.cmov.locmess.MainMenuActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.inbox.InboxActivity;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -104,8 +103,8 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordText.getText().toString();
 
 
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            passwordText.setError("between 4 and 10 alphanumeric characters");
+        if (password.isEmpty() || password.length() < 4) {
+            passwordText.setError("larger than 4 characters");
             valid = false;
         } else {
             passwordText.setError(null);
