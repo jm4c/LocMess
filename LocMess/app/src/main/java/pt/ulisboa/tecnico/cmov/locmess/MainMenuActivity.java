@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -8,15 +9,25 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Switch;
+import android.widget.Toast;
+
+import pt.ulisboa.tecnico.cmov.locmess.inbox.InboxActivity;
+import pt.ulisboa.tecnico.cmov.locmess.location.LocationActivity;
+import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
+import pt.ulisboa.tecnico.cmov.locmess.outbox.OutboxActivity;
+import pt.ulisboa.tecnico.cmov.locmess.profile.ProfileActivity;
 
 public class MainMenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String activityTitle = "LocMess - Main Menu";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(activityTitle);
         setSupportActionBar(toolbar);
 
 
@@ -45,23 +56,35 @@ public class MainMenuActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        Intent i;
 
-        if (id == R.id.nav_inbox) {
-
-        } else if (id == R.id.nav_outbox) {
-
-        } else if (id == R.id.nav_locations) {
-
-        } else if (id == R.id.nav_profile) {
-
-        } else if (id == R.id.nav_logout) {
-
-
+        switch(item.getItemId()){
+            case R.id.nav_inbox:
+                i = new Intent(this, InboxActivity.class);
+                break;
+            case R.id.nav_outbox:
+                i = new Intent(this, OutboxActivity.class);
+                break;
+            case R.id.nav_locations:
+                i = new Intent(this, LocationActivity.class);
+                Toast.makeText(this, "TODO", Toast.LENGTH_LONG);
+                break;
+            case R.id.nav_profile:
+                i = new Intent(this, ProfileActivity.class);
+                break;
+            case R.id.nav_logout:
+                i = new Intent(this, LoginActivity.class);
+                break;
+            default:
+                i = null;
+                return false;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
+        startActivity(i);
+
         return true;
     }
 }
