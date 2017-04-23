@@ -6,17 +6,15 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import java.io.Console;
 import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
@@ -24,11 +22,6 @@ import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
-
-import static pt.ulisboa.tecnico.cmov.locmess.model.Tags.EXTRA_TITLE;
-import static pt.ulisboa.tecnico.cmov.locmess.model.Tags.BUNDLE_EXTRAS;
-import static pt.ulisboa.tecnico.cmov.locmess.model.Tags.EXTRA_CONTENT;
-import static pt.ulisboa.tecnico.cmov.locmess.model.Tags.EXTRA_OWNER;
 
 public class InboxActivity extends AppCompatActivity implements RecyclerListsAdapter.activityCallback {
 
@@ -262,11 +255,11 @@ public class InboxActivity extends AppCompatActivity implements RecyclerListsAda
 
         Bundle extras = new Bundle();
 
-        extras.putString(EXTRA_TITLE, item.getTitle());
-        extras.putString(EXTRA_OWNER, item.getOwner());
-        extras.putString(EXTRA_CONTENT, item.getContent());
+        extras.putString("title", item.getTitle());
+        extras.putString("owner", item.getOwner());
+        extras.putString("content", item.getContent());
 //
-        i.putExtra(BUNDLE_EXTRAS, extras);
+        i.putExtra("extras", extras);
         startActivity(i);
     }
 

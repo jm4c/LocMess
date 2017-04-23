@@ -24,8 +24,10 @@ repositories {
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.xerial:sqlite-jdbc:3.8.11.2")
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('com.jayway.jsonpath:json-path')
 }

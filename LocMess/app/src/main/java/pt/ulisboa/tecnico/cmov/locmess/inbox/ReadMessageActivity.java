@@ -7,11 +7,6 @@ import android.widget.TextView;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 
-import static pt.ulisboa.tecnico.cmov.locmess.model.Tags.BUNDLE_EXTRAS;
-import static pt.ulisboa.tecnico.cmov.locmess.model.Tags.EXTRA_CONTENT;
-import static pt.ulisboa.tecnico.cmov.locmess.model.Tags.EXTRA_OWNER;
-import static pt.ulisboa.tecnico.cmov.locmess.model.Tags.EXTRA_TITLE;
-
 public class ReadMessageActivity extends AppCompatActivity {
     private TextView titleView;
     private TextView ownerView;
@@ -27,11 +22,11 @@ public class ReadMessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_read_message);
 
         Intent i = getIntent();
-        Bundle extras = i.getExtras().getBundle(BUNDLE_EXTRAS);
+        Bundle extras = i.getExtras().getBundle("extras");
 
-        title = extras.getString(EXTRA_TITLE);
-        owner = extras.getString(EXTRA_OWNER);
-        content = extras.getString(EXTRA_CONTENT);
+        title = extras.getString("title");
+        owner = extras.getString("owner");
+        content = extras.getString("content");
 
         titleView = (TextView) findViewById(R.id.title);
         ownerView = (TextView) findViewById(R.id.owner);

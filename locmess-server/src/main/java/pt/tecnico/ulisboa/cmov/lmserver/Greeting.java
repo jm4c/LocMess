@@ -1,4 +1,4 @@
-package pt.tecnico.ulisboa.cmov.locmess_server;
+package pt.tecnico.ulisboa.cmov.lmserver;
 
 public class Greeting {
 
