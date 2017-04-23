@@ -31,7 +31,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".login.NewUserActivity" />
-        <activity android:name=".MainMenuActivity" />
+        <activity android:name=".MainMenuActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".inbox.InboxActivity" />
         <activity android:name=".outbox.OutboxActivity" >
 

@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import pt.ulisboa.tecnico.cmov.locmess.MainMenuActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.inbox.InboxActivity;
 
@@ -72,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
-                }, 3000);
+                }, 500); //TODO wait for response from server
     }
 
 
@@ -85,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         Button loginButton = (Button) findViewById(R.id.btn_login);
         loginButton.setEnabled(true);
-        Intent i = new Intent(getApplicationContext(), InboxActivity.class);
+        Intent i = new Intent(getApplicationContext(), MainMenuActivity.class);
         startActivity(i);
         //finish();
     }
