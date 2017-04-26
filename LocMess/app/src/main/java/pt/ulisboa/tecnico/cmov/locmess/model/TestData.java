@@ -104,6 +104,8 @@ public class TestData {
 
         for (int i = 0; i < locations.length; i++)
             data.add(new Location(locations[i], latitudes[i], longitudes[i], radius[i] ));
+        //add ssid location
+        data.add(new Location("TagusPark (eduroam)", "eduroam"));
 
         return data;
 
