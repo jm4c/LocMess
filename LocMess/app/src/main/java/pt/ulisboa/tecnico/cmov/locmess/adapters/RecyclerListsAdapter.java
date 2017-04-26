@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +26,7 @@ import pt.ulisboa.tecnico.cmov.locmess.model.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
 
-public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdapter.OutboxHolder> {
+public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdapter.AdapterViewHolder> {
 
     private static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
 
@@ -71,13 +70,13 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
     }
 
     @Override
-    public OutboxHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = inflater.inflate(itemLayout, parent, false);
-        return new OutboxHolder(view);
+        return new AdapterViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(OutboxHolder holder, int position) {
+    public void onBindViewHolder(AdapterViewHolder holder, int position) {
         ListItem item = items.get(position);
         Message message;
 
@@ -116,10 +115,6 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
             case R.layout.listitem_location:
                 Location location = (Location) item;
                 holder.title.setText(location.getName());
-                holder.subtitle.setText("[" + location.getLatitude() + ", "
-                        + location.getLongitude() + ", "
-                        + location.getRadius() + "m]");
-
                 if (location.getSsid() == null) {
                     //means its based on gps location
                     holder.subtitle.setText("[" + location.getLatitude() + ", "
@@ -130,7 +125,6 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                     //means its based on ssid
                     holder.subtitle.setText("{ " + location.getSsid() + " }");
                     holder.thumbnail.setImageResource(R.drawable.ic_wifi_black_36dp);
-
                 }
                 break;
             case R.layout.listitem_profile_keypair:
@@ -186,7 +180,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
         return items.size();
     }
 
-    class OutboxHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class AdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView owner;
         private TextView title;
@@ -198,7 +192,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
         private TextDrawable.IBuilder texDrawableBuilder;
 
 
-        public OutboxHolder(View itemView) {
+        public AdapterViewHolder(View itemView) {
             super(itemView);
             //TODO set all resources from layout here
             switch (itemLayout) {
@@ -225,7 +219,9 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                     timestamp = (TextView) itemView.findViewById(R.id.timestamp);
                     break;
                 case R.layout.listitem_location:
-                    //TODO location resources
+                    title = (TextView) itemView.findViewById(R.id.lbl_item_title);
+                    subtitle = (TextView) itemView.findViewById(R.id.lbl_item_subtitle);
+                    thumbnail = (ImageView) itemView.findViewById(R.id.im_item_icon);
                     break;
                 case R.layout.listitem_profile_keypair:
                     title = (TextView) itemView.findViewById(R.id.lbl_keypair);
@@ -248,18 +244,18 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 // all list items have a title
                 title.setVisibility(View.GONE);
 
-                // only location, inbox and outbox have a subtitle
+                // only location, inbox and outbox have a subtitle and a thumbnail
                 if (itemLayout != R.layout.listitem_profile_keypair) {
                     subtitle.setVisibility(View.GONE);
+                    thumbnail.setVisibility(View.GONE);
                 }
 
-                //only inbox and outbox have a thumbnail and a timestamp
+                //only inbox and outbox have a timestamp
                 if (itemLayout == R.layout.listitem_inbox_message || itemLayout == R.layout.listitem_outbox_message) {
-                    thumbnail.setVisibility(View.GONE);
                     timestamp.setVisibility(View.GONE);
                 }
 
-                //only inbox has this
+                //only inbox has a owner
                 if (itemLayout == R.layout.listitem_inbox_message) {
                     owner.setVisibility(View.GONE);
                 }
@@ -287,18 +283,18 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 // all list items have a title
                 title.setVisibility(View.VISIBLE);
 
-                // only location, inbox and outbox have a subtitle
+                // only location, inbox and outbox have a subtitle and a a thumbnail
                 if (itemLayout != R.layout.listitem_profile_keypair) {
                     subtitle.setVisibility(View.VISIBLE);
+                    thumbnail.setVisibility(View.VISIBLE);
                 }
 
-                //only inbox and outbox have a thumbnail and a timestamp
+                //only inbox and outbox have a timestamp
                 if (itemLayout == R.layout.listitem_inbox_message || itemLayout == R.layout.listitem_outbox_message) {
-                    thumbnail.setVisibility(View.VISIBLE);
                     timestamp.setVisibility(View.VISIBLE);
                 }
 
-                //only inbox has this
+                //only inbox has a owner
                 if (itemLayout == R.layout.listitem_inbox_message) {
                     owner.setVisibility(View.VISIBLE);
                 }

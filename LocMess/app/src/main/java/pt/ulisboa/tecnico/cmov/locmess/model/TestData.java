@@ -52,13 +52,32 @@ public class TestData {
             "[38,734383, -9.140388, 20m]",
     };
 
-    private static final String [] keys = {
+    private static final Double[] latitudes = {
+            38.737566,
+            38.736750,
+            38.734383
+
+    };
+
+    private static final Double[] longitudes = {
+            -9.303119,
+            -9.139370,
+            -9.140388
+
+    };
+
+    private static final int[] radius = {
+            20,
+            20,
+            20
+    };
+    private static final String[] keys = {
             "club",
             "course",
             "school"
     };
 
-    private static final String [] values = {
+    private static final String[] values = {
             "Real Madrid",
             "MEIC",
             "IST"
@@ -66,7 +85,7 @@ public class TestData {
 
     private static final int icon = R.drawable.ic_wifi_black_36dp;
 
-    public static List<Message> getListData() {
+    public static List<Message> getDummyMessages() {
         List<Message> data = new ArrayList<>();
 
         for (int x = 0; x < 4; x++) {
@@ -80,7 +99,17 @@ public class TestData {
         return data;
     }
 
-    public static List<ProfileKeypair> getProfileKeyPairs(){
+    public static List<Location> getDummyLocations() {
+        List<Location> data = new ArrayList<>();
+
+        for (int i = 0; i < locations.length; i++)
+            data.add(new Location(locations[i], latitudes[i], longitudes[i], radius[i] ));
+
+        return data;
+
+    }
+
+    public static List<ProfileKeypair> getProfileKeyPairs() {
         List<ProfileKeypair> data = new ArrayList<>();
 
         for (int i = 0; i < keys.length; i++)
@@ -89,7 +118,7 @@ public class TestData {
         return data;
     }
 
-    public static List<String> getLocations(){
+    public static List<String> getLocations() {
         List<String> locations = new ArrayList<>(Arrays.asList(TestData.locations));
 
         for (int i = 0; i < 40; i++) {
@@ -99,16 +128,14 @@ public class TestData {
     }
 
 
-
-
-    public static Message getRandomMessage(){
+    public static Message getRandomMessage() {
         int rand = new Random().nextInt(6);
-        return new Message("Title " + (String.valueOf(rand)), contentExamples[rand],owners[rand], null, null, false);
+        return new Message("Title " + (String.valueOf(rand)), contentExamples[rand], owners[rand], null, null, false);
     }
 
     public static List<String> getExistingKeys() {
         List<String> existingKeys = new ArrayList<>();
-        for (String key: keys)
+        for (String key : keys)
             existingKeys.add(key);
 
         return existingKeys;

@@ -36,7 +36,7 @@ public class InboxActivity extends AppCompatActivity implements RecyclerListsAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
 
-        listData = (ArrayList) TestData.getListData();
+        listData = (ArrayList) TestData.getDummyMessages();
 
         setUpRecyclerView();
 

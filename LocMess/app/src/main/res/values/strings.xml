@@ -58,6 +58,7 @@
 
     <string name="add_key_value">Add Key/Value</string>
     <string name="add_message">Post New Message</string>
+    <string name="add_location">Add New Location</string>
 
     <!-- Menu. -->
     <string name="menu">Menu</string>

@@ -6,14 +6,14 @@ package pt.ulisboa.tecnico.cmov.locmess.model;
 
 public class Location extends ListItem {
     private String name;
-    private float latitude;
-    private float longitude;
+    private double latitude;
+    private double longitude;
 
     private int radius;
 
     private String ssid;
 
-    public Location(String name, float latitude, float longitude, int radius) {
+    public Location(String name, double latitude, double longitude, int radius) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -34,7 +34,7 @@ public class Location extends ListItem {
         this.name = name;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
@@ -42,7 +42,7 @@ public class Location extends ListItem {
         this.latitude = latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
