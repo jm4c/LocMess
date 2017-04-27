@@ -6,15 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 
 
-
-
-
 public class NewLocationActivity extends AppCompatActivity {
-
-
 
 
     @Override
@@ -37,7 +34,7 @@ public class NewLocationActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent intent = new Intent(getApplicationContext(), LocationActivity.class);
-                ((MyApplication) getApplicationContext()).addLocation(nameLayout.getText().toString(), latitudeLayout.getText().toString(), longitudeLayout.getText().toString(), Integer.parseInt(radiusLayout.getText().toString()));//TODO buscar os valores das caixas.
+                ((LocMessApplication) getApplicationContext()).addLocation(nameLayout.getText().toString(), latitudeLayout.getText().toString(), longitudeLayout.getText().toString(), Integer.parseInt(radiusLayout.getText().toString()));//TODO buscar os valores das caixas.
                 startActivity(intent);
             }
         });
@@ -45,7 +42,7 @@ public class NewLocationActivity extends AppCompatActivity {
         pickMap.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                 startActivity(intent);
             }
         });

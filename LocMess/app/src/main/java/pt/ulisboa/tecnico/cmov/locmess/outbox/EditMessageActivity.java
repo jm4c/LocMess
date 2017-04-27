@@ -1,13 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess.outbox;
 
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-
-import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.model.Location;
-import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
 
 public class EditMessageActivity extends PostMessageActivity {
 
