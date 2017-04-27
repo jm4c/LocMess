@@ -34,7 +34,10 @@ public class NewLocationActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent intent = new Intent(getApplicationContext(), LocationActivity.class);
-                ((LocMessApplication) getApplicationContext()).addLocation(nameLayout.getText().toString(), latitudeLayout.getText().toString(), longitudeLayout.getText().toString(), Integer.parseInt(radiusLayout.getText().toString()));//TODO buscar os valores das caixas.
+                ((LocMessApplication) getApplicationContext()).addLocation(nameLayout.getText().toString(),
+                        Double.valueOf(latitudeLayout.getText().toString()),
+                        Double.valueOf(longitudeLayout.getText().toString()),
+                        Integer.parseInt(radiusLayout.getText().toString()));//TODO buscar os valores das caixas.
                 startActivity(intent);
             }
         });

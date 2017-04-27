@@ -1,6 +1,7 @@
 package pt.tecnico.ulisboa.cmov.lmserver.utils;
 
-import javax.xml.bind.DatatypeConverter;
+import org.apache.tomcat.util.codec.binary.Base64;
+
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +24,8 @@ public class HashUtils {
     }
 
     public static String hashInText(Object msg, byte[] salt) throws IOException, NoSuchAlgorithmException {
-        return DatatypeConverter.printHexBinary(hash(msg, salt));
+        return Base64.encodeBase64String(hash(msg,salt));
+
     }
 
 }
