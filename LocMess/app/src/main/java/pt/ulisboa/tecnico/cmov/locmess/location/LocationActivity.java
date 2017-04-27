@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -18,12 +17,13 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
-public class LocationActivity extends AppCompatActivity implements RecyclerListsAdapter.activityCallback {
+public class LocationActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
@@ -34,6 +34,8 @@ public class LocationActivity extends AppCompatActivity implements RecyclerLists
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
+
+        setupToolbar("LocMess - Locations");
 
         listData = (ArrayList) TestData.getDummyLocations();
         Toast.makeText(this, listData.toString(), Toast.LENGTH_LONG).show();

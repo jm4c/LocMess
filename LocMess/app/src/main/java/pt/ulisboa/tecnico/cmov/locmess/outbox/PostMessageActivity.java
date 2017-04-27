@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -17,13 +16,14 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.model.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
 
 import static pt.ulisboa.tecnico.cmov.locmess.model.TestData.getLocations;
 
-public class PostMessageActivity extends AppCompatActivity {
+public class PostMessageActivity extends ToolbarActivity {
 
 
     protected Button createButton;
@@ -51,7 +51,7 @@ public class PostMessageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_post_message);
-
+        setupToolbar("LocMess - Post Message");
         setupButtons();
     }
 

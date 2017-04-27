@@ -9,6 +9,16 @@
     android:orientation="vertical"
     tools:context="pt.ulisboa.tecnico.cmov.locmess.outbox.PolicyActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:titleTextColor="@android:color/white"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
     <ToggleButton
         android:id="@+id/btn_policy_mode"
         android:layout_width="match_parent"

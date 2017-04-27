@@ -9,7 +9,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,13 +26,14 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
-public class PolicyActivity extends AppCompatActivity implements RecyclerListsAdapter.activityCallback {
+public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
@@ -44,6 +44,8 @@ public class PolicyActivity extends AppCompatActivity implements RecyclerListsAd
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_policy);
+
+        setupToolbar("LocMess - Setting up Policy");
 
         listData = (ArrayList) TestData.getProfileKeyPairs();
 

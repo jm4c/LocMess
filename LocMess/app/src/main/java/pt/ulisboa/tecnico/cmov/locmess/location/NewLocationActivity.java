@@ -2,16 +2,16 @@ package pt.ulisboa.tecnico.cmov.locmess.location;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
+import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 
 
-public class NewLocationActivity extends AppCompatActivity {
+public class NewLocationActivity extends ToolbarActivity {
 
 
     @Override
@@ -19,6 +19,7 @@ public class NewLocationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_location);
 
+        setupToolbar("LocMess - New Location");
 
         final EditText nameLayout = (EditText) findViewById(R.id.input_name);
         final EditText latitudeLayout = (EditText) findViewById(R.id.input_latitude);
