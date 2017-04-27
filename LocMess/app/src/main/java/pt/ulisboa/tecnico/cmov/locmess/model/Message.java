@@ -1,5 +1,8 @@
 package pt.ulisboa.tecnico.cmov.locmess.model;
 
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Created by joaod on 02-Apr-17.
  */
@@ -12,9 +15,13 @@ public class Message extends ListItem {
     private TimeWindow timeWindow;
     private boolean isCentralized;
     private boolean isRead;
+    private HashMap<String,String> policy;
+    private boolean isWhitelist;
 
-    public Message(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized) {
+    public Message(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized, HashMap<String, String> policy, boolean isWhitelist) {
         this.timeWindow = timeWindow;
+        this.policy = policy;
+        this.isWhitelist = isWhitelist;
         setTitle(title);
         this.content = content;
         this.owner = owner;
@@ -78,5 +85,21 @@ public class Message extends ListItem {
 
     public void setTimeWindow(TimeWindow timeWindow) {
         this.timeWindow = timeWindow;
+    }
+
+    public HashMap<String, String> getPolicy() {
+        return policy;
+    }
+
+    public void setPolicy(HashMap<String, String> policy) {
+        this.policy = policy;
+    }
+
+    public boolean isWhitelist() {
+        return isWhitelist;
+    }
+
+    public void setWhitelist(boolean whitelist) {
+        isWhitelist = whitelist;
     }
 }

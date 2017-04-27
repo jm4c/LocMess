@@ -1,6 +1,5 @@
 package pt.tecnico.ulisboa.cmov.lmserver;
 
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +20,7 @@ public class GreetingController {
     }
 
     @RequestMapping("/test")
-    public Message test() {
-        return new Message (1, "title", "cs", "adas", new Location("lisboa","sa"), "ter", "erter");
+    public int test() {
+        return 1;
     }
 }

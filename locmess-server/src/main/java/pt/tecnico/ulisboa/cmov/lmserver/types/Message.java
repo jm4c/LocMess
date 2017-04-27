@@ -1,10 +1,10 @@
 package pt.tecnico.ulisboa.cmov.lmserver.types;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
 
-/**
- * Created by joaod on 02-Apr-17.
- */
+
 
 public class Message implements Serializable {
     private int id;
@@ -14,8 +14,10 @@ public class Message implements Serializable {
     private Location location;
     private String startTime;
     private String endTime;
+    private HashMap<String, String> policy;
+    private boolean isWhitelist;
 
-    public Message(int id, String title, String content, String owner, Location location, String startTime, String endTime) {
+    public Message(int id, String title, String content, String owner, Location location, String startTime, String endTime, HashMap<String, String> policy, boolean isWhitelist) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -23,6 +25,8 @@ public class Message implements Serializable {
         this.location = location;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.policy = policy;
+        this.isWhitelist = isWhitelist;
     }
 
     public int getId() {
@@ -79,5 +83,21 @@ public class Message implements Serializable {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public HashMap<String, String> getPolicy() {
+        return policy;
+    }
+
+    public void setPolicy(HashMap<String, String> policy) {
+        this.policy = policy;
+    }
+
+    public boolean isWhitelist() {
+        return isWhitelist;
+    }
+
+    public void setWhitelist(boolean whitelist) {
+        isWhitelist = whitelist;
     }
 }
