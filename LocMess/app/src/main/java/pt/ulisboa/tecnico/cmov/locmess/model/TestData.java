@@ -90,7 +90,7 @@ public class TestData {
 
         for (int x = 0; x < 4; x++) {
             for (int i = 0; i < contentExamples.length && i < owners.length; i++) {
-                Message item = new Message("Title " + (i + x * contentExamples.length), contentExamples[i], owners[i], null, null, false, policy, isWhitelist);
+                Message item = new Message("Title " + (i + x * contentExamples.length), contentExamples[i], owners[i], null, null, false, null);
                 data.add(item);
             }
 
@@ -132,7 +132,7 @@ public class TestData {
 
     public static Message getRandomMessage() {
         int rand = new Random().nextInt(6);
-        return new Message("Title " + (String.valueOf(rand)), contentExamples[rand], owners[rand], null, null, false, policy, isWhitelist);
+        return new Message("Title " + (String.valueOf(rand)), contentExamples[rand], owners[rand], null, null, false, null);
     }
 
     public static List<String> getExistingKeys() {

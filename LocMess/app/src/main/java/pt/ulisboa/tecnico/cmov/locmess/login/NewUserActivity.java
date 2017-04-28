@@ -26,6 +26,8 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 public class NewUserActivity extends AppCompatActivity {
     private static final String TAG = "NewUserActivity";
 
+//    final ProgressDialog progressDialog = new ProgressDialog(NewUserActivity.this);
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,8 +120,19 @@ public class NewUserActivity extends AppCompatActivity {
         return true;
     }
 
+//    private void showProgressDialog(){
+//        progressDialog.setIndeterminate(true);
+//        progressDialog.setMessage("Creating Account...");
+//        progressDialog.show();
+//
+//    }
+
+//    private void dismissProgressDialog(){
+//        progressDialog.dismiss();
+//
+//    }
+
     private class CreateAccountTask extends AsyncTask<Void, Void, Boolean> {
-        final ProgressDialog progressDialog = new ProgressDialog(NewUserActivity.this);
         private String username;
         private String password;
 
@@ -136,12 +149,10 @@ public class NewUserActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             //show progress bar
-            progressDialog.setIndeterminate(true);
-            progressDialog.setMessage("Creating Account...");
-            progressDialog.show();
+//            showProgressDialog();
 
             // Setup url
-            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/account/new/" + username;
+            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/account";
 
             // Populate header
             HttpHeaders requestHeaders = new HttpHeaders();
@@ -165,7 +176,7 @@ public class NewUserActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
-            progressDialog.dismiss();
+//            dismissProgressDialog();
             if (aBoolean)
                 onSignupSuccess();
             else

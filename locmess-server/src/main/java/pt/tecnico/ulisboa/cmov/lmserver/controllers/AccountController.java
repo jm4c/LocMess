@@ -12,7 +12,7 @@ import static pt.tecnico.ulisboa.cmov.lmserver.utils.HashUtils.hashInText;
 
 @RestController
 public class AccountController {
-    @RequestMapping(value = "/account/", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/account", method = RequestMethod.POST, produces = "application/json")
     public @ResponseBody boolean createNewAccount(@RequestHeader(value = "username") String username,
                                                   @RequestHeader(value = "password") String password) {
         Singleton singleton = Singleton.getInstance();

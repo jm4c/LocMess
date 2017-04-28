@@ -15,13 +15,11 @@ public class Message extends ListItem {
     private TimeWindow timeWindow;
     private boolean isCentralized;
     private boolean isRead;
-    private HashMap<String,String> policy;
-    private boolean isWhitelist;
+    private Policy policy;
 
-    public Message(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized, HashMap<String, String> policy, boolean isWhitelist) {
+    public Message(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized, Policy policy) {
         this.timeWindow = timeWindow;
         this.policy = policy;
-        this.isWhitelist = isWhitelist;
         setTitle(title);
         this.content = content;
         this.owner = owner;
@@ -87,19 +85,12 @@ public class Message extends ListItem {
         this.timeWindow = timeWindow;
     }
 
-    public HashMap<String, String> getPolicy() {
+    public Policy getPolicy() {
         return policy;
     }
 
-    public void setPolicy(HashMap<String, String> policy) {
+    public void setPolicy(Policy policy) {
         this.policy = policy;
     }
 
-    public boolean isWhitelist() {
-        return isWhitelist;
-    }
-
-    public void setWhitelist(boolean whitelist) {
-        isWhitelist = whitelist;
-    }
 }
