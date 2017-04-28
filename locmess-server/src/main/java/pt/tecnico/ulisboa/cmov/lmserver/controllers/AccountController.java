@@ -1,8 +1,7 @@
-package pt.tecnico.ulisboa.cmov.lmserver;
+package pt.tecnico.ulisboa.cmov.lmserver.controllers;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -12,21 +11,22 @@ import static pt.tecnico.ulisboa.cmov.lmserver.utils.HashUtils.hashInText;
 
 
 @RestController
-class AccountController {
-    @RequestMapping(value = "/account/new/{username}", method = RequestMethod.POST)
-    public ResponseEntity createNewAccount(@PathVariable("username") String username, @RequestHeader(value = "password") String password) {
+public class AccountController {
+    @RequestMapping(value = "/account/", method = RequestMethod.POST, produces = "application/json")
+    public @ResponseBody boolean createNewAccount(@RequestHeader(value = "username") String username,
+                                                  @RequestHeader(value = "password") String password) {
         Singleton singleton = Singleton.getInstance();
         try {
-            if(singleton.usernameExists(username)){
+            if(!singleton.usernameExists(username)){
                 byte[] salt = getSalt();
                 String hashedPassword = hashInText(password, salt);
                 singleton.createAccount(username, hashedPassword, salt);
-                return new ResponseEntity<>(HttpStatus.ACCEPTED);
+                return true;
             }
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
-            return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return false;
         }
-        return  new ResponseEntity<>(HttpStatus.CONFLICT);
+        return false;
     }
 }

@@ -1,9 +1,10 @@
-package pt.tecnico.ulisboa.cmov.lmserver;
+package pt.tecnico.ulisboa.cmov.lmserver.controllers;
 
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pt.tecnico.ulisboa.cmov.lmserver.Greeting;
 import pt.tecnico.ulisboa.cmov.lmserver.types.Location;
 import pt.tecnico.ulisboa.cmov.lmserver.types.Message;
 

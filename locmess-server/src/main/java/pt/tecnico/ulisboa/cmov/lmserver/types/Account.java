@@ -1,8 +1,10 @@
 package pt.tecnico.ulisboa.cmov.lmserver.types;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.HashMap;
 
+@XmlRootElement(name = "account")
 public class Account implements Serializable{
 
     private String username;

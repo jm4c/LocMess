@@ -1,9 +1,12 @@
 package pt.tecnico.ulisboa.cmov.lmserver.types;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Created by joaod on 12-Apr-17.
  */
 
+@XmlRootElement(name = "time-window")
 public class TimeWindow {
     private boolean isTimeWindowSet;
 

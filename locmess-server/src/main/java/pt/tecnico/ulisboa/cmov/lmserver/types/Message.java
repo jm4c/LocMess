@@ -1,11 +1,12 @@
 package pt.tecnico.ulisboa.cmov.lmserver.types;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
 
-
+@XmlRootElement(name = "message")
 public class Message implements Serializable {
     private int id;
     private String title;

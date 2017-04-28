@@ -1,11 +1,13 @@
 package pt.tecnico.ulisboa.cmov.lmserver.types;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * Created by joaod on 10-Apr-17.
  */
 
+@XmlRootElement(name = "profile-key")
 public class ProfileKey implements Serializable {
     private String key;
     private int currentUsers;

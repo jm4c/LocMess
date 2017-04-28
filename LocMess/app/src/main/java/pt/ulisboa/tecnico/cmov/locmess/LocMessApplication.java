@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.locmess;
 import android.app.Application;
 
 import java.io.IOException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,8 @@ import static pt.ulisboa.tecnico.cmov.locmess.utils.HashUtils.hashInText;
  */
 
 public class LocMessApplication extends Application {
+
+    private String serverURL = "";
 
     private List<ProfileKeypair> keypairs;
     private List<String> availableKeys;
@@ -134,5 +137,13 @@ public class LocMessApplication extends Application {
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getServerURL() {
+        return serverURL;
+    }
+
+    public void setServerURL(String serverURL) {
+        this.serverURL = serverURL;
     }
 }
