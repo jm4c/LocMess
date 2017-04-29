@@ -56,7 +56,6 @@ public class NewUserActivity extends AppCompatActivity {
         Log.d(TAG, "Signup");
 
         if (!validateFields()) {
-            onSignupFailed();
             return;
         }
 
@@ -78,7 +77,12 @@ public class NewUserActivity extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(),
+                "Sign up failed.\n" +
+                "The username '" +
+                        ((EditText) findViewById(R.id.input_name)).getText().toString() +
+                        "' already exists."
+                , Toast.LENGTH_LONG).show();
 
         Button signupButton = (Button) findViewById(R.id.btn_signup);
         signupButton.setEnabled(true);
@@ -86,13 +90,13 @@ public class NewUserActivity extends AppCompatActivity {
 
     public boolean validateFields() {
 
+        EditText nameText = (EditText) findViewById(R.id.input_name);
         EditText passwordText = (EditText) findViewById(R.id.input_password);
         EditText passwordTextConfirm = (EditText) findViewById(R.id.input_password_confirm);
-        EditText nameText = (EditText) findViewById(R.id.input_name);
 
         String name = nameText.getText().toString();
-        String passwordConfirm = passwordTextConfirm.getText().toString();
         String password = passwordText.getText().toString();
+        String passwordConfirm = passwordTextConfirm.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
             nameText.setError("at least 3 characters");
@@ -164,11 +168,11 @@ public class NewUserActivity extends AppCompatActivity {
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
             try {
-                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), boolean.class);
+                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(requestHeaders), boolean.class);
                 return response.getBody();
 
             } catch (Exception e) {
-                Log.e("MainActivity", e.getMessage(), e);
+                Log.e("NewUserActivity", e.getMessage(), e);
             }
 
             return null;

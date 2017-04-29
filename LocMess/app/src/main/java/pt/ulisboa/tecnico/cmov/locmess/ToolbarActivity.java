@@ -23,8 +23,8 @@ public class ToolbarActivity extends AppCompatActivity {
 
     private static final int MENU_INBOX = 0;
     private static final int MENU_OUTBOX = 1;
-    private static final int MENU_PROFILE = 2;
-    private static final int MENU_LOCATIONS = 3;
+    private static final int MENU_LOCATIONS = 2;
+    private static final int MENU_PROFILE = 3;
     private static final int MENU_LOGOUT = 4;
 
 

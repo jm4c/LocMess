@@ -22,7 +22,7 @@ import static pt.ulisboa.tecnico.cmov.locmess.utils.HashUtils.hashInText;
 
 public class LocMessApplication extends Application {
 
-    private String SERVER_URL = "192.168.56.1:38864";
+    private String SERVER_URL = "http://192.168.1.7:38864";
 
     private List<ProfileKeypair> keypairs;
     private List<String> availableKeys;
