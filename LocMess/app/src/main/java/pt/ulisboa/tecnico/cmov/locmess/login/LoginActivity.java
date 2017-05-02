@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setEnabled(true);
         Intent i = new Intent(getApplicationContext(), InboxActivity.class);
         startActivity(i);
-        //finish();
+        finish();
     }
 
     public void onLoginFailed() {
