@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.locmess.model;
 
+import java.util.List;
+
 /**
  * Created by joaod on 10-Apr-17.
  */
@@ -11,7 +13,7 @@ public class Location extends ListItem {
 
     private int radius;
 
-    private String ssid;
+    private List<String> ssidList;
 
     public Location(String name, double latitude, double longitude, int radius) {
         this.name = name;
@@ -20,9 +22,9 @@ public class Location extends ListItem {
         this.radius = radius;
     }
 
-    public Location(String name, String ssid) {
+    public Location(String name, List ssidList) {
         this.name = name;
-        this.ssid = ssid;
+        this.ssidList = ssidList;
 
     }
 
@@ -63,11 +65,11 @@ public class Location extends ListItem {
         this.radius = radius;
     }
 
-    public String getSsid() {
-        return ssid;
+    public List<String> getSsidList() {
+        return ssidList;
     }
 
-    public void setSsid(String ssid) {
-        this.ssid = ssid;
+    public void setSsidList(List<String> ssidList) {
+        this.ssidList = ssidList;
     }
 }
