@@ -115,7 +115,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
             case R.layout.listitem_location:
                 Location location = (Location) item;
                 holder.title.setText(location.getName());
-                if (location.getSsid() == null) {
+                if (location.getSsidList() == null) {
                     //means its based on gps location
                     holder.subtitle.setText("[" + location.getLatitude() + ", "
                             + location.getLongitude() + ", "
@@ -123,7 +123,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                     holder.thumbnail.setImageResource(R.drawable.ic_location_on_black_36dp);
                 } else {
                     //means its based on ssid
-                    holder.subtitle.setText("{ " + location.getSsid() + " }");
+                    holder.subtitle.setText(location.getSsidList().toString());
                     holder.thumbnail.setImageResource(R.drawable.ic_wifi_black_36dp);
                 }
                 break;
