@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "pt.ulisboa.tecnico.cmov.locmess"
         minSdkVersion 17
@@ -19,7 +19,7 @@ android {
     }
 }
 
-repositories{
+repositories {
     maven {
         url 'https://repo.spring.io/libs-milestone'
     }
@@ -35,6 +35,7 @@ dependencies {
     })
 
     compile(name: 'Termite-WifiP2P-API', ext: 'aar')
+
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
@@ -44,7 +45,6 @@ dependencies {
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'org.springframework.android:spring-android-rest-template:2.0.0.M3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
-
     testCompile 'junit:junit:4.12'
 }
 

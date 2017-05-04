@@ -69,13 +69,12 @@
     <string name="logout">Logout</string>
 
     <!-- Location. -->
-    <string name = "Location">Locations</string>
-    <string name = "NLocation">New Location</string>
-    <string name = "locationName">name</string>
-    <string name = "locationLatitude">latitude</string>
-    <string name = "locationLongitude">longitude</string>
-    <string name = "pickOnMap">pick on map</string>
-    <string name = "radius">radius</string>
-    <string name = "addButton">Add</string>
-
+    <string name="Location">Locations</string>
+    <string name="NLocation">New Location</string>
+    <string name="locationName">name</string>
+    <string name="locationLatitude">latitude</string>
+    <string name="locationLongitude">longitude</string>
+    <string name="pickOnMap">pick on map</string>
+    <string name="radius">radius</string>
+    <string name="addButton">Add</string>
 </resources>

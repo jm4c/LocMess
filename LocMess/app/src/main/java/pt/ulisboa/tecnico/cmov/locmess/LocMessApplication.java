@@ -10,6 +10,8 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.model.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
+import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
 import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
 import pt.ulisboa.tecnico.cmov.locmess.outbox.OutboxActivity;
 
@@ -98,7 +100,38 @@ public class LocMessApplication extends Application {
         this.keypairs = keypairs;
     }
 
+    public void addKeyPair(String keyName, String value){
+        keypairs.add(new ProfileKeypair(keyName,value));
+    }
+
+    public void removeKeyPair(String keyname){ //TODO e possivel remover keyPair??
+        for (ProfileKeypair keypair : keypairs) {
+            if (keypair.getKey().equals(keyname)) {
+                keypairs.remove(keypair);
+            }
+        }
+    }
+
+    public void listKeys(){ //TODO  Analogo ao problema das locations
+        for (ProfileKeypair keypair : keypairs) {
+            System.out.println(keypair.getKey() + ":" + keypair.getValue());
+        }
+    }
     //Inbox Messages
+
+    public void addInboxMessage(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized, Policy policy){
+            inboxMessages.add(new Message(title,content,owner,location,timeWindow,isCentralized,policy));
+    }
+
+    public void removeInboxMessage(String title,String owner){ //TODO podem existir mensagens com o mesmo titulo?? se sim ver o owner? ou o mesmo owner pode ter 2 msgs com o mesmo titulo?
+        for(Message msg: inboxMessages){
+           // if(msg.getTitle().equals(title) && (msg.getOwner().equals(owner)))
+            if(msg.getTitle().equals(title)){
+                inboxMessages.remove(msg);
+            }
+        }
+    }
+
     public List<Message> getInboxMessages() {
         return inboxMessages;
     }
@@ -107,16 +140,46 @@ public class LocMessApplication extends Application {
         this.inboxMessages = inboxMessages;
     }
 
+
     //Outbox Messages
+
+
+
     public List<Message> getOutboxMessages() {
         return outboxMessages;
     }
+
+    public void listOutMessages(){ // TODO Primeiro centralized messages e depois decentralized.
+        List<Message> decentralizedMsgList = new ArrayList<>();
+        for(Message msg : outboxMessages){
+            if(msg.isCentralized()){
+                System.out.println(msg.getTitle());
+            }
+            decentralizedMsgList.add(msg);
+        }
+        for(Message msg : decentralizedMsgList){
+            System.out.println(msg.getTitle());
+        }
+    }
+
+    public void removeOutMessage(String title){
+        for( Message msg : outboxMessages){
+            if(msg.getTitle().equals(title)){
+                outboxMessages.remove(msg);
+            }
+        }
+    }
+
 
     public void setOutboxMessages(List<Message> outboxMessages) {
         this.outboxMessages = outboxMessages;
     }
 
-    //Available Keys (keys that might not used by the user but they exist in the server)
+    public void updateOutMessage(){  // TODO o que e possivel de se alterar numa msg?(update)
+
+    }
+
+    //Available Keys (keys that might not used by the user but they exist in the server) ?
     public List<String> getAvailableKeys() {
         return availableKeys;
     }
