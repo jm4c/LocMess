@@ -111,6 +111,7 @@ public class ToolbarActivity extends AppCompatActivity {
                 //TODO remove credentials/login token
                 break;
         }
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
 

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
@@ -29,15 +30,17 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
     private View view;
+    private LocMessApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
+        application = (LocMessApplication) getApplicationContext();
 
         setupToolbar("LocMess - Locations");
 
-        listData = (ArrayList) TestData.getDummyLocations();
+        listData = (ArrayList) application.getLocations();
 
         setUpRecyclerView();
 
@@ -52,7 +55,19 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
 
             }
         });
+    }
 
+    @Override
+    protected void onResume() {
+        listData = (ArrayList) application.getLocations();
+        adapter.notifyDataSetChanged();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        application.setLocations(listData);
+        super.onPause();
     }
 
     private void setUpRecyclerView() {
@@ -251,7 +266,7 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
 
     @Override
     public void onItemClick(int p) {
-        Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "TODO show in map/show list in dialog if SSIDs", Toast.LENGTH_LONG).show();
 
 //
 //        ((Message) listData.get(p)).setRead(true);

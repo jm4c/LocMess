@@ -45,7 +45,7 @@ public class GPSTrackerService extends Service implements LocationListener {
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 30; // 30 sec
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
@@ -128,8 +128,8 @@ public class GPSTrackerService extends Service implements LocationListener {
                 }
                 locationManager.requestLocationUpdates(
                         provider_info,
-                        /*MIN_TIME_BW_UPDATES*/1000 * 20, //TODO every 20 secs for now
-                        /*MIN_DISTANCE_CHANGE_FOR_UPDATES*/0,
+                        MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
                         this
                 );
 

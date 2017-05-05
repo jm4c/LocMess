@@ -43,6 +43,40 @@ public class NewLocationActivity extends ToolbarActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
+
+                //validate fields
+
+                boolean abort = false;
+                if (nameEditText.getText().length() == 0) {
+                    nameEditText.setError("Can't be null");
+                    abort = true;
+                }
+                if (latitudeEditText.getText().length() == 0) {
+                    latitudeEditText.setError("Can't be null");
+                    abort = true;
+                }
+                if (longitudeEditText.getText().length() == 0) {
+                    longitudeEditText.setError("Can't be null");
+                    abort = true;
+                }
+                if (abort) return;
+
+                Double latitude = Double.valueOf(latitudeEditText.getText().toString());
+                Double longitude = Double.valueOf(latitudeEditText.getText().toString());
+
+                if (latitude < -90 || latitude > 90) {
+                    latitudeEditText.setError("Value outside range: -90 to 90");
+                    abort = true;
+                }
+                if (longitude < -180 || latitude > 180) {
+                    latitudeEditText.setError("Value outside range: -180 to 180");
+                    abort = true;
+                }
+
+                if (abort) return;
+
+                if (radiusEditText.getText().length() == 0)
+                    radiusEditText.setText("100");
                 ((LocMessApplication) getApplicationContext()).addLocation(nameEditText.getText().toString(),
                         Double.valueOf(latitudeEditText.getText().toString()),
                         Double.valueOf(longitudeEditText.getText().toString()),
@@ -58,8 +92,8 @@ public class NewLocationActivity extends ToolbarActivity {
 
                 Editable radiusText = radiusEditText.getText();
 
-                if(radiusText.length() > 0)
-                   intent.putExtra("radius", Integer.valueOf(radiusText.toString()));
+                if (radiusText.length() > 0)
+                    intent.putExtra("radius", Integer.valueOf(radiusText.toString()));
 
                 startActivityForResult(intent, MAP_ACTIVITY);
             }
@@ -70,7 +104,7 @@ public class NewLocationActivity extends ToolbarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK){
+        if (resultCode == RESULT_OK) {
             latitudeEditText.setText(String.valueOf(data.getDoubleExtra("latitude", 0)));
             longitudeEditText.setText(String.valueOf(data.getDoubleExtra("longitude", 0)));
         }
