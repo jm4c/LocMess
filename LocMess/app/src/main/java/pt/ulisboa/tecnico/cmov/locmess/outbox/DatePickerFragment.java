@@ -21,24 +21,29 @@ public class DatePickerFragment extends DialogFragment
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        if(getTag().equals("dateStartPicker"))
-            Toast.makeText(getActivity(), "Pick message posting time.", Toast.LENGTH_LONG).show();
-        else
-            Toast.makeText(getActivity(), "Pick message expiration time.", Toast.LENGTH_LONG).show();
+        DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, year, month, day);
+
+        if(getTag().equals("dateStartPicker")) {
+            dialog.setTitle("Message posting time");
+            Toast.makeText(getActivity(), "Pick message posting time.", Toast.LENGTH_SHORT).show();
+        }else{
+            dialog.setTitle("Message expiration time");
+            Toast.makeText(getActivity(), "Pick message expiration time.", Toast.LENGTH_SHORT).show();
+        }
 
         // Create a new instance of DatePickerDialog and return it
-        return new DatePickerDialog(getActivity(), this, year, month, day);
+        return dialog;
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date chosen by the user
         DialogFragment dialogFragment;
         if(getTag().equals("dateStartPicker")){
-            ((PostMessageActivity) getActivity()).getTimeWindow().setStartDate(day, month, year);
+            ((PostMessageActivity) getActivity()).timeWindow.setStartDate(day, month, year);
             dialogFragment = new TimePickerFragment();
             dialogFragment.show(this.getFragmentManager(), "timeStartPicker");
         }else{
-            ((PostMessageActivity) getActivity()).getTimeWindow().setEndDate(day, month, year);
+            ((PostMessageActivity) getActivity()).timeWindow.setEndDate(day, month, year);
             dialogFragment = new TimePickerFragment();
             dialogFragment.show(this.getFragmentManager(), "timeEndPicker");
         }

@@ -1,7 +1,10 @@
 package pt.ulisboa.tecnico.cmov.locmess.outbox;
 
+import android.app.Activity;
+import android.app.Application;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -24,12 +27,15 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
+import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
 import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
@@ -38,16 +44,28 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
-    private boolean isWhitelist;
+    private boolean isWhitelist = true;
+    private LocMessApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_policy);
+        application = (LocMessApplication) getApplicationContext();
 
         setupToolbar("LocMess - Setting up Policy");
 
-        listData = (ArrayList) TestData.getProfileKeyPairs();
+        if (savedInstanceState != null)
+            // Restore value of members from saved state
+            listData = (ArrayList) savedInstanceState.getSerializable("list");
+        else if (getIntent().getSerializableExtra("policy") == null)
+            listData = new ArrayList();
+        else {
+            Policy policy = (Policy) getIntent().getSerializableExtra("policy");
+            assert policy != null;
+            isWhitelist = policy.isWhitelist();
+            listData = (ArrayList) policy.getKeyValues();
+        }
 
         setUpRecyclerView();
 
@@ -61,6 +79,21 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
         });
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("list", listData);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent resultData = new Intent();
+        resultData.putExtra("policy",new Policy(listData, isWhitelist));
+
+        setResult(RESULT_OK, resultData);
+        finish();
+    }
 
     private void setUpRecyclerView() {
         //LayoutManager: GridLayout or StaggeredGridLayoutManager
@@ -79,9 +112,10 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
 
     private void setUpPolicyModeButton() {
         ToggleButton toggle = (ToggleButton) findViewById(R.id.btn_policy_mode);
+        toggle.setChecked(isWhitelist);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                setWhitelist(isChecked);
+                isWhitelist = isChecked ;
             }
         });
     }
@@ -262,12 +296,20 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
     }
 
     private void addKeyPair(String key, String value) {
-        Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_LONG).show();
+        for (ProfileKeypair keypair : (ArrayList<ProfileKeypair>) listData) {
+            if (keypair.getKey().equals(key)) {
+                Toast.makeText(this, "The key '" + key + "' already exists", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
         ProfileKeypair item = new ProfileKeypair(key, value);
         listData.add(item);
         adapter.notifyItemInserted(listData.indexOf(item));
+    }
 
-        //TODO existing keys?
+    private void replaceKeyPair(int pos, String value) {
+        ((ProfileKeypair) listData.get(pos)).setValue(value);
+        adapter.notifyItemChanged(pos);
     }
 
 
@@ -279,19 +321,8 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
     @Override
     public void onItemClick(int p) {
         Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_LONG).show();
-
-//        Message item = (Message) listData.get(p);
-//
-//
-//        Intent i = new Intent(this, EditMessageActivity.class);
-//
-//        Bundle extras = new Bundle();
-//        TODO
-//        extras.putString(EXTRA_QUOTE, item.getTitle());
-//        extras.putString(EXTRA_ATTR, item.getSubTitle());
-//
-//        i.putExtra(BUNDLE_EXTRAS, extras);
-//        startActivity(i);
+        Dialog dialog = editKeypairDialog(p);
+        dialog.show();
     }
 
 
@@ -300,14 +331,6 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
         deleteItem(p);
     }
 
-
-    public boolean isWhitelist() {
-        return isWhitelist;
-    }
-
-    public void setWhitelist(boolean whitelist) {
-        isWhitelist = whitelist;
-    }
 
     public Dialog createNewKeypairDialog() {
 
@@ -321,6 +344,42 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
                     public void onClick(DialogInterface dialog, int id) {
                         addKeyPair(String.valueOf(((TextView) view.findViewById(R.id.profile_key)).getText()),
                                 String.valueOf(((TextView) view.findViewById(R.id.profile_value)).getText()));
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        // Create the AlertDialog object and return it
+        return builder.create();
+    }
+
+    public Dialog editKeypairDialog(final int pos) {
+
+        final View view = setupAutoCompleteKeys();
+
+        TextView keyTextView = (TextView) view.findViewById(R.id.profile_key);
+        final TextView valueTextView = (TextView) view.findViewById(R.id.profile_value);
+
+        ProfileKeypair keyPair = (ProfileKeypair) listData.get(pos);
+
+        keyTextView.setText(keyPair.getKey());
+        keyTextView.setFocusable(false);
+        keyTextView.setClickable(false);
+        keyTextView.setEnabled(false);
+        keyTextView.setFocusableInTouchMode(false);
+
+        valueTextView.setText(keyPair.getValue());
+
+
+        // Use the Builder class for convenient dialog construction
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit keypair")
+                .setView(view)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        replaceKeyPair(pos, valueTextView.getText().toString());
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -365,8 +424,8 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
         return view;
     }
 
-    private List<String> getExistingKeys(){
-        return TestData.getExistingKeys();
+    private List<String> getExistingKeys() {
+        return application.getAvailableKeys();
     }
 
 

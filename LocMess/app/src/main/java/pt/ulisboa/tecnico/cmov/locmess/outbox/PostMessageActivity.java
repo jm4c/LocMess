@@ -16,43 +16,50 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.model.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
 import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
 
 import static pt.ulisboa.tecnico.cmov.locmess.model.TestData.getLocations;
 
 public class PostMessageActivity extends ToolbarActivity {
 
+    private static final int POLICY_ACTIVITY = 1;
+    private LocMessApplication application;
+    private Button createButton;
+    private ImageButton locationButton;
+    private ImageButton policyButton;
+    private ImageButton scheduleButton;
 
-    protected Button createButton;
-    protected TimeWindow timeWindow;
-    protected ImageButton locationButton;
-    protected ImageButton policyButton;
-    protected ImageButton scheduleButton;
+    private Location location;
+    private EditText contentEditText;
+    EditText titleEditText;
 
-    protected EditText titleEditText;
+    TimeWindow timeWindow;
+    private Policy policy;
 
-    protected EditText contentEditText;
-
-    protected boolean isCentralized = true;
-
-    protected Location location;
-
-
-    protected TimeWindow getTimeWindow() {
-        return timeWindow;
-    }
+    private boolean isCentralized = true;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        application = (LocMessApplication) getApplicationContext();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_post_message);
         setupToolbar("LocMess - Post Message");
         setupButtons();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            policy = (Policy) data.getSerializableExtra("policy");
+        }
     }
 
     public void refreshButtons() {
@@ -86,7 +93,7 @@ public class PostMessageActivity extends ToolbarActivity {
         }
     }
 
-    protected void setupButtons(){
+    protected void setupButtons() {
         locationButton = (ImageButton) findViewById(R.id.bt_location);
         policyButton = (ImageButton) findViewById(R.id.bt_policy);
         scheduleButton = (ImageButton) findViewById(R.id.bt_schedule);
@@ -107,14 +114,16 @@ public class PostMessageActivity extends ToolbarActivity {
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(PostMessageActivity.this);
 
-                final List<String> locations = getLocations();
+                final List<String> locations = application.getLocationsNames();
                 CharSequence[] cs = locations.toArray(new CharSequence[locations.size()]);
                 builder.setTitle(R.string.pick_location)
                         .setItems(cs, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 // The 'which' argument contains the index position
                                 // of the selected item
-                                location = new Location(locations.get(which), 0, 0, 0); //TODO pick location
+
+//                                location = new Location(locations.get(which), 0, 0, 0);
+                                location = application.getLocation(which);
                                 Toast.makeText(PostMessageActivity.this, "Location: " + location.getName(), Toast.LENGTH_LONG).show();
                                 refreshButtons();
                             }
@@ -128,13 +137,16 @@ public class PostMessageActivity extends ToolbarActivity {
             public boolean onLongClick(View view) {
                 if (location != null) {
                     Toast.makeText(PostMessageActivity.this,
-                            "Location: " + location.getName(), //TODO
+                            "Location: " + location.getName() + "\n"
+                                    + "Latitude: " + location.getLatitude() + "\n"
+                                    + "Longitude: " + location.getLongitude() + "\n"
+                                    + "Radius: " + location.getLatitude(),
                             Toast.LENGTH_LONG).show();
                     return true;
                 } else {
                     Toast.makeText(PostMessageActivity.this,
                             "Location not picked yet",
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                     return false;
                 }
             }
@@ -144,8 +156,11 @@ public class PostMessageActivity extends ToolbarActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PostMessageActivity.this, PolicyActivity.class);
-//                intent.putExtra(EXTRA_MESSAGE, message);
-                startActivity(intent);
+
+                if (policy != null)
+                    intent.putExtra("policy", policy);
+
+                startActivityForResult(intent, POLICY_ACTIVITY);
             }
         });
 
@@ -175,8 +190,8 @@ public class PostMessageActivity extends ToolbarActivity {
                 if (timeWindow.isTimeWindowSet()) {
                     Toast.makeText(PostMessageActivity.this,
                             "Message Duration\n"
-                                    + "From: " + PostMessageActivity.this.getTimeWindow().getFormattedStartTime() + "\n"
-                                    + "To: " + PostMessageActivity.this.getTimeWindow().getFormattedEndTime(),
+                                    + "From: " + PostMessageActivity.this.timeWindow.getFormattedStartTime() + "\n"
+                                    + "To: " + PostMessageActivity.this.timeWindow.getFormattedEndTime(),
                             Toast.LENGTH_LONG).show();
                     return true;
                 } else {

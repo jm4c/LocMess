@@ -51,7 +51,7 @@ public class TimeWindow {
 
     public void setEndTime(int endHour, int endMinute){
         this.endHour = endHour;
-        this.endMinute = startMinute;
+        this.endMinute = endMinute;
     }
 
     public int getStartYear() {

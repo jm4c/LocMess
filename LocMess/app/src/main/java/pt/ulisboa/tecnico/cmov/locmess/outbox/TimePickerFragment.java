@@ -31,18 +31,18 @@ public class TimePickerFragment extends DialogFragment
         DialogFragment dialogFragment;
 
         if(getTag().equals("timeStartPicker")){
-            ((PostMessageActivity) getActivity()).getTimeWindow().setStartTime(hourOfDay, minute);
+            ((PostMessageActivity) getActivity()).timeWindow.setStartTime(hourOfDay, minute);
             dialogFragment = new DatePickerFragment();
             dialogFragment.show(this.getFragmentManager(), "dateEndPicker");
         }else {
-            ((PostMessageActivity) getActivity()).getTimeWindow().setEndTime(hourOfDay, minute);
-            ((PostMessageActivity) getActivity()).getTimeWindow().setTimeWindowSet(true);
+            ((PostMessageActivity) getActivity()).timeWindow.setEndTime(hourOfDay, minute);
+            ((PostMessageActivity) getActivity()).timeWindow.setTimeWindowSet(true);
             ((PostMessageActivity) getActivity()).refreshButtons();
 
             Toast.makeText(getActivity(),
                     "Message Duration\n"
-                            + "From: " + ((PostMessageActivity) getActivity()).getTimeWindow().getFormattedStartTime() + "\n"
-                            + "To: " + ((PostMessageActivity) getActivity()).getTimeWindow().getFormattedEndTime(),
+                            + "From: " + ((PostMessageActivity) getActivity()).timeWindow.getFormattedStartTime() + "\n"
+                            + "To: " + ((PostMessageActivity) getActivity()).timeWindow.getFormattedEndTime(),
                     Toast.LENGTH_LONG).show();
 
         }

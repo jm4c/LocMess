@@ -69,6 +69,17 @@ public class LocMessApplication extends Application {
         locations.add(new Location(name, longitude, latitude, radius));
     }
 
+    public Location getLocation(int pos){
+        return locations.get(pos);
+    }
+
+    public List<String> getLocationsNames(){
+        List<String> locationNames = new ArrayList<>();
+        for (Location location : locations)
+            locationNames.add(location.getName());
+        return locationNames;
+    }
+
     public void removeLocationArray(String name) {
         for (Location loc : locations) {
             if (loc.getName().equals(name)) {
