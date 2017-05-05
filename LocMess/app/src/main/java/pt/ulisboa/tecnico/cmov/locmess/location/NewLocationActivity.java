@@ -2,9 +2,12 @@ package pt.ulisboa.tecnico.cmov.locmess.location;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import org.w3c.dom.Text;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
@@ -12,6 +15,13 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 
 
 public class NewLocationActivity extends ToolbarActivity {
+
+    private static final int MAP_ACTIVITY = 0;
+
+    private EditText nameEditText;
+    private EditText latitudeEditText;
+    private EditText longitudeEditText;
+    private EditText radiusEditText;
 
 
     @Override
@@ -21,35 +31,48 @@ public class NewLocationActivity extends ToolbarActivity {
 
         setupToolbar("LocMess - New Location");
 
-        final EditText nameLayout = (EditText) findViewById(R.id.input_name);
-        final EditText latitudeLayout = (EditText) findViewById(R.id.input_latitude);
-        final EditText longitudeLayout = (EditText) findViewById(R.id.input_longitude);
-        final EditText radiusLayout = (EditText) findViewById(R.id.input_radius);
+        nameEditText = (EditText) findViewById(R.id.input_name);
+        latitudeEditText = (EditText) findViewById(R.id.input_latitude);
+        longitudeEditText = (EditText) findViewById(R.id.input_longitude);
+        radiusEditText = (EditText) findViewById(R.id.input_radius);
 
-        Button addbutton = (Button) findViewById(R.id.addButton);
-        Button pickMap = (Button) findViewById(R.id.pickOnMap);
+        Button addButton = (Button) findViewById(R.id.addButton);
+        Button pickMapButton = (Button) findViewById(R.id.pickOnMap);
 
 
-        addbutton.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-
-                Intent intent = new Intent(getApplicationContext(), LocationActivity.class);
-                ((LocMessApplication) getApplicationContext()).addLocation(nameLayout.getText().toString(),
-                        Double.valueOf(latitudeLayout.getText().toString()),
-                        Double.valueOf(longitudeLayout.getText().toString()),
-                        Integer.parseInt(radiusLayout.getText().toString()));//TODO buscar os valores das caixas.
-                startActivity(intent);
+                ((LocMessApplication) getApplicationContext()).addLocation(nameEditText.getText().toString(),
+                        Double.valueOf(latitudeEditText.getText().toString()),
+                        Double.valueOf(longitudeEditText.getText().toString()),
+                        Integer.parseInt(radiusEditText.getText().toString()));//TODO buscar os valores das caixas.
+                finish();
             }
         });
 
-        pickMap.setOnClickListener(new View.OnClickListener() {
+        pickMapButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(intent);
+
+                Editable radiusText = radiusEditText.getText();
+
+                if(radiusText.length() > 0)
+                   intent.putExtra("radius", Integer.valueOf(radiusText.toString()));
+
+                startActivityForResult(intent, MAP_ACTIVITY);
             }
         });
+
+
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK){
+            latitudeEditText.setText(String.valueOf(data.getDoubleExtra("latitude", 0)));
+            longitudeEditText.setText(String.valueOf(data.getDoubleExtra("longitude", 0)));
+        }
+    }
 }

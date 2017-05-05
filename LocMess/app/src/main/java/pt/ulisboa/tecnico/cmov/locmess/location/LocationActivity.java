@@ -38,7 +38,6 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
         setupToolbar("LocMess - Locations");
 
         listData = (ArrayList) TestData.getDummyLocations();
-        Toast.makeText(this, listData.toString(), Toast.LENGTH_LONG).show();
 
         setUpRecyclerView();
 

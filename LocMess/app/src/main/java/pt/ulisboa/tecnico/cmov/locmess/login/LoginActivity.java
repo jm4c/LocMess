@@ -15,6 +15,7 @@ import android.widget.Toast;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.inbox.InboxActivity;
+import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -86,6 +87,10 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         Button loginButton = (Button) findViewById(R.id.btn_login);
         loginButton.setEnabled(true);
+
+        //start GPS service
+        startService(new Intent(this, GPSTrackerService.class));
+
         Intent i = new Intent(getApplicationContext(), InboxActivity.class);
         startActivity(i);
         finish();

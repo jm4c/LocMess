@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.cmov.locmess.location.LocationActivity;
 import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
 import pt.ulisboa.tecnico.cmov.locmess.outbox.OutboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.profile.ProfileActivity;
+import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
 
 public class ToolbarActivity extends AppCompatActivity {
 
@@ -81,18 +82,31 @@ public class ToolbarActivity extends AppCompatActivity {
         Intent i;
         switch (which){
             case MENU_INBOX:
+                if(ToolbarActivity.this instanceof InboxActivity)
+                    return;
                 i = new Intent(ToolbarActivity.this, InboxActivity.class);
                 break;
             case MENU_OUTBOX:
+                if(ToolbarActivity.this instanceof OutboxActivity)
+                    return;
+
                 i = new Intent(ToolbarActivity.this, OutboxActivity.class);
                 break;
             case MENU_LOCATIONS:
+                if(ToolbarActivity.this instanceof LocationActivity)
+                    return;
+
                 i = new Intent(ToolbarActivity.this, LocationActivity.class);
                 break;
             case MENU_PROFILE:
+                if(ToolbarActivity.this instanceof ProfileActivity)
+                    return;
+
                 i = new Intent(ToolbarActivity.this, ProfileActivity.class);
                 break;
             default: //LOGOUT
+                stopService(new Intent(this, GPSTrackerService.class));
+
                 i = new Intent(ToolbarActivity.this, LoginActivity.class);
                 //TODO remove credentials/login token
                 break;

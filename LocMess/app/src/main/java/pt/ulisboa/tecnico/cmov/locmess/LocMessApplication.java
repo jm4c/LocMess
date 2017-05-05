@@ -1,6 +1,9 @@
 package pt.ulisboa.tecnico.cmov.locmess;
 
 import android.app.Application;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +34,7 @@ public class LocMessApplication extends Application {
     private List<Message> inboxMessages;
     private List<Message> outboxMessages;
     private List<Location> locations;
+    private LatLng currentLocation;
 
     private String keysHash;
     private String locationsHash;
@@ -206,4 +210,12 @@ public class LocMessApplication extends Application {
         return SERVER_URL;
     }
 
+    public LatLng getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(LatLng currentLocation) {
+        this.currentLocation = currentLocation;
+        Toast.makeText(this, currentLocation.toString(), Toast.LENGTH_LONG).show();
+    }
 }
