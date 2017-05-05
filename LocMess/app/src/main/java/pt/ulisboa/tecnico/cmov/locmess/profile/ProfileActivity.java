@@ -24,27 +24,30 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
+import pt.ulisboa.tecnico.cmov.locmess.model.ListItem;
 import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
-import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
 public class ProfileActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
+    private LocMessApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        application = ((LocMessApplication) getApplicationContext());
         setContentView(R.layout.activity_profile);
 
         setupToolbar("LocMess - Profile");
 
-        listData = (ArrayList) TestData.getProfileKeyPairs();
+        listData = (ArrayList) application.getProfileKeypairs();
 
         setUpRecyclerView();
 
@@ -58,6 +61,11 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
         });
     }
 
+    @Override
+    protected void onPause() {
+        application.setKeypairs(listData);
+        super.onPause();
+    }
 
     private void setUpRecyclerView() {
         //LayoutManager: GridLayout or StaggeredGridLayoutManager
@@ -250,12 +258,20 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
     }
 
     private void addKeyPair(String key, String value) {
-        Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_LONG).show();
+        for (ProfileKeypair keypair: (ArrayList<ProfileKeypair>) listData) {
+            if (keypair.getKey().equals(key)){
+                Toast.makeText(this,"The key '" + key + "' already exists", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
         ProfileKeypair item = new ProfileKeypair(key, value);
         listData.add(item);
         adapter.notifyItemInserted(listData.indexOf(item));
+    }
 
-        //TODO existing keys?
+    private void replaceKeyPair(int pos, String value) {
+        ((ProfileKeypair) listData.get(pos)).setValue(value);
+        adapter.notifyItemChanged(pos);
     }
 
 
@@ -268,18 +284,9 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
     public void onItemClick(int p) {
         Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_LONG).show();
 
-//        Message item = (Message) listData.get(p);
-//
-//
-//        Intent i = new Intent(this, EditMessageActivity.class);
-//
-//        Bundle extras = new Bundle();
-//        TODO
-//        extras.putString(EXTRA_QUOTE, item.getTitle());
-//        extras.putString(EXTRA_ATTR, item.getSubTitle());
-//
-//        i.putExtra(BUNDLE_EXTRAS, extras);
-//        startActivity(i);
+        Dialog dialog = editKeypairDialog(p);
+        dialog.show();
+
     }
 
 
@@ -302,6 +309,42 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
                     public void onClick(DialogInterface dialog, int id) {
                         addKeyPair(String.valueOf(((TextView) view.findViewById(R.id.profile_key)).getText()),
                                 String.valueOf(((TextView) view.findViewById(R.id.profile_value)).getText()));
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        // Create the AlertDialog object and return it
+        return builder.create();
+    }
+
+    public Dialog editKeypairDialog(final int pos) {
+
+        final View view = setupAutoCompleteKeys();
+
+        TextView keyTextView = (TextView) view.findViewById(R.id.profile_key);
+        final TextView valueTextView = (TextView) view.findViewById(R.id.profile_value);
+
+        ProfileKeypair keyPair = (ProfileKeypair) listData.get(pos);
+
+        keyTextView.setText(keyPair.getKey());
+        keyTextView.setFocusable(false);
+        keyTextView.setClickable(false);
+        keyTextView.setEnabled(false);
+        keyTextView.setFocusableInTouchMode(false);
+
+        valueTextView.setText(keyPair.getValue());
+
+
+        // Use the Builder class for convenient dialog construction
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit keypair")
+                .setView(view)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        replaceKeyPair(pos, valueTextView.getText().toString());
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -347,7 +390,9 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
     }
 
     private List<String> getExistingKeys(){
-        return TestData.getExistingKeys();
+        return application.getAvailableKeys();
     }
+
+
 
 }

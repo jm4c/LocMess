@@ -96,7 +96,7 @@ public class LocMessApplication extends Application {
     }
 
     //Profile keypairs
-    public List<ProfileKeypair> getKeypairs() {
+    public List<ProfileKeypair> getProfileKeypairs() {
         return keypairs;
     }
 
