@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess.login;
 
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -14,22 +13,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.ConnectException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
@@ -45,14 +35,12 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private EditText usernameEditText;
     private EditText passwordEditText;
-    private LocMessApplication application;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        application = (LocMessApplication) getApplicationContext();
 
         loginButton = (Button) findViewById(R.id.btn_login);
         usernameEditText = (EditText) findViewById(R.id.input_name);
@@ -62,7 +50,6 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-
                 login();
             }
         });
@@ -90,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
             LoginTask task = new LoginTask();
             task.execute();
         } else {
-            onLoginSuccess();
+            onLoginSuccess(9999);
         }
 
 //        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
@@ -127,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
-    public void onLoginSuccess() {
+    public void onLoginSuccess(int sessionID) {
         loginButton.setEnabled(true);
 
         //save to shared preferences
@@ -135,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("username", usernameEditText.getText().toString());
         editor.putString("password", passwordEditText.getText().toString());
+        editor.putInt("session", sessionID);
         editor.apply();
 
         //start GPS service
@@ -198,7 +186,7 @@ public class LoginActivity extends AppCompatActivity {
 
             try {
                 ResponseEntity<Integer> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), Integer.class);
-                return response.getBody(); //TODO shared preferences token
+                return response.getBody();
 
             } catch (Exception e) {
                 Log.e("NewUserActivity", e.getMessage(), e);
@@ -209,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Integer aInteger) {
             if (aInteger > 0)
-                onLoginSuccess();
+                onLoginSuccess(aInteger);
             else
                 onLoginFailed(aInteger);
             super.onPostExecute(aInteger);
