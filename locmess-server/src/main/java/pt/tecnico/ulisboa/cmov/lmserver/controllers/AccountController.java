@@ -6,9 +6,6 @@ import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-import static pt.tecnico.ulisboa.cmov.lmserver.utils.CryptoUtils.getSalt;
-import static pt.tecnico.ulisboa.cmov.lmserver.utils.HashUtils.hashInText;
-
 
 @RestController
 public class AccountController {
@@ -18,9 +15,7 @@ public class AccountController {
         Singleton singleton = Singleton.getInstance();
         try {
             if(!singleton.usernameExists(username)){
-                byte[] salt = getSalt();
-                String hashedPassword = hashInText(password, salt);
-                singleton.createAccount(username, hashedPassword, salt);
+                singleton.createAccount(username, password);
                 return true;
             }
         } catch (IOException | NoSuchAlgorithmException e) {
@@ -29,4 +24,21 @@ public class AccountController {
         }
         return false;
     }
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody int login(@RequestHeader(value = "username") String username,
+                                                  @RequestHeader(value = "password") String password) {
+        Singleton singleton = Singleton.getInstance();
+        try {
+            if(singleton.usernameExists(username)){
+                return singleton.login(username, password);
+            }
+        } catch (IOException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return -1;
+        }
+        return -1;
+    }
 }
+
+
