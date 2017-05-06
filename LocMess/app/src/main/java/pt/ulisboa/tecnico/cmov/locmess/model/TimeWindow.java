@@ -1,10 +1,14 @@
 package pt.ulisboa.tecnico.cmov.locmess.model;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.DateFormatSymbols;
+
 /**
  * Created by joaod on 12-Apr-17.
  */
 
-public class TimeWindow {
+public class TimeWindow implements Serializable{
     private boolean isTimeWindowSet;
 
     private int startYear;
@@ -95,18 +99,18 @@ public class TimeWindow {
     }
 
     public String getFormattedStartTime(){
-        return String.valueOf(startDay) + "/" +
-                String.valueOf(startMonth) + "/" +
+        return  String.format("%02d", startDay) + " " +
+                new DateFormatSymbols().getMonths()[startMonth] + " " +
                 String.valueOf(startYear) + " " +
-                String.valueOf(startHour) + ":" +
-                String.valueOf(startMinute);
+                String.format("%02d", startHour) + ":" +
+                String.format("%02d", startMinute);
     }
 
     public String getFormattedEndTime(){
-        return String.valueOf(endDay) + "/" +
-                String.valueOf(endMonth) + "/" +
+        return String.format("%02d", endDay) + " " +
+                new DateFormatSymbols().getMonths()[endMonth] + " " +
                 String.valueOf(endYear) + " " +
-                String.valueOf(endHour) + ":" +
-                String.valueOf(endMinute);
+                String.format("%02d", endHour) + ":" +
+                String.format("%02d", endMinute);
     }
 }

@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.cmov.locmess.login;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,7 +13,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.inbox.InboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
@@ -21,13 +21,20 @@ import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
 
+    private Button loginButton;
+    private EditText usernameEditText;
+    private EditText passwordEditText;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Button loginButton = (Button) findViewById(R.id.btn_login);
+        loginButton = (Button) findViewById(R.id.btn_login);
+        usernameEditText =  (EditText) findViewById(R.id.input_name);
+        passwordEditText = (EditText) findViewById(R.id.input_password);
+
         loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -57,7 +64,6 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        Button loginButton = (Button) findViewById(R.id.btn_login);
         loginButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
@@ -85,8 +91,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess() {
-        Button loginButton = (Button) findViewById(R.id.btn_login);
         loginButton.setEnabled(true);
+
+        //save to shared preferences
+        SharedPreferences sharedPref = this.getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("username", usernameEditText.getText().toString());
+        editor.putString("password", passwordEditText.getText().toString());
+        editor.apply();
 
         //start GPS service
         startService(new Intent(this, GPSTrackerService.class));
@@ -98,24 +110,17 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-        Button loginButton = (Button) findViewById(R.id.btn_login);
         loginButton.setEnabled(true);
     }
 
     public boolean validate() {
-        boolean valid = true;
-        EditText passwordText = (EditText) findViewById(R.id.input_password);
-
-        String password = passwordText.getText().toString();
-
-
-        if (password.isEmpty() || password.length() < 4) {
-            passwordText.setError("larger than 4 characters");
-            valid = false;
+        if (passwordEditText.getText().length() < 4) {
+            passwordEditText.setError("larger than 4 characters");
+            return false;
         } else {
-            passwordText.setError(null);
+            passwordEditText.setError(null);
         }
 
-        return valid;
+        return true;
     }
 }

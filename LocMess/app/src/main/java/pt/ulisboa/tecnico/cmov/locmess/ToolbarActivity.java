@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.locmess;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -106,6 +107,12 @@ public class ToolbarActivity extends AppCompatActivity {
                 break;
             default: //LOGOUT
                 stopService(new Intent(this, GPSTrackerService.class));
+
+                SharedPreferences sharedPreferences = this.getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("username");
+                editor.remove("password");
+                editor.apply();
 
                 i = new Intent(ToolbarActivity.this, LoginActivity.class);
                 //TODO remove credentials/login token

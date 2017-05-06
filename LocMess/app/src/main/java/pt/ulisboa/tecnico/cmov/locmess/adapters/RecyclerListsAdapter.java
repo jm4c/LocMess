@@ -97,7 +97,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                     holder.owner.setTypeface(null, Typeface.BOLD);
                 }
                 holder.subtitle.setText(message.getContent());
-                holder.timestamp.setText("9:44"); //TODO
+                holder.timestamp.setText("9:44"); //TODO timestamp when receives
                 holder.thumbnail.setImageDrawable(
                         drawIconFromString(owner, holder.texDrawableBuilder));
                 break;
@@ -105,7 +105,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 message = (Message) item;
                 holder.title.setText(message.getTitle());
                 holder.subtitle.setText(message.getContent());
-                holder.timestamp.setText("02 April 19:00 to 03 April 18:00"); //TODO
+                holder.timestamp.setText(message.getTimeWindow().getFormattedStartTime() + " to " + message.getTimeWindow().getFormattedEndTime()); //"02 April 19:00 to 03 April 18:00");
 
                 if (((Message) item).isCentralized())
                     holder.thumbnail.setImageResource(R.drawable.ic_cloud_black_36dp);

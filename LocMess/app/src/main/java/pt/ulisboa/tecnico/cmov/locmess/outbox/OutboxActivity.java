@@ -13,6 +13,7 @@ import android.widget.Button;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.model.Message;
@@ -21,24 +22,6 @@ public class OutboxActivity extends ToolbarActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private List<Message> centralizedMessages;
-    private List<Message> decentralizedMessages;
-
-    public List<Message> getCentralizedMessages() {
-        return centralizedMessages;
-    }
-
-    public void setCentralizedMessages(List<Message> centralizedMessages) {
-        this.centralizedMessages = centralizedMessages;
-    }
-
-    public List<Message> getDecentralizedMessages() {
-        return decentralizedMessages;
-    }
-
-    public void setDecentralizedMessages(List<Message> decentralizedMessages) {
-        this.decentralizedMessages = decentralizedMessages;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

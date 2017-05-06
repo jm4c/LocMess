@@ -18,13 +18,13 @@ public class Message extends ListItem {
     private Policy policy;
 
     public Message(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized, Policy policy) {
-        this.timeWindow = timeWindow;
-        this.policy = policy;
-        setTitle(title);
+        this.title = title;
         this.content = content;
         this.owner = owner;
         this.location = location;
+        this.timeWindow = timeWindow;
         this.isCentralized = isCentralized;
+        this.policy = policy;
         this.isRead = false;
     }
 

@@ -1,11 +1,13 @@
 package pt.ulisboa.tecnico.cmov.locmess.outbox;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -20,10 +22,9 @@ import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.model.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
 import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
-
-import static pt.ulisboa.tecnico.cmov.locmess.model.TestData.getLocations;
 
 public class PostMessageActivity extends ToolbarActivity {
 
@@ -34,14 +35,17 @@ public class PostMessageActivity extends ToolbarActivity {
     private ImageButton policyButton;
     private ImageButton scheduleButton;
 
-    private Location location;
-    private EditText contentEditText;
+    EditText contentEditText;
     EditText titleEditText;
 
+    Location location;
     TimeWindow timeWindow;
-    private Policy policy;
+    Policy policy;
 
-    private boolean isCentralized = true;
+    boolean isEditMode = false;
+    int positionInList; //used when editing a message
+
+    boolean isCentralized = true;
 
 
     @Override
@@ -60,8 +64,10 @@ public class PostMessageActivity extends ToolbarActivity {
         if (resultCode == RESULT_OK) {
             policy = (Policy) data.getSerializableExtra("policy");
         }
+        refreshButtons();
     }
 
+    /** changes buttons background according to the PostMessageActivity state*/
     public void refreshButtons() {
 
         if (isCentralized) {
@@ -82,15 +88,24 @@ public class PostMessageActivity extends ToolbarActivity {
         else
             scheduleButton.setBackgroundResource(R.drawable.background_icon_todo_button);
 
-        //TODO policy
+        if (policy != null)
+            policyButton.setBackgroundResource(R.drawable.background_icon_enabled_button);
+        else
+            policyButton.setBackgroundResource(R.drawable.background_icon_todo_button);
 
-        if (timeWindow.isTimeWindowSet() && (isCentralized || (location != null) /*TODO && policy set && title/content not empty*/)) {
+        if (isPostMessageReady()) {
             createButton.setEnabled(true);
             createButton.setBackgroundResource(R.drawable.background_icon_enabled_button);
         } else {
             createButton.setEnabled(false);
             createButton.setBackgroundResource(R.drawable.background_icon_disabled_button);
         }
+    }
+
+    private boolean isPostMessageReady(){
+        return timeWindow.isTimeWindowSet() &&
+                (!isCentralized || (location != null)) &&
+                policy != null;
     }
 
     protected void setupButtons() {
@@ -114,7 +129,7 @@ public class PostMessageActivity extends ToolbarActivity {
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(PostMessageActivity.this);
 
-                final List<String> locations = application.getLocationsNames();
+                final List<String> locations = application.listLocations();
                 CharSequence[] cs = locations.toArray(new CharSequence[locations.size()]);
                 builder.setTitle(R.string.pick_location)
                         .setItems(cs, new DialogInterface.OnClickListener() {
@@ -167,8 +182,17 @@ public class PostMessageActivity extends ToolbarActivity {
         policyButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                String message;
+
+                if (policy == null)
+                    message = "Policy not set.";
+                else if (policy.isWhitelist())
+                    message = "Policy: Whitelist";
+                else
+                    message = "Policy: Blacklist";
+
                 Toast.makeText(PostMessageActivity.this,
-                        "List Mode: TODO", //TODO
+                        message,
                         Toast.LENGTH_LONG).show();
                 return true;
             }
@@ -206,7 +230,45 @@ public class PostMessageActivity extends ToolbarActivity {
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                TODO onClick
+                Log.d("POST", "inside create");
+                //validate
+                if (!isPostMessageReady()) {
+                    Log.d("POST", "field not valid");
+                    return;
+                }
+
+                if(titleEditText.getText().length() == 0) {
+                    titleEditText.setError("Title cannot be empty.");
+                    return;
+                }
+
+                String owner = PostMessageActivity.this.getPreferences(MODE_PRIVATE).getString("username", "");
+
+                Message message = new Message(
+                        titleEditText.getText().toString(),
+                        contentEditText.getText().toString(),
+                        owner,
+                        location,
+                        timeWindow,
+                        isCentralized,
+                        policy);
+
+                if(!isEditMode) {
+                    Log.d("MSG", "add message");
+                    application.addOutboxMessage(message);
+                }else {
+                    Log.d("MSG", "replace message");
+                    application.replaceOutboxMessage(message, positionInList);
+                }
+
+
+//                Intent resultData = new Intent();
+//                resultData.putExtra("message", message);
+//                resultData.putExtra("position", positionInList);
+//
+//                setResult(Activity.RESULT_OK, resultData);
+
+                finish();
             }
         });
 

@@ -13,20 +13,28 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.model.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
+
+import static android.app.Activity.RESULT_OK;
 
 
 public class OutboxMessagesFragment extends Fragment implements RecyclerListsAdapter.activityCallback {
+
+    private static final int NEW_MESSAGE = 1;
+    private static final int EDIT_MESSAGE = 2;
 
     public OutboxMessagesFragment() {
         // Required empty public constructor
@@ -37,6 +45,7 @@ public class OutboxMessagesFragment extends Fragment implements RecyclerListsAda
     private ArrayList listData;
     private View view;
     private boolean isCentralized;
+    private LocMessApplication application;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,17 +53,43 @@ public class OutboxMessagesFragment extends Fragment implements RecyclerListsAda
         isCentralized = getArguments().getBoolean("isCentralized");
     }
 
+
+    private void updateListData() {
+        if(isCentralized)
+            listData = (ArrayList) application.getOutboxCentralizedMessages();
+        else
+            listData = (ArrayList) application.getOutboxDecentralizedMessages();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        application = (LocMessApplication) getActivity().getApplicationContext();
 
         view = inflater.inflate(R.layout.fragment_outbox_messages, container, false);
 
-        listData = (ArrayList) TestData.getDummyMessages();
+        updateListData();
 
         setUpRecyclerView();
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        updateListData();
+        adapter.notifyDataSetChanged();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        if(isCentralized)
+            application.setOutboxCentralizedMessages(listData);
+        else
+            application.setOutboxDecentralizedMessages(listData);
+        super.onPause();
+    }
+
 
     private void setUpRecyclerView() {
         //LayoutManager: GridLayout or StaggeredGridLayoutManager
@@ -254,31 +289,19 @@ public class OutboxMessagesFragment extends Fragment implements RecyclerListsAda
 
     @Override
     public void onItemClick(int p) {
-        Message item = (Message) listData.get(p);
+        Message message = (Message) listData.get(p);
+        Log.d("OUT", message.getTitle());
 
 
-        Intent i = new Intent(this.getActivity(), EditMessageActivity.class);
-
-        Bundle extras = new Bundle();
-//        TODO
-//        extras.putString(EXTRA_QUOTE, item.getTitle());
-//        extras.putString(EXTRA_ATTR, item.getSubTitle());
-//
-//        i.putExtra(BUNDLE_EXTRAS, extras);
-        startActivity(i);
+        Intent intent = new Intent(this.getActivity(), EditMessageActivity.class);
+        intent.putExtra("message", message);
+        intent.putExtra("position", p);
+        startActivityForResult(intent, EDIT_MESSAGE);
     }
 
 
     @Override
     public void onUndoTimeout(int p) {
         deleteItem(p);
-    }
-
-    public boolean isCentralized() {
-        return isCentralized;
-    }
-
-    public void setCentralized(boolean centralized) {
-        isCentralized = centralized;
     }
 }

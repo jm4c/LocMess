@@ -80,7 +80,7 @@ public class NewLocationActivity extends ToolbarActivity {
                 ((LocMessApplication) getApplicationContext()).addLocation(nameEditText.getText().toString(),
                         Double.valueOf(latitudeEditText.getText().toString()),
                         Double.valueOf(longitudeEditText.getText().toString()),
-                        Integer.parseInt(radiusEditText.getText().toString()));//TODO buscar os valores das caixas.
+                        Integer.parseInt(radiusEditText.getText().toString()));
                 finish();
             }
         });

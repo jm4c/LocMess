@@ -1,6 +1,9 @@
 package pt.ulisboa.tecnico.cmov.locmess.outbox;
 
 import android.os.Bundle;
+import android.util.Log;
+
+import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 
 public class EditMessageActivity extends PostMessageActivity {
 
@@ -12,8 +15,21 @@ public class EditMessageActivity extends PostMessageActivity {
 
     private void loadMessage(){
         //TODO load message received
-        titleEditText.setText("Random title");
+        Message message =  (Message) getIntent().getSerializableExtra("message");
+
+        assert message != null;
+        Log.w("EDIT", message.getTitle());
+        titleEditText.setText(message.getTitle());
         titleEditText.setEnabled(false);
+        contentEditText.setText(message.getContent());
+        location = message.getLocation();
+        policy = message.getPolicy();
+        timeWindow = message.getTimeWindow();
+        isCentralized = message.isCentralized();
+
+        positionInList = getIntent().getIntExtra("position", -1);
+        isEditMode = true;
+
         refreshButtons();
     }
 }
