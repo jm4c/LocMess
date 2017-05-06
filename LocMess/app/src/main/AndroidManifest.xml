@@ -28,14 +28,17 @@
         android:theme="@style/AppTheme"
         tools:replace="icon">
         <activity android:name=".login.LoginActivity"
-            android:label="LocMess">
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:label="LocMess"
+            android:theme="@style/AppThemeDefault" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".login.NewUserActivity" />
+        <activity android:name=".login.NewUserActivity"
+            android:theme="@style/AppThemeDefault"
+            android:label="@string/app_create_account_title"
+        />
         <activity android:name=".ToolbarActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".inbox.InboxActivity" />

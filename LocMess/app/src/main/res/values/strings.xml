@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">LocMess</string>
+    <string name="app_create_account_title"></string>
 
     <!-- Strings related to login -->
     <string name="noaccount">No account yet? Create one</string>
