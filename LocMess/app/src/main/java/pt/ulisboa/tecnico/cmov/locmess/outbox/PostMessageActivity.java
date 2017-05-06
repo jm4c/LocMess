@@ -201,7 +201,6 @@ public class PostMessageActivity extends ToolbarActivity {
         scheduleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                TODO onClick
                 DialogFragment dialogFragment = new DatePickerFragment();
                 dialogFragment.show(getFragmentManager(), "dateStartPicker");
                 refreshButtons();

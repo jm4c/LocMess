@@ -14,7 +14,6 @@ public class EditMessageActivity extends PostMessageActivity {
     }
 
     private void loadMessage(){
-        //TODO load message received
         Message message =  (Message) getIntent().getSerializableExtra("message");
 
         assert message != null;

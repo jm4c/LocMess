@@ -110,12 +110,13 @@ public class ToolbarActivity extends AppCompatActivity {
 
                 SharedPreferences sharedPreferences = this.getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
+                // To avoid automatically login
                 editor.remove("username");
                 editor.remove("password");
                 editor.apply();
 
                 i = new Intent(ToolbarActivity.this, LoginActivity.class);
-                //TODO remove credentials/login token
+                //TODO remove credentials/login token (token does'nt exist yet)
                 break;
         }
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

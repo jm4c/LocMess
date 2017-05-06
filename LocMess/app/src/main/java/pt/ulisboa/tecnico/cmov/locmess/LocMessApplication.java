@@ -90,11 +90,6 @@ public class LocMessApplication extends Application {
         }
     }
 
-    public void printLocations() { /*TODO Tera que ser alterada dependendo como se quer mostrar a informacao*/
-        for (Location loc : locations) {
-            System.out.println(loc.getName());
-        }
-    }
 
     public String getLocationsHash() {
         return locationsHash;
@@ -121,7 +116,7 @@ public class LocMessApplication extends Application {
         keypairs.add(new ProfileKeypair(keyName, value));
     }
 
-    public void removeKeyPair(String keyname) { //TODO e possivel remover keyPair??
+    public void removeKeyPair(String keyname) {
         for (ProfileKeypair keypair : keypairs) {
             if (keypair.getKey().equals(keyname)) {
                 keypairs.remove(keypair);
@@ -129,9 +124,9 @@ public class LocMessApplication extends Application {
         }
     }
 
-    public void listKeys() { //TODO  Analogo ao problema das locations
+    public void listKeys() { //TODO
         for (ProfileKeypair keypair : keypairs) {
-            System.out.println(keypair.getKey() + ":" + keypair.getValue());
+//            System.out.println(keypair.getKey() + ":" + keypair.getValue());
         }
     }
     //Inbox Messages
@@ -194,29 +189,20 @@ public class LocMessApplication extends Application {
     }
 
 
-    public void printOutboxMessages() { // TODO Primeiro centralized messages e depois decentralized.
-        List<Message> decentralizedMsgList = new ArrayList<>();
-        for (Message msg : outboxCentralizedMessages) {
-            if (msg.isCentralized()) {
-                System.out.println(msg.getTitle());
+    public void removeOutboxMessage(String title, Boolean isCentralized) {
+        if(isCentralized) {
+            for (Message msg : outboxCentralizedMessages) {
+                if (msg.getTitle().equals(title)) {
+                    outboxCentralizedMessages.remove(msg);
+                }
             }
-            decentralizedMsgList.add(msg);
-        }
-        for (Message msg : decentralizedMsgList) {
-            System.out.println(msg.getTitle());
-        }
-    }
-
-    public void removeOutMessage(String title) {
-        for (Message msg : outboxCentralizedMessages) {
-            if (msg.getTitle().equals(title)) {
-                outboxCentralizedMessages.remove(msg);
+        }else {
+            for (Message msg : outboxDecentralizedMessages) {
+                if (msg.getTitle().equals(title)) {
+                    outboxDecentralizedMessages.remove(msg);
+                }
             }
         }
-    }
-
-    public void updateOutMessage() {  // TODO o que e possivel de se alterar numa msg?(update)
-
     }
 
 
