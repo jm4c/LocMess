@@ -5,6 +5,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -240,4 +243,6 @@ public class LocMessApplication extends Application {
         this.currentLocation = currentLocation;
         Toast.makeText(this, currentLocation.toString(), Toast.LENGTH_LONG).show();
     }
+
+
 }

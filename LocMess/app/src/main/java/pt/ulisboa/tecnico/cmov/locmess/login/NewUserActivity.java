@@ -16,6 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
@@ -79,7 +80,7 @@ public class NewUserActivity extends AppCompatActivity {
     public void onSignupFailed() {
         Toast.makeText(getBaseContext(),
                 "Sign up failed.\n" +
-                "The username '" +
+                        "The username '" +
                         ((EditText) findViewById(R.id.input_name)).getText().toString() +
                         "' already exists."
                 , Toast.LENGTH_LONG).show();
@@ -166,6 +167,7 @@ public class NewUserActivity extends AppCompatActivity {
             // Create a new RestTemplate instance
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
 
             try {
                 ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(requestHeaders), boolean.class);
@@ -173,18 +175,20 @@ public class NewUserActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 Log.e("NewUserActivity", e.getMessage(), e);
+                return null;
             }
 
-            return null;
         }
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
-//            dismissProgressDialog();
-            if (aBoolean)
-                onSignupSuccess();
+            if (aBoolean == null)
+                Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
             else
-                onSignupFailed();
+                if (aBoolean)
+                    onSignupSuccess();
+                else
+                    onSignupFailed();
             super.onPostExecute(aBoolean);
         }
 

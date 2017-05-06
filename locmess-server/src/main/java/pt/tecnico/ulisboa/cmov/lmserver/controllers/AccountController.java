@@ -18,6 +18,7 @@ public class AccountController {
                 singleton.createAccount(username, password);
                 return true;
             }
+            System.out.println("LOG: Account '" + username + "' already exists");
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
             return false;

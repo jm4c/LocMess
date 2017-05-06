@@ -44,7 +44,6 @@ public class Singleton {
     //Accounts
     public boolean usernameExists(String username) {
         if (getAccount(username) != null) {
-            System.out.println("LOG: Account '" + username + "' already exists.");
             return true;
         }
         return false;
@@ -73,6 +72,11 @@ public class Singleton {
     public int login(String username, String password) throws IOException, NoSuchAlgorithmException {
 
         byte[] salt = getAccountSalt(username);
+
+        if(salt == null){
+            System.out.println("LOG: Login '" +username+ "' failed. Reason: Wrong password.");
+            return -2;
+        }
         String hashedPassword = hashInText(password, salt);
 
         if(getAccount(username).getHashedPassword().equals(hashedPassword)){
@@ -81,6 +85,7 @@ public class Singleton {
             System.out.println("LOG: Session " + token.getSessionID() + " created for user " + username + ".");
             return token.getSessionID();
         }
+        System.out.println("LOG: Login '" +username+ "' failed. Reason: Wrong password.");
         return -1;
     }
 

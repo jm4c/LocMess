@@ -14,12 +14,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.ConnectException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
@@ -29,19 +39,23 @@ import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
+    private static final boolean LOGIN_ACTIVE_FLAG = true;
+    private static final int TIMEOUT_CODE = -3;
 
     private Button loginButton;
     private EditText usernameEditText;
     private EditText passwordEditText;
+    private LocMessApplication application;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        application = (LocMessApplication) getApplicationContext();
 
         loginButton = (Button) findViewById(R.id.btn_login);
-        usernameEditText =  (EditText) findViewById(R.id.input_name);
+        usernameEditText = (EditText) findViewById(R.id.input_name);
         passwordEditText = (EditText) findViewById(R.id.input_password);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -69,14 +83,15 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "Login");
 
         if (!validate()) {
-            onLoginFailed();
             return;
         }
 
-        loginButton.setEnabled(false);
-
-        LoginTask task = new LoginTask();
-        task.execute();
+        if (LOGIN_ACTIVE_FLAG) { //in order to speed up debugging
+            LoginTask task = new LoginTask();
+            task.execute();
+        } else {
+            onLoginSuccess();
+        }
 
 //        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
 //        progressDialog.setIndeterminate(true);
@@ -84,15 +99,25 @@ public class LoginActivity extends AppCompatActivity {
 //        progressDialog.show();
 //
 //
-//        new android.os.Handler().postDelayed(
+//        new android.os.Handler().post(
 //                new Runnable() {
 //                    public void run() {
 //                        // On complete call either onLoginSuccess or onLoginFailed
-//                        onLoginSuccess();
-//                        // onLoginFailed();
+//                        try {
+//                            if (LOGIN_ACTIVE_FLAG) { //in order to speed up debugging
+//                                LoginTask task = new LoginTask();
+//                                task.execute();
+//                                task.get(10, TimeUnit.SECONDS);
+//                            } else {
+//                                onLoginSuccess();
+//                            }
+//                        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+//                            e.printStackTrace();
+//                            Toast.makeText(LoginActivity.this, "Failed to connect with server.", Toast.LENGTH_SHORT);
+//                        }
 //                        progressDialog.dismiss();
 //                    }
-//                }, 500); //TODO wait for response from server
+//                });
     }
 
 
@@ -120,8 +145,12 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    public void onLoginFailed(int code) {
+        if (code == TIMEOUT_CODE) {
+            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_SHORT).show();
+
         loginButton.setEnabled(true);
     }
 
@@ -153,8 +182,6 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(Void... params) {
-            //show progress bar
-//            showProgressDialog();
 
             // Setup url
             final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/login";
@@ -167,25 +194,24 @@ public class LoginActivity extends AppCompatActivity {
             // Create a new RestTemplate instance
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
 
             try {
                 ResponseEntity<Integer> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), Integer.class);
-                return response.getBody();
+                return response.getBody(); //TODO shared preferences token
 
             } catch (Exception e) {
                 Log.e("NewUserActivity", e.getMessage(), e);
+                return TIMEOUT_CODE;
             }
-
-            return null;
         }
 
         @Override
         protected void onPostExecute(Integer aInteger) {
-//            dismissProgressDialog();
-            if (aInteger != -1)
+            if (aInteger > 0)
                 onLoginSuccess();
             else
-                onLoginFailed();
+                onLoginFailed(aInteger);
             super.onPostExecute(aInteger);
         }
 
