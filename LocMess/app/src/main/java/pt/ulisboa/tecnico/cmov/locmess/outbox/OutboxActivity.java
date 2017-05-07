@@ -13,15 +13,10 @@ import android.widget.Button;
 import java.util.ArrayList;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
-import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.model.Message;
+import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 
 public class OutboxActivity extends ToolbarActivity {
-
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +25,10 @@ public class OutboxActivity extends ToolbarActivity {
 
         setupToolbar("LocMess - Outbox");
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
         Button addItem = (Button) findViewById(R.id.btn_add_item);

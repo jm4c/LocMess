@@ -29,7 +29,6 @@ import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
 public class PostMessageActivity extends ToolbarActivity {
 
     private static final int POLICY_ACTIVITY = 1;
-    private LocMessApplication application;
     private Button createButton;
     private ImageButton locationButton;
     private ImageButton policyButton;
@@ -51,7 +50,6 @@ public class PostMessageActivity extends ToolbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        application = (LocMessApplication) getApplicationContext();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_post_message);
         setupToolbar("LocMess - Post Message");
@@ -241,7 +239,7 @@ public class PostMessageActivity extends ToolbarActivity {
                     return;
                 }
 
-                String owner = PostMessageActivity.this.getPreferences(MODE_PRIVATE).getString("username", "");
+                String owner = PostMessageActivity.this.getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", "");
 
                 Message message = new Message(
                         titleEditText.getText().toString(),

@@ -34,6 +34,13 @@ public class Singleton {
         locations = new ArrayList<>();
         profileKeys = new ArrayList<>();
         tokens = new ArrayList<>();
+
+        try {
+            locationsHash = hashInText(locations, null);
+            profileKeysHash = hashInText(profileKeys, null);
+        } catch (IOException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     /* Static 'instance' method */

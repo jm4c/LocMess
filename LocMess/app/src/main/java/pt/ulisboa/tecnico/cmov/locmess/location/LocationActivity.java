@@ -17,12 +17,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
-import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
 public class LocationActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
@@ -30,13 +28,11 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
     private View view;
-    private LocMessApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
-        application = (LocMessApplication) getApplicationContext();
 
         setupToolbar("LocMess - Locations");
 

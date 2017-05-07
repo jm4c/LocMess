@@ -1,13 +1,12 @@
 package pt.ulisboa.tecnico.cmov.locmess.model;
 
-import java.util.HashMap;
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * Created by joaod on 02-Apr-17.
  */
 
-public class Message extends ListItem {
+public class Message implements Serializable {
     private String title;
     private String owner;
     private Location location;

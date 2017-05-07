@@ -1,12 +1,10 @@
 package pt.ulisboa.tecnico.cmov.locmess.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-/**
- * Created by joaod on 10-Apr-17.
- */
 
-public class Location extends ListItem {
+public class Location implements Serializable{
     private String name;
     private double latitude;
     private double longitude;
@@ -22,7 +20,7 @@ public class Location extends ListItem {
         this.radius = radius;
     }
 
-    public Location(String name, List ssidList) {
+    public Location(String name, List<String> ssidList) {
         this.name = name;
         this.ssidList = ssidList;
 

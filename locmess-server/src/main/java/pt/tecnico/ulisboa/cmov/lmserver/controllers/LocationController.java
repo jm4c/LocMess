@@ -14,17 +14,21 @@ import java.util.List;
 public class LocationController {
     @RequestMapping(value = "/locations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public List<Location> createNewAccount(@RequestHeader(value = "session") int sessionID,
+    public List<Location> createNewAccount(@RequestHeader(value = "session") String sessionID,
                                            @RequestHeader(value = "hash") String clientLocationHash,
                                            HttpServletResponse response) throws IOException {
         Singleton singleton = Singleton.getInstance();
         List<Location> locations = null;
+        int id = Integer.valueOf(sessionID);
 
-        if (singleton.tokenExists(sessionID)) {
+        if (singleton.tokenExists(id)) {
+            System.out.println("LOG: " + singleton.getToken(id).getUsername() + " checking for new locations. Current hash: " + clientLocationHash);
             if (!(singleton.getLocationsHash().equals(clientLocationHash))) {
                 locations = singleton.getLocations();
+                System.out.println("LOG: " + singleton.getToken(id).getUsername() + " downloaded new locations. New hash: " + singleton.getLocationsHash());
             }
         } else {
+            System.out.println("LOG: No valid session ID found.");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 

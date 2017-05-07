@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.cmov.locmess.outbox;
 
-import android.app.Activity;
-import android.app.Application;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,9 +8,9 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -27,17 +25,15 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
-import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
 import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
-import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
 public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
@@ -45,13 +41,11 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
     private boolean isWhitelist = true;
-    private LocMessApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_policy);
-        application = (LocMessApplication) getApplicationContext();
 
         setupToolbar("LocMess - Setting up Policy");
 

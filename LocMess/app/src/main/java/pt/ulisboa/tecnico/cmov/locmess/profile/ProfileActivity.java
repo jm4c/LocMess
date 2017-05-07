@@ -24,12 +24,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.model.ListItem;
 import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
 
 public class ProfileActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
@@ -37,12 +35,10 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
-    private LocMessApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        application = ((LocMessApplication) getApplicationContext());
         setContentView(R.layout.activity_profile);
 
         setupToolbar("LocMess - Profile");

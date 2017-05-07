@@ -1,12 +1,9 @@
 package pt.ulisboa.tecnico.cmov.locmess.model;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 
-/**
- * Created by joaod on 12-Apr-17.
- */
+
 
 public class TimeWindow implements Serializable{
     private boolean isTimeWindowSet;

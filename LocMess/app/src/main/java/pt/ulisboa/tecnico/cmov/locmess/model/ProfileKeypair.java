@@ -1,10 +1,12 @@
 package pt.ulisboa.tecnico.cmov.locmess.model;
 
+import java.io.Serializable;
+
 /**
  * Created by joaod on 10-Apr-17.
  */
 
-public class ProfileKeypair extends ListItem {
+public class ProfileKeypair implements Serializable {
     private String key;
     private String value;
 

@@ -95,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setEnabled(true);
 
         //save to shared preferences
-        SharedPreferences sharedPref = this.getPreferences(MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getSharedPreferences("LocMess",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("username", usernameEditText.getText().toString());
         editor.putString("password", passwordEditText.getText().toString());

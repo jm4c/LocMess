@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.model.ListItem;
 import pt.ulisboa.tecnico.cmov.locmess.model.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
@@ -30,9 +29,9 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
 
     private static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
 
-    private List<ListItem> items;
+    private List<Object> items;
     private LayoutInflater inflater;
-    private List<ListItem> itemsPendingRemoval;
+    private List<Object> itemsPendingRemoval;
 
     private int itemLayout;
 
@@ -44,10 +43,10 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
 
 
     private Handler handler = new Handler(); // handler for running delayed runnables
-    HashMap<ListItem, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
+    HashMap<Object, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
 
 
-    public RecyclerListsAdapter(List<ListItem> items, Context c, int itemLayout, boolean undoOn) {
+    public RecyclerListsAdapter(List<Object> items, Context c, int itemLayout, boolean undoOn) {
         this.inflater = LayoutInflater.from(c);
         this.items = items;
         this.itemsPendingRemoval = new ArrayList<>();
@@ -77,7 +76,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
 
     @Override
     public void onBindViewHolder(AdapterViewHolder holder, int position) {
-        ListItem item = items.get(position);
+        Object item = items.get(position);
         Message message;
 
         switch (itemLayout) {
@@ -147,13 +146,13 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
 
     }
 
-    public void setItems(ArrayList<ListItem> exerciseList) {
+    public void setItems(ArrayList<Object> exerciseList) {
         this.items.clear();
         this.items.addAll(exerciseList);
     }
 
     public void pendingRemoval(int position) {
-        final ListItem item = items.get(position);
+        final Object item = items.get(position);
         if (!itemsPendingRemoval.contains(item)) {
             itemsPendingRemoval.add(item);
             // this will redraw row in "undo" state
@@ -171,7 +170,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
     }
 
     public boolean isPendingRemoval(int position) {
-        ListItem item = items.get(position);
+        Object item = items.get(position);
         return itemsPendingRemoval.contains(item);
     }
 
@@ -234,7 +233,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
 
         }
 
-        public void handleUndoState(final ListItem item) {
+        public void handleUndoState(final Object item) {
 
             // TODO handle Undo according to layout used
             if (itemsPendingRemoval.contains(item)) {
@@ -314,7 +313,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                     activityCallback.onItemClick(itemID);
                     break;
                 case R.id.undo_button:
-                    ListItem item = items.get(itemID);
+                    Object item = items.get(itemID);
                     // user wants to undo the removal, let's cancel the pending task
                     Runnable pendingRemovalRunnable = pendingRunnables.get(item);
                     pendingRunnables.remove(item);

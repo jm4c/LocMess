@@ -5,10 +5,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,8 +23,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.model.Location;
-import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 

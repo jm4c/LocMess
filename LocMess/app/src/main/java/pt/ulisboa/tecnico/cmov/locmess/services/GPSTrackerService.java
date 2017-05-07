@@ -25,6 +25,9 @@ public class GPSTrackerService extends Service implements LocationListener {
     // Get Class Name
     private static String TAG = GPSTrackerService.class.getName();
 
+    // Get application context
+    private LocMessApplication application;
+
     // flag for GPS Status
     boolean isGPSEnabled = false;
 
@@ -58,6 +61,7 @@ public class GPSTrackerService extends Service implements LocationListener {
     @Override
     public void onCreate() {
         super.onCreate();
+        application =(LocMessApplication) getApplicationContext();
         getLocation();
     }
 
@@ -153,7 +157,7 @@ public class GPSTrackerService extends Service implements LocationListener {
         if (location != null) {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
-            ((LocMessApplication) getApplicationContext()).setCurrentLocation(new LatLng(latitude, longitude));
+            application.setCurrentLocation(new LatLng(latitude, longitude));
         }
     }
 

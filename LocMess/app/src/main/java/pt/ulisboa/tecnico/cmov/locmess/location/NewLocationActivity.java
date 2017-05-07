@@ -9,7 +9,6 @@ import android.widget.EditText;
 
 import org.w3c.dom.Text;
 
-import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 
@@ -77,7 +76,7 @@ public class NewLocationActivity extends ToolbarActivity {
 
                 if (radiusEditText.getText().length() == 0)
                     radiusEditText.setText("100");
-                ((LocMessApplication) getApplicationContext()).addLocation(nameEditText.getText().toString(),
+                application.addLocation(nameEditText.getText().toString(),
                         Double.valueOf(latitudeEditText.getText().toString()),
                         Double.valueOf(longitudeEditText.getText().toString()),
                         Integer.parseInt(radiusEditText.getText().toString()));

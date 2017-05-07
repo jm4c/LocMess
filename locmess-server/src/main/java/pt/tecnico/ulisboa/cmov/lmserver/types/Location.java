@@ -2,31 +2,28 @@ package pt.tecnico.ulisboa.cmov.lmserver.types;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-
-/**
- * Created by joaod on 10-Apr-17.
- */
+import java.util.List;
 
 @XmlRootElement(name = "location")
-public class Location implements Serializable {
+public class Location implements Serializable{
     private String name;
-    private float latitude;
-    private float longitude;
+    private double latitude;
+    private double longitude;
 
     private int radius;
 
-    private String ssid;
+    private List<String> ssidList;
 
-    public Location(String name, float latitude, float longitude, int radius) {
+    public Location(String name, double latitude, double longitude, int radius) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
     }
 
-    public Location(String name, String ssid) {
+    public Location(String name, List<String> ssidList) {
         this.name = name;
-        this.ssid = ssid;
+        this.ssidList = ssidList;
 
     }
 
@@ -38,7 +35,7 @@ public class Location implements Serializable {
         this.name = name;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
@@ -46,7 +43,7 @@ public class Location implements Serializable {
         this.latitude = latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
@@ -67,11 +64,11 @@ public class Location implements Serializable {
         this.radius = radius;
     }
 
-    public String getSsid() {
-        return ssid;
+    public List<String> getSsidList() {
+        return ssidList;
     }
 
-    public void setSsid(String ssid) {
-        this.ssid = ssid;
+    public void setSsidList(List<String> ssidList) {
+        this.ssidList = ssidList;
     }
 }
