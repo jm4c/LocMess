@@ -38,11 +38,22 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameEditText;
     private EditText passwordEditText;
 
+    private String username;
+    private String password;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        if(getSharedPreferences("LocMess", MODE_PRIVATE).contains("username") &&
+                getSharedPreferences("LocMess", MODE_PRIVATE).contains("password")){
+            getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", null);
+            getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null);
+            login();
+        }
+
 
         loginButton = (Button) findViewById(R.id.btn_login);
         usernameEditText = (EditText) findViewById(R.id.input_name);
@@ -52,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                login();
+                validateFields();
             }
         });
 
@@ -68,18 +79,25 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        if(getSharedPreferences("LocMess", MODE_PRIVATE).contains("username") &&
+                getSharedPreferences("LocMess", MODE_PRIVATE).contains("password")){
+            username = getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", null);
+            password = getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null);
+            login();
+        }
+        super.onResume();
+    }
+
     public void login() {
         Log.d(TAG, "Login");
-
-        if (!validate()) {
-            return;
-        }
 
         if (LOGIN_ACTIVE_FLAG) { //in order to speed up debugging
             LoginTask task = new LoginTask();
             task.execute();
         } else {
-            onLoginSuccess(9999);
+            onLoginSuccess(0);
         }
 
     }
@@ -97,8 +115,8 @@ public class LoginActivity extends AppCompatActivity {
         //save to shared preferences
         SharedPreferences sharedPref = this.getSharedPreferences("LocMess",MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("username", usernameEditText.getText().toString());
-        editor.putString("password", passwordEditText.getText().toString());
+        editor.putString("username", username);
+        editor.putString("password", password);
         editor.putInt("session", sessionID);
         editor.apply();
 
@@ -119,32 +137,29 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setEnabled(true);
     }
 
-    public boolean validate() {
+    public void validateFields() {
         if (passwordEditText.getText().length() < 4) {
             passwordEditText.setError("larger than 4 characters");
-            return false;
+            return;
         } else {
             passwordEditText.setError(null);
         }
 
-        return true;
+        username = usernameEditText.getText().toString();
+        password = passwordEditText.getText().toString();
+
+        login();
     }
 
 
     private class LoginTask extends AsyncTask<Void, Void, Integer> {
-        private String username;
-        private String password;
+
         private ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
 
         @Override
         protected void onPreExecute() {
             this.dialog.setMessage("Logging in...");
             this.dialog.show();
-            EditText passwordText = (EditText) findViewById(R.id.input_password);
-            EditText nameText = (EditText) findViewById(R.id.input_name);
-
-            username = nameText.getText().toString();
-            password = passwordText.getText().toString();
             super.onPreExecute();
         }
 

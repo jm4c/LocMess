@@ -1,5 +1,6 @@
 package pt.tecnico.ulisboa.cmov.lmserver;
 
+import jdk.nashorn.internal.parser.Token;
 import pt.tecnico.ulisboa.cmov.lmserver.types.Account;
 import pt.tecnico.ulisboa.cmov.lmserver.types.Location;
 import pt.tecnico.ulisboa.cmov.lmserver.types.LoginToken;
@@ -7,6 +8,8 @@ import pt.tecnico.ulisboa.cmov.lmserver.types.Message;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,15 +116,19 @@ public class Singleton {
         return locationsHash;
     }
 
+    public boolean locationExists(Location location) {
+        return locations.contains(location);
+    }
+
     //Profile Keys
     public List<String> getProfileKeys() {
         return profileKeys;
     }
 
+
     public String getProfileKeysHash() {
         return profileKeysHash;
     }
-
 
     //Login tokens
 
@@ -146,14 +153,24 @@ public class Singleton {
     }
 
     public boolean tokenExists(int id){
-        if(getToken(id) != null)
-            return true;
-        return false;
+        LoginToken token = getToken(id);
+        return tokenExists(token);
     }
 
     public boolean tokenExists(String username){
-        if(getToken(username) != null)
-            return true;
+        LoginToken token = getToken(username);
+        return tokenExists(token);
+    }
+
+    public boolean tokenExists(LoginToken token){
+        if(token!=null)
+            // if token expires, remove it from list
+            if(token.getExpiration().before(Timestamp.valueOf(LocalDateTime.now()))) {
+                System.out.println("Token expired. Removing token with session ID " + token.getSessionID());
+                tokens.remove(token);
+            }
+            else
+                return true;
         return false;
     }
 

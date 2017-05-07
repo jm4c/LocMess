@@ -80,7 +80,6 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
         Message message;
 
         switch (itemLayout) {
-
             case R.layout.listitem_inbox_message:
                 message = (Message) item;
                 String owner = message.getOwner();

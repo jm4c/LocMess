@@ -228,7 +228,7 @@ public class PostMessageActivity extends ToolbarActivity {
             @Override
             public void onClick(View view) {
                 Log.d("POST", "inside create");
-                //validate
+                //validateFields
                 if (!isPostMessageReady()) {
                     Log.d("POST", "field not valid");
                     return;

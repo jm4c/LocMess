@@ -27,6 +27,9 @@ public class Location implements Serializable{
 
     }
 
+    public Location() {
+    }
+
     public String getName() {
         return name;
     }
@@ -39,7 +42,8 @@ public class Location implements Serializable{
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
@@ -47,7 +51,8 @@ public class Location implements Serializable{
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
+
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

@@ -3,6 +3,18 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+    }
+
     defaultConfig {
         applicationId "pt.ulisboa.tecnico.cmov.locmess"
         minSdkVersion 17
@@ -44,7 +56,7 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'org.springframework.android:spring-android-rest-template:2.0.0.M3'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.0'
     testCompile 'junit:junit:4.12'
 }
 

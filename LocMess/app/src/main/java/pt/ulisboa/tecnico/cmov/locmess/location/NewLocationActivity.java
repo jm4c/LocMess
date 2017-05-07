@@ -9,8 +9,12 @@ import android.widget.EditText;
 
 import org.w3c.dom.Text;
 
+import java.util.concurrent.ExecutionException;
+
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
+import pt.ulisboa.tecnico.cmov.locmess.model.Location;
 
 
 public class NewLocationActivity extends ToolbarActivity {
@@ -43,7 +47,7 @@ public class NewLocationActivity extends ToolbarActivity {
 
             public void onClick(View v) {
 
-                //validate fields
+                //validateFields fields
 
                 boolean abort = false;
                 if (nameEditText.getText().length() == 0) {
@@ -76,10 +80,25 @@ public class NewLocationActivity extends ToolbarActivity {
 
                 if (radiusEditText.getText().length() == 0)
                     radiusEditText.setText("100");
-                application.addLocation(nameEditText.getText().toString(),
+
+                Location location = new Location(nameEditText.getText().toString(),
                         Double.valueOf(latitudeEditText.getText().toString()),
                         Double.valueOf(longitudeEditText.getText().toString()),
                         Integer.parseInt(radiusEditText.getText().toString()));
+
+                AddLocationTask task = new AddLocationTask();
+                task.execute(location);
+                try {
+                    if(task.get())
+                        application.addLocation(location);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    Intent i = new Intent(NewLocationActivity.this, LoginActivity.class);
+                    application.forceLoginFlag = false;
+                    startActivity(i);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
                 finish();
             }
         });
@@ -108,4 +127,6 @@ public class NewLocationActivity extends ToolbarActivity {
             longitudeEditText.setText(String.valueOf(data.getDoubleExtra("longitude", 0)));
         }
     }
+
+
 }

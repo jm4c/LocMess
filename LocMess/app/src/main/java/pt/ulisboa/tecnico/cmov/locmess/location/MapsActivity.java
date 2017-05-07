@@ -57,7 +57,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //  move camera to current location and zoom in
         LatLng currentLocation = ((LocMessApplication) getApplicationContext()).getCurrentLocation();
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16.0f));
+        if(currentLocation != null)
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16.0f));
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling

@@ -1,12 +1,23 @@
 package pt.ulisboa.tecnico.cmov.locmess;
 
 import android.app.Application;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -30,6 +41,9 @@ public class LocMessApplication extends Application {
 
     private String SERVER_URL = "http://192.168.1.7:38864";
     public static final boolean LOGIN_ACTIVE_FLAG = true;
+
+    public boolean forceLoginFlag = false;
+
 
 
 
@@ -73,8 +87,8 @@ public class LocMessApplication extends Application {
         this.locations = locations;
     }
 
-    public void addLocation(String name, Double longitude, Double latitude, int radius) {
-        locations.add(new Location(name, longitude, latitude, radius));
+    public void addLocation(Location location) {
+        locations.add(location);
     }
 
     public Location getLocation(int pos) {
