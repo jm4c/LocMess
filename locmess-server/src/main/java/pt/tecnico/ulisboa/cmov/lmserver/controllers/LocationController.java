@@ -1,40 +1,33 @@
 package pt.tecnico.ulisboa.cmov.lmserver.controllers;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
 import pt.tecnico.ulisboa.cmov.lmserver.types.Location;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-
-import static pt.tecnico.ulisboa.cmov.lmserver.utils.CryptoUtils.getSalt;
-import static pt.tecnico.ulisboa.cmov.lmserver.utils.HashUtils.hash;
-import static pt.tecnico.ulisboa.cmov.lmserver.utils.HashUtils.hashInText;
 
 
 @RestController
 public class LocationController {
-    @RequestMapping(value = "/location/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createNewAccount(@RequestHeader(value = "password") String hash) {
+    @RequestMapping(value = "/locations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public List<Location> createNewAccount(@RequestHeader(value = "session") int sessionID,
+                                           @RequestHeader(value = "hash") String clientLocationHash,
+                                           HttpServletResponse response) throws IOException {
         Singleton singleton = Singleton.getInstance();
+        List<Location> locations = null;
 
-        if (!(singleton.getLocationsHash().equals(hash))) {
-            List<Location> locations = singleton.getLocations();
-
-            for (Location l: locations) {
-//                JSONObject location = new JSONPObject();
-
+        if (singleton.tokenExists(sessionID)) {
+            if (!(singleton.getLocationsHash().equals(clientLocationHash))) {
+                locations = singleton.getLocations();
             }
-
+        } else {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
-
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        return locations;
     }
 }

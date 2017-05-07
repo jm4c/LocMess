@@ -4,12 +4,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -97,6 +109,7 @@ public class ToolbarActivity extends AppCompatActivity {
                 if(ToolbarActivity.this instanceof LocationActivity)
                     return;
 
+
                 i = new Intent(ToolbarActivity.this, LocationActivity.class);
                 break;
             case MENU_PROFILE:
@@ -125,6 +138,58 @@ public class ToolbarActivity extends AppCompatActivity {
 
     public List<String> getMenu(){
         return Arrays.asList(menu);
+    }
+
+    private class CreateAccountTask extends AsyncTask<Void, Void, Boolean> {
+        private String username;
+        private String password;
+
+        @Override
+        protected void onPreExecute() {
+            EditText passwordText = (EditText) findViewById(R.id.input_password);
+            EditText nameText = (EditText) findViewById(R.id.input_name);
+
+            username = nameText.getText().toString();
+            password = passwordText.getText().toString();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            //show progress bar
+//            showProgressDialog();
+
+            // Setup url
+            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/account";
+
+            // Populate header
+            HttpHeaders requestHeaders = new HttpHeaders();
+            requestHeaders.add("username", username);
+            requestHeaders.add("password", password);
+
+            // Create a new RestTemplate instance
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+
+            try {
+                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(requestHeaders), boolean.class);
+                return response.getBody();
+
+            } catch (Exception e) {
+                Log.e("NewUserActivity", e.getMessage(), e);
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if (aBoolean == null)
+                Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
+            super.onPostExecute(aBoolean);
+        }
+
     }
 
 

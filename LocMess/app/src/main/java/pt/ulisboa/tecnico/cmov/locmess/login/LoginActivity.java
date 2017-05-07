@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.cmov.locmess.login;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -26,10 +27,11 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.inbox.InboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
 
+import static pt.ulisboa.tecnico.cmov.locmess.LocMessApplication.*;
+
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
-    private static final boolean LOGIN_ACTIVE_FLAG = true;
     private static final int TIMEOUT_CODE = -3;
 
     private Button loginButton;
@@ -80,31 +82,6 @@ public class LoginActivity extends AppCompatActivity {
             onLoginSuccess(9999);
         }
 
-//        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
-//        progressDialog.setIndeterminate(true);
-//        progressDialog.setMessage("Authenticating...");
-//        progressDialog.show();
-//
-//
-//        new android.os.Handler().post(
-//                new Runnable() {
-//                    public void run() {
-//                        // On complete call either onLoginSuccess or onLoginFailed
-//                        try {
-//                            if (LOGIN_ACTIVE_FLAG) { //in order to speed up debugging
-//                                LoginTask task = new LoginTask();
-//                                task.execute();
-//                                task.get(10, TimeUnit.SECONDS);
-//                            } else {
-//                                onLoginSuccess();
-//                            }
-//                        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-//                            e.printStackTrace();
-//                            Toast.makeText(LoginActivity.this, "Failed to connect with server.", Toast.LENGTH_SHORT);
-//                        }
-//                        progressDialog.dismiss();
-//                    }
-//                });
     }
 
 
@@ -157,9 +134,12 @@ public class LoginActivity extends AppCompatActivity {
     private class LoginTask extends AsyncTask<Void, Void, Integer> {
         private String username;
         private String password;
+        private ProgressDialog dialog = new ProgressDialog(LoginActivity.this);
 
         @Override
         protected void onPreExecute() {
+            this.dialog.setMessage("Logging in...");
+            this.dialog.show();
             EditText passwordText = (EditText) findViewById(R.id.input_password);
             EditText nameText = (EditText) findViewById(R.id.input_name);
 
@@ -196,6 +176,9 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Integer aInteger) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
             if (aInteger > 0)
                 onLoginSuccess(aInteger);
             else

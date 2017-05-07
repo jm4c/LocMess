@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.cmov.locmess.login;
 
 import android.app.ProgressDialog;
-import android.net.Credentials;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,8 +25,6 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 
 public class NewUserActivity extends AppCompatActivity {
     private static final String TAG = "NewUserActivity";
-
-//    final ProgressDialog progressDialog = new ProgressDialog(NewUserActivity.this);
 
 
     @Override
@@ -61,7 +58,7 @@ public class NewUserActivity extends AppCompatActivity {
         }
 
         Button signupButton = (Button) findViewById(R.id.btn_signup);
-        signupButton.setEnabled(false);
+//        signupButton.setEnabled(false);
 
         CreateAccountTask task = new CreateAccountTask();
 
@@ -72,8 +69,7 @@ public class NewUserActivity extends AppCompatActivity {
 
     public void onSignupSuccess() {
         Button signupButton = (Button) findViewById(R.id.btn_signup);
-        signupButton.setEnabled(true);
-        //  setResult(RESULT_OK, null);
+//        signupButton.setEnabled(true);
         finish();
     }
 
@@ -86,7 +82,7 @@ public class NewUserActivity extends AppCompatActivity {
                 , Toast.LENGTH_LONG).show();
 
         Button signupButton = (Button) findViewById(R.id.btn_signup);
-        signupButton.setEnabled(true);
+//        signupButton.setEnabled(true);
     }
 
     public boolean validateFields() {
@@ -125,24 +121,17 @@ public class NewUserActivity extends AppCompatActivity {
         return true;
     }
 
-//    private void showProgressDialog(){
-//        progressDialog.setIndeterminate(true);
-//        progressDialog.setMessage("Creating Account...");
-//        progressDialog.show();
-//
-//    }
-
-//    private void dismissProgressDialog(){
-//        progressDialog.dismiss();
-//
-//    }
 
     private class CreateAccountTask extends AsyncTask<Void, Void, Boolean> {
         private String username;
         private String password;
+        private ProgressDialog dialog = new ProgressDialog(NewUserActivity.this);
+
 
         @Override
         protected void onPreExecute() {
+            this.dialog.setMessage("Creating new account...");
+            this.dialog.show();
             EditText passwordText = (EditText) findViewById(R.id.input_password);
             EditText nameText = (EditText) findViewById(R.id.input_name);
 
@@ -153,8 +142,7 @@ public class NewUserActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            //show progress bar
-//            showProgressDialog();
+
 
             // Setup url
             final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/account";
@@ -182,6 +170,9 @@ public class NewUserActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
             if (aBoolean == null)
                 Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
             else
