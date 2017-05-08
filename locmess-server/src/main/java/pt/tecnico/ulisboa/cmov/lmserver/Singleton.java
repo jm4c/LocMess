@@ -125,9 +125,25 @@ public class Singleton {
         return profileKeys;
     }
 
+    public void addProfileKey(String profileKey) throws IOException, NoSuchAlgorithmException {
+        profileKeys.add(profileKey);
+        profileKeysHash = hashInText(profileKeys, null);
+    }
+
+
 
     public String getProfileKeysHash() {
         return profileKeysHash;
+    }
+
+    public boolean profileKeyExists(String profileKey) {
+        for (String key:
+             getProfileKeys()) {
+            if (profileKey.equals(key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //Login tokens

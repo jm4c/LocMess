@@ -1,23 +1,9 @@
 package pt.ulisboa.tecnico.cmov.locmess;
 
 import android.app.Application;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -27,8 +13,8 @@ import java.util.List;
 import pt.ulisboa.tecnico.cmov.locmess.model.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
 import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
 
 import static pt.ulisboa.tecnico.cmov.locmess.utils.HashUtils.hashInText;
 
@@ -85,6 +71,7 @@ public class LocMessApplication extends Application {
 
     public void setLocations(List<Location> locations) {
         this.locations = locations;
+        generateLocationsHash();
     }
 
     public void addLocation(Location location) {
@@ -233,6 +220,7 @@ public class LocMessApplication extends Application {
 
     public void setAvailableKeys(List<String> availableKeys) {
         this.availableKeys = availableKeys;
+        generateKeysHash();
     }
 
 
