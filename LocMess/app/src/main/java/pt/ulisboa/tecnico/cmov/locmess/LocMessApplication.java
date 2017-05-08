@@ -39,7 +39,7 @@ import static pt.ulisboa.tecnico.cmov.locmess.utils.HashUtils.hashInText;
 
 public class LocMessApplication extends Application {
 
-    private String SERVER_URL = "http://192.168.1.7:38864";
+    private String SERVER_URL = "http://194.210.222.75:38864";
     public static final boolean LOGIN_ACTIVE_FLAG = true;
 
     public boolean forceLoginFlag = false;
@@ -144,11 +144,24 @@ public class LocMessApplication extends Application {
         }
     }
 
-    public void listKeys() { //TODO
+    public  List<String> listKeyNames() {
+        List<String> keyNames = new ArrayList<>();
         for (ProfileKeypair keypair : keypairs) {
-//            System.out.println(keypair.getKey() + ":" + keypair.getValue());
+            keyNames.add(keypair.getKey());
         }
+        return keyNames;
     }
+
+    public List<String> listKeyValues(){
+        List<String> keyValues = new ArrayList<>();
+
+        for(ProfileKeypair keyvalue : keypairs){
+            keyValues.add(keyvalue.getValue());
+        }
+        return keyValues;
+    }
+
+
     //Inbox Messages
 
     public void addInboxMessage(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized, Policy policy) {
