@@ -81,11 +81,8 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
         addItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("1","1");
                 String ssid = ssIdEditText.getText().toString();
-                Log.d("2","2");
                 addSSID(ssid);
-                Log.d("3","3");
 
 
             }
@@ -324,9 +321,7 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
         }
 
         listData.add(ssid);
-        Log.d("4","4");
         adapter.notifyItemInserted(listData.indexOf(ssid));
-        Log.d("5","5");
     }
 
     private void deleteItem(int pos) {

@@ -288,7 +288,6 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 // all list items have a title
                 title.setVisibility(View.VISIBLE);
 
-                Log.d("SDFDSGASGJSGDJSGJAJGJAS","value = " + itemLayout);
                 // only location, inbox and outbox have a subtitle and a a thumbnail
                 if (itemLayout != R.layout.listitem_profile_keypair && itemLayout != R.layout.listitem_location_ssid ) {
                     subtitle.setVisibility(View.VISIBLE);
