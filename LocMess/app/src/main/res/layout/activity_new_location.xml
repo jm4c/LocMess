@@ -18,34 +18,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center">
-    <Button
-        android:id="@+id/btn_gps"
-        android:layout_width="194dp"
-        android:layout_height="72dp"
-        android:layout_gravity="bottom"
-        android:background="@drawable/background_state_drawable"
-        android:padding="16dp"
-        android:text="@string/gps"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
 
-    <Button
-        android:id="@+id/btn_ssid"
-        android:layout_width="193dp"
-        android:layout_height="72dp"
-        android:layout_gravity="bottom"
-        android:background="@drawable/background_state_drawable"
-        android:padding="16dp"
-        android:text="@string/ssid"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
-
-    </LinearLayout>
 
 
     <LinearLayout

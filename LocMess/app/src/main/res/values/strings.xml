@@ -78,6 +78,7 @@
     <string name="pickOnMap">pick on map</string>
     <string name="radius">Radius (100m by default)</string>
     <string name="addButton">Add</string>
+    <string name="addButtonSSID">Add Location</string>
     <string name="ssid">SSID</string>
     <string name="gps">GPS</string>
 
