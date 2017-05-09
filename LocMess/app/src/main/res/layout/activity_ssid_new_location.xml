@@ -72,6 +72,19 @@
                 android:hint="@string/name" />
         </android.support.design.widget.TextInputLayout>
 
+        <!-- SSID Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp">
+            <EditText android:id="@+id/input_ssid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:hint="@string/ssid" />
+        </android.support.design.widget.TextInputLayout>
+
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rec_list"
