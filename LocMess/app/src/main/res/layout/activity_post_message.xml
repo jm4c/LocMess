@@ -54,17 +54,16 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/tx_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/switch_delivery_mode"
             android:hint="@string/title"
             android:inputType="text"
-            android:maxLines="1"
-            android:layout_toStartOf="@+id/switch_delivery_mode" />
+            android:maxLines="1" />
 
         <Switch
             android:id="@+id/switch_delivery_mode"

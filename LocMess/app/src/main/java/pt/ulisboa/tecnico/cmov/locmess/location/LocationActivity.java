@@ -40,13 +40,23 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
 
         setUpRecyclerView();
 
-        Button addLocation = (Button) findViewById(R.id.btn_add_location);
+        Button addLocation = (Button) findViewById(R.id.btn_gps);
         addLocation.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(LocationActivity.this, NewLocationActivity.class);
+                startActivity(i);
 
+            }
+        });
+
+        Button addLocationSSid = (Button) findViewById(R.id.btn_ssid);
+        addLocationSSid.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(LocationActivity.this, NewLocationSSIDActivity.class);
                 startActivity(i);
 
             }

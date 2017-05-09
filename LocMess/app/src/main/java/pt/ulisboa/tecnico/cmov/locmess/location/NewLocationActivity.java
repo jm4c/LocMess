@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.locmess.location;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
@@ -9,10 +10,12 @@ import android.widget.EditText;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
 import pt.ulisboa.tecnico.cmov.locmess.model.Location;
 
@@ -41,7 +44,6 @@ public class NewLocationActivity extends ToolbarActivity {
 
         Button addButton = (Button) findViewById(R.id.addButton);
         Button pickMapButton = (Button) findViewById(R.id.pickOnMap);
-
 
         addButton.setOnClickListener(new View.OnClickListener() {
 

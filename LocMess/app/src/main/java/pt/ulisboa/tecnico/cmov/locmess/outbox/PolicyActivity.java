@@ -398,7 +398,7 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
 
         textView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
-            @Override
+                @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus)
                     textView.showDropDown();
