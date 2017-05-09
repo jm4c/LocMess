@@ -67,9 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:padding="12dp"
-            android:text="@string/addButton"
-
-            />
+            android:text="@string/addButton" />
 
 
         <android.support.v7.widget.RecyclerView

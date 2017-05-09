@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,6 +130,10 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 ProfileKeypair profileKeypair = (ProfileKeypair) item;
                 holder.title.setText(profileKeypair.getKey() + " = " + profileKeypair.getValue());
                 break;
+            case R.layout.listitem_location_ssid:
+                String ssid = (String) item;
+                holder.title.setText(ssid);
+                break;
         }
 
 
@@ -224,6 +229,8 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 case R.layout.listitem_profile_keypair:
                     title = (TextView) itemView.findViewById(R.id.lbl_keypair);
                     break;
+                case R.layout.listitem_location_ssid:
+                    title = (TextView) itemView.findViewById(R.id.lbl_ssid);
             }
 
             container = itemView.findViewById(R.id.cont_item_root);
@@ -243,7 +250,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 title.setVisibility(View.GONE);
 
                 // only location, inbox and outbox have a subtitle and a thumbnail
-                if (itemLayout != R.layout.listitem_profile_keypair) {
+                if (itemLayout != R.layout.listitem_profile_keypair && itemLayout != R.layout.listitem_location_ssid) {
                     subtitle.setVisibility(View.GONE);
                     thumbnail.setVisibility(View.GONE);
                 }
@@ -281,11 +288,13 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 // all list items have a title
                 title.setVisibility(View.VISIBLE);
 
+                Log.d("SDFDSGASGJSGDJSGJAJGJAS","value = " + itemLayout);
                 // only location, inbox and outbox have a subtitle and a a thumbnail
-                if (itemLayout != R.layout.listitem_profile_keypair) {
+                if (itemLayout != R.layout.listitem_profile_keypair && itemLayout != R.layout.listitem_location_ssid ) {
                     subtitle.setVisibility(View.VISIBLE);
                     thumbnail.setVisibility(View.VISIBLE);
                 }
+
 
                 //only inbox and outbox have a timestamp
                 if (itemLayout == R.layout.listitem_inbox_message || itemLayout == R.layout.listitem_outbox_message) {

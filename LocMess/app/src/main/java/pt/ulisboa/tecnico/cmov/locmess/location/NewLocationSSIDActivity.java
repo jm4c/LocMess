@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -60,7 +61,6 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
         setupToolbar("LocMess - New SSID Location");
 
 
-
         nameEditText = (EditText) findViewById(R.id.input_name);
         ssIdEditText = (EditText) findViewById(R.id.input_ssid);
 
@@ -81,9 +81,12 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
         addItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Log.d("1","1");
                 String ssid = ssIdEditText.getText().toString();
+                Log.d("2","2");
                 addSSID(ssid);
+                Log.d("3","3");
+
 
             }
         });
@@ -130,7 +133,6 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
         recView.addItemDecoration(new SimpleDividerItemDecoration(this));
         recView.setAdapter(adapter);
         adapter.setActivityCallback(this);
-
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
 
@@ -320,8 +322,11 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
                 return;
             }
         }
+
         listData.add(ssid);
+        Log.d("4","4");
         adapter.notifyItemInserted(listData.indexOf(ssid));
+        Log.d("5","5");
     }
 
     private void deleteItem(int pos) {
@@ -332,6 +337,7 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
     @Override
     public void onItemClick(int p) {
     }
+
     @Override
     public void onUndoTimeout(int p) {
         deleteItem(p);
