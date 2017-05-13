@@ -99,7 +99,7 @@
             android:textAlignment="center"
 
 
-            android:text="@string/addButtonSSID" />
+            android:text="@string/addButton" />
 
 
     </RelativeLayout>
