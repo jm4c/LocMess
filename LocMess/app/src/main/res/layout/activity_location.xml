@@ -29,30 +29,37 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="72dp"
         android:orientation="horizontal"
-        android:layout_gravity="center">
+        android:weightSum="2"
+        android:divider="@drawable/line_divider"
+        android:layout_gravity="center"
+        android:showDividers="middle"
+        >
+
         <Button
             android:id="@+id/btn_gps"
-            android:layout_width="194dp"
-            android:layout_height="72dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom"
-            android:background="@drawable/background_state_drawable"
-            android:padding="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_icon_enabled_button"
             android:text="@string/gps"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="16sp"
+            android:layout_marginEnd="6dp"/>
+
 
         <Button
             android:id="@+id/btn_ssid"
-            android:layout_width="193dp"
-            android:layout_height="72dp"
-            android:layout_gravity="bottom"
-            android:background="@drawable/background_state_drawable"
-            android:padding="16dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/background_icon_enabled_button"
             android:text="@string/ssid"
+            android:layout_marginStart="6dp"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
     </LinearLayout>
 

@@ -45,7 +45,7 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
 
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(LocationActivity.this, NewLocationActivity.class);
+                Intent i = new Intent(LocationActivity.this, NewLocationGPSActivity.class);
                 startActivity(i);
 
             }

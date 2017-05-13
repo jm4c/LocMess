@@ -41,9 +41,7 @@ import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
 import pt.ulisboa.tecnico.cmov.locmess.outbox.PolicyActivity;
 
 
-
-
-public class NewLocationSSIDActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback{
+public class NewLocationSSIDActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
@@ -82,24 +80,31 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
             @Override
             public void onClick(View view) {
                 String ssid = ssIdEditText.getText().toString();
-                addSSID(ssid);
 
+                //Add ssid to list
+                if (listData.contains(ssid)) {
+                    Toast.makeText(NewLocationSSIDActivity.this, "The SSID '" + ssid + "' already exists", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                ssIdEditText.setText("");
+                listData.add(ssid);
+                adapter.notifyItemInserted(listData.indexOf(ssid));
 
             }
         });
 
 
         Button createLocation = (Button) findViewById(R.id.addButtonSSIDLocation);
-        createLocation.setOnClickListener(new View.OnClickListener(){
+        createLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Location location = new Location(nameEditText.getText().toString(),listData);
+                Location location = new Location(nameEditText.getText().toString(), listData);
                 AddLocationTask task = new AddLocationTask();
                 task.execute(location);
 
                 try {
-                    if(task.get())
+                    if (task.get())
                         application.addLocation(location);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -133,7 +138,7 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
 
-       // setUpPolicyModeButton();
+        // setUpPolicyModeButton();
     }
 
 
@@ -312,17 +317,6 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
         return simpleItemTouchCallback;
     }
 
-    private void addSSID(String ssid) {
-        for (String ssi : (ArrayList<String>) listData){
-            if (ssid.equals(ssi)) {
-                Toast.makeText(this, "The SSID '" + ssid + "' already exists", Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
-
-        listData.add(ssid);
-        adapter.notifyItemInserted(listData.indexOf(ssid));
-    }
 
     private void deleteItem(int pos) {
         listData.remove(pos);
@@ -337,12 +331,6 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
     public void onUndoTimeout(int p) {
         deleteItem(p);
     }
-
-
-
-
-
-
 
 
 }

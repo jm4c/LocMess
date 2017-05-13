@@ -19,23 +19,22 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="right|center_vertical"
         android:orientation="vertical"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:paddingTop="12dp">
         >
 
 
         <!-- Name Label -->
         <android.support.design.widget.TextInputLayout
+            android:id = "@+id/name_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="6dp">
+            android:padding="6dp"
+
+            android:layout_alignParentTop="true">
 
             <EditText
                 android:id="@+id/input_name"
@@ -46,48 +45,64 @@
         </android.support.design.widget.TextInputLayout>
 
         <!-- SSID Label -->
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
+            android:id="@+id/ssid_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="6dp">
+            android:padding="6dp"
 
-            <EditText
-                android:id="@+id/input_ssid"
-                android:layout_width="match_parent"
+            android:layout_below="@id/name_label"
+            android:orientation="horizontal"
+            >
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/ssid"
-                android:inputType="textCapWords" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_weight="1"
+                >
+                <EditText
+                    android:id="@+id/input_ssid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/ssid"
+                    android:inputType="textCapWords" />
+            </android.support.design.widget.TextInputLayout>
 
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/addButtonSSID"
-            android:layout_width="105dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:padding="12dp"
-            android:text="@string/addButton" />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/addButtonSSID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:text="@string/addButton"
+                android:background="@drawable/background_icon_enabled_button"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
 
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rec_list"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ssid_label"
+            android:layout_above="@+id/addButtonSSIDLocation"
             android:background="#e8eaf6" />
 
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/addButtonSSIDLocation"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_height="72dp"
+            android:layout_alignParentBottom="true"
             android:padding="12dp"
+            android:background="@drawable/background_icon_enabled_button"
+            android:textColor="@android:color/white"
+            android:textAlignment="center"
+
+
             android:text="@string/addButtonSSID" />
 
 
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>
 
 
