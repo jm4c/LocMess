@@ -69,14 +69,14 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
         else if (getIntent().getSerializableExtra("ssid") == null)
             listData = new ArrayList<>();
         else {
-            ArrayList<String> sSid = (ArrayList<String>) getIntent().getSerializableExtra("ssid");
+            listData = (ArrayList<String>) getIntent().getSerializableExtra("ssid");
 
         }
 
         setUpRecyclerView();
 
-        Button addItem = (Button) findViewById(R.id.addButtonSSID);
-        addItem.setOnClickListener(new View.OnClickListener() {
+        Button addSSID = (Button) findViewById(R.id.addButtonSSID);
+        addSSID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String ssid = ssIdEditText.getText().toString();
@@ -104,14 +104,23 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
                 task.execute(location);
 
                 try {
-                    if (task.get())
+                    Boolean result = task.get();
+                    if (result == null){
+                        Toast.makeText(NewLocationSSIDActivity.this, "Can't reach server, no actions done.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if(result)
                         application.addLocation(location);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    Intent i = new Intent(NewLocationSSIDActivity.this, LoginActivity.class);
-                    application.forceLoginFlag = false;
-                    startActivity(i);
-                } catch (ExecutionException e) {
+                    else{
+                        if (application.forceLoginFlag){
+                            Intent i = new Intent(NewLocationSSIDActivity.this, LoginActivity.class);
+                            application.forceLoginFlag = false;
+                            Toast.makeText(NewLocationSSIDActivity.this, "This session was invalid. Logging into new session.", Toast.LENGTH_LONG).show();
+                            startActivity(i);
+                        }
+                    }
+
+                } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
                 finish();

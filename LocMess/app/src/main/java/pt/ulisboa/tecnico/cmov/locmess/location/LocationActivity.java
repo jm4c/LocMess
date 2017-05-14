@@ -16,18 +16,20 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
+import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
+import pt.ulisboa.tecnico.cmov.locmess.model.Location;
 
 public class LocationActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
-    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -266,31 +268,42 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
     }
 
     private void deleteItem(int pos) {
-        listData.remove(pos);
-        adapter.notifyItemRemoved(pos);
+
+        RemoveLocationTask task = new RemoveLocationTask();
+
+        Location location = (Location) listData.get(pos);
+        task.execute(location);
+
+        try {
+            Boolean result = task.get();
+            if (result == null){
+                Toast.makeText(LocationActivity.this, "Can't reach server, no actions done.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (result) {
+                listData.remove(pos);
+                adapter.notifyItemRemoved(pos);
+            } else {
+                if (application.forceLoginFlag) {
+                    Intent i = new Intent(LocationActivity.this, LoginActivity.class);
+                    application.forceLoginFlag = false;
+                    Toast.makeText(LocationActivity.this, "This session was invalid. Logging into new session.", Toast.LENGTH_LONG).show();
+                    startActivity(i);
+                } else {
+                    Toast.makeText(LocationActivity.this, "Failed to remove location.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onItemClick(int p) {
+        //TODO onClick Locations
         Toast.makeText(getApplicationContext(), "TODO show in map/show list in dialog if SSIDs", Toast.LENGTH_LONG).show();
 
-//
-//        ((Message) listData.get(p)).setRead(true);
-//        adapter.notifyDataSetChanged();
-//        Message item = (Message) listData.get(p);
-//
-//
-//        Intent i = new Intent(this, ReadMessageActivity.class);
-//
-//
-//        Bundle extras = new Bundle();
-//
-//        extras.putString("title", item.getTitle());
-//        extras.putString("owner", item.getOwner());
-//        extras.putString("content", item.getContent());
-////
-//        i.putExtra("extras", extras);
-//        startActivity(i);
     }
 
 

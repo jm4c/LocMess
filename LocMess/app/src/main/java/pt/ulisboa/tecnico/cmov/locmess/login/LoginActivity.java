@@ -47,8 +47,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if(getSharedPreferences("LocMess", MODE_PRIVATE).contains("username") &&
-                getSharedPreferences("LocMess", MODE_PRIVATE).contains("password")){
+        if (getSharedPreferences("LocMess", MODE_PRIVATE).contains("username") &&
+                getSharedPreferences("LocMess", MODE_PRIVATE).contains("password")) {
             getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", null);
             getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null);
             login();
@@ -81,8 +81,8 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        if(getSharedPreferences("LocMess", MODE_PRIVATE).contains("username") &&
-                getSharedPreferences("LocMess", MODE_PRIVATE).contains("password")){
+        if (getSharedPreferences("LocMess", MODE_PRIVATE).contains("username") &&
+                getSharedPreferences("LocMess", MODE_PRIVATE).contains("password")) {
             username = getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", null);
             password = getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null);
             login();
@@ -113,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setEnabled(true);
 
         //save to shared preferences
-        SharedPreferences sharedPref = this.getSharedPreferences("LocMess",MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getSharedPreferences("LocMess", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("username", username);
         editor.putString("password", password);
@@ -129,10 +129,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginFailed(int code) {
-        if (code == TIMEOUT_CODE) {
-            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
-        } else
-            Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_SHORT).show();
+        if (code != TIMEOUT_CODE)
+           Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_SHORT).show();
 
         loginButton.setEnabled(true);
     }
@@ -201,5 +199,10 @@ public class LoginActivity extends AppCompatActivity {
             super.onPostExecute(aInteger);
         }
 
+        @Override
+        protected void onCancelled() {
+            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
+            super.onCancelled();
+        }
     }
 }

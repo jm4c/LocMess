@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
 
@@ -87,15 +88,24 @@ public class NewLocationGPSActivity extends ToolbarActivity {
                 AddLocationTask task = new AddLocationTask();
                 task.execute(location);
                 try {
-                    if(task.get())
+                    Boolean result = task.get();
+                    if (result == null){
+                        Toast.makeText(NewLocationGPSActivity.this, "Can't reach server, no actions done.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if(result)
                         application.addLocation(location);
-                } catch (InterruptedException e) {
+                    else{
+                        if (application.forceLoginFlag){
+                            Intent i = new Intent(NewLocationGPSActivity.this, LoginActivity.class);
+                            application.forceLoginFlag = false;
+                            Toast.makeText(NewLocationGPSActivity.this, "This session was invalid. Logging into new session.", Toast.LENGTH_LONG).show();
+                            startActivity(i);
+                        }
+                    }
+                } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
-                    Intent i = new Intent(NewLocationGPSActivity.this, LoginActivity.class);
-                    application.forceLoginFlag = false;
-                    startActivity(i);
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+
                 }
                 finish();
             }

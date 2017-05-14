@@ -23,10 +23,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -163,6 +167,8 @@ public class ToolbarActivity extends AppCompatActivity {
     }
 
 
+
+
     /** HTTP methods******************************************************************************************************/
 
     private class GetLocationsTask extends AsyncTask<Void, Void, List<Location>> {
@@ -279,6 +285,81 @@ public class ToolbarActivity extends AppCompatActivity {
 
             try {
                 ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(params[0], requestHeaders), Boolean.class);
+
+                return response.getBody();
+
+            } catch (HttpClientErrorException e) {
+                Log.e("AddLocationTask", e.getMessage(), e);
+                if(e.getStatusCode() == HttpStatus.UNAUTHORIZED)
+                    application.forceLoginFlag = true;
+
+                return false;
+            }
+             catch (Exception e) {
+                Log.e("AddLocationTask", e.getMessage(), e);
+
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            super.onPostExecute(aBoolean);
+        }
+
+
+        @Override
+        protected void onCancelled() {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
+            super.onCancelled();
+        }
+
+    }
+
+    public class RemoveLocationTask extends AsyncTask<Location, Void, Boolean> {
+        private int sessionID;
+        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
+
+
+        @Override
+        protected void onPreExecute() {
+            this.dialog.setMessage("Removing location...");
+            this.dialog.show();
+
+            sessionID  = application
+                    .getSharedPreferences("LocMess",MODE_PRIVATE)
+                    .getInt("session", 0);
+
+
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Location... params) {
+
+            // Setup url
+            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
+
+            // Populate header
+            HttpHeaders requestHeaders = new HttpHeaders();
+            requestHeaders.add("session", String.valueOf(sessionID));
+            requestHeaders.add("location", params[0].getName());
+
+
+            // Create a new RestTemplate instance
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+
+            try {
+                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(requestHeaders), Boolean.class);
                 if(response.getStatusCode() == HttpStatus.UNAUTHORIZED)
                     application.forceLoginFlag = true;
                 return response.getBody();
@@ -310,6 +391,7 @@ public class ToolbarActivity extends AppCompatActivity {
         }
 
     }
+
 
 
     private class GetAvailableKeysTask extends AsyncTask<Void, Void, List<String>> {
@@ -457,5 +539,8 @@ public class ToolbarActivity extends AppCompatActivity {
         }
 
     }
+
+
+
 
 }

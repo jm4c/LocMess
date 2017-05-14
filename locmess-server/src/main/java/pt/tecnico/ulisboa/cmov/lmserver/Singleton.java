@@ -67,7 +67,7 @@ public class Singleton {
         return null;
     }
 
-    public byte[] getAccountSalt(String username){
+    public byte[] getAccountSalt(String username) {
         return getAccount(username).getSalt();
     }
 
@@ -83,19 +83,19 @@ public class Singleton {
 
         byte[] salt = getAccountSalt(username);
 
-        if(salt == null){
-            System.out.println("LOG: Login '" +username+ "' failed. Reason: Wrong password.");
+        if (salt == null) {
+            System.out.println("LOG: Login '" + username + "' failed. Reason: Wrong password.");
             return -2;
         }
         String hashedPassword = hashInText(password, salt);
 
-        if(getAccount(username).getHashedPassword().equals(hashedPassword)){
+        if (getAccount(username).getHashedPassword().equals(hashedPassword)) {
             LoginToken token = new LoginToken(username);
             tokens.add(token);
             System.out.println("LOG: Session " + token.getSessionID() + " created for user " + username + ".");
             return token.getSessionID();
         }
-        System.out.println("LOG: Login '" +username+ "' failed. Reason: Wrong password.");
+        System.out.println("LOG: Login '" + username + "' failed. Reason: Wrong password.");
         return -1;
     }
 
@@ -103,9 +103,25 @@ public class Singleton {
 
 
     //Locations
-    public void addLocation(Location location) throws IOException, NoSuchAlgorithmException {
-        locations.add(location);
+    public boolean addLocation(Location location) throws IOException, NoSuchAlgorithmException {
+        boolean result = locations.add(location);
         locationsHash = hashInText(locations, null);
+        return result;
+
+    }
+
+    public boolean removeLocation(String locationName) throws IOException, NoSuchAlgorithmException {
+        Location location = getLocation(locationName);
+        boolean result = locations.remove(location);
+        profileKeysHash = hashInText(profileKeys, null);
+        return result;
+    }
+
+    public Location getLocation(String name) {
+        for (Location location : locations)
+            if (location.getName().equals(name))
+                return location;
+        return null;
     }
 
     public List<Location> getLocations() {
@@ -117,7 +133,9 @@ public class Singleton {
     }
 
     public boolean locationExists(Location location) {
-        return locations.contains(location);
+        if (getLocation(location.getName()) != null)
+            return true;
+        return false;
     }
 
     //Profile Keys
@@ -131,14 +149,13 @@ public class Singleton {
     }
 
 
-
     public String getProfileKeysHash() {
         return profileKeysHash;
     }
 
     public boolean profileKeyExists(String profileKey) {
-        for (String key:
-             getProfileKeys()) {
+        for (String key :
+                getProfileKeys()) {
             if (profileKey.equals(key)) {
                 return true;
             }
@@ -153,44 +170,43 @@ public class Singleton {
     }
 
     public LoginToken getToken(int id) {
-        for (LoginToken token: tokens) {
-            if(token.getSessionID() ==  id)
+        for (LoginToken token : tokens) {
+            if (token.getSessionID() == id)
                 return token;
         }
         return null;
     }
 
     public LoginToken getToken(String username) {
-        for (LoginToken token: tokens) {
-            if(token.getUsername().equals(username))
+        for (LoginToken token : tokens) {
+            if (token.getUsername().equals(username))
                 return token;
         }
         return null;
     }
 
-    public boolean tokenExists(int id){
+    public boolean tokenExists(int id) {
         LoginToken token = getToken(id);
         return tokenExists(token);
     }
 
-    public boolean tokenExists(String username){
+    public boolean tokenExists(String username) {
         LoginToken token = getToken(username);
         return tokenExists(token);
     }
 
-    public boolean tokenExists(LoginToken token){
-        if(token!=null)
+    public boolean tokenExists(LoginToken token) {
+        if (token != null)
             // if token expires, remove it from list
-            if(token.getExpiration().before(Timestamp.valueOf(LocalDateTime.now()))) {
+            if (token.getExpiration().before(Timestamp.valueOf(LocalDateTime.now()))) {
                 System.out.println("Token expired. Removing token with session ID " + token.getSessionID());
                 tokens.remove(token);
-            }
-            else
+            } else
                 return true;
         return false;
     }
 
-    public void removeToken(LoginToken token){
+    public void removeToken(LoginToken token) {
         tokens.remove(token);
     }
 }
