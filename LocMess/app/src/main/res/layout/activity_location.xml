@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:orientation="vertical"
-    tools:context="pt.ulisboa.tecnico.cmov.locmess.location.LocationActivity">
+    tools:context=".activities.location.LocationActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

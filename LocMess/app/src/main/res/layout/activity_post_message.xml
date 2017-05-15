@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="pt.ulisboa.tecnico.cmov.locmess.outbox.PostMessageActivity">
+    tools:context=".activities.outbox.PostMessageActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

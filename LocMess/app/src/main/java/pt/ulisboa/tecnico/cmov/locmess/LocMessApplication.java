@@ -8,24 +8,20 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import pt.ulisboa.tecnico.cmov.locmess.model.containers.AvailableKeysContainer;
-import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.TimeWindow;
+import pt.ulisboa.tecnico.cmov.locmess.activities.model.containers.AvailableKeysContainer;
+import pt.ulisboa.tecnico.cmov.locmess.activities.model.containers.LocationsContainer;
+import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Policy;
+import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.TimeWindow;
 import pt.ulisboa.tecnico.cmov.locmess.services.ProfileKeyManagerService;
-
-import static pt.ulisboa.tecnico.cmov.locmess.utils.HashUtils.hashInText;
 
 /**
  * This is a Custom Application Class that extends the class Application, which is a Singleton.

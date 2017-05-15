@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:orientation="vertical"
-    tools:context="pt.ulisboa.tecnico.cmov.locmess.inbox.InboxActivity">
+    tools:context=".activities.inbox.InboxActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

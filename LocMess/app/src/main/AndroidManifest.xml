@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="icon">
-        <activity android:name=".login.LoginActivity"
+        <activity android:name=".activities.login.LoginActivity"
             android:label="LocMess"
             android:theme="@style/AppThemeDefault" >
             <intent-filter>
@@ -35,24 +35,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".login.NewUserActivity"
+        <activity android:name=".activities.login.NewUserActivity"
             android:theme="@style/AppThemeDefault"
             android:label="@string/app_create_account_title"
         />
-        <activity android:name=".ToolbarActivity"
+        <activity android:name=".activities.ToolbarActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".inbox.InboxActivity" />
-        <activity android:name=".outbox.OutboxActivity" />
+        <activity android:name=".activities.inbox.InboxActivity" />
+        <activity android:name=".activities.outbox.OutboxActivity" />
 
-        <activity android:name=".outbox.PostMessageActivity"/>
-        <activity android:name=".inbox.ReadMessageActivity" />
-        <activity android:name=".outbox.EditMessageActivity" />
-        <activity android:name=".profile.ProfileActivity" />
-        <activity android:name=".outbox.PolicyActivity" />
+        <activity android:name=".activities.outbox.PostMessageActivity"/>
+        <activity android:name=".activities.inbox.ReadMessageActivity" />
+        <activity android:name=".activities.outbox.EditMessageActivity" />
+        <activity android:name=".activities.profile.ProfileActivity" />
+        <activity android:name=".activities.outbox.PolicyActivity" />
 
-        <activity android:name=".location.LocationActivity" />
-        <activity android:name=".location.NewLocationGPSActivity" />
-        <activity android:name=".location.NewLocationSSIDActivity"/>
+        <activity android:name=".activities.location.LocationActivity" />
+        <activity android:name=".activities.location.NewLocationGPSActivity" />
+        <activity android:name=".activities.location.NewLocationSSIDActivity"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -66,7 +66,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".location.MapsActivity"
+            android:name=".activities.location.MapsActivity"
             android:label="@string/title_activity_maps" />
 
         <service
