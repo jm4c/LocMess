@@ -2,9 +2,6 @@ package pt.ulisboa.tecnico.cmov.locmess.model.types;
 
 import java.io.Serializable;
 
-/**
- * Created by joaod on 02-Apr-17.
- */
 
 public class Message implements Serializable {
     private String title;
@@ -25,6 +22,9 @@ public class Message implements Serializable {
         this.isCentralized = isCentralized;
         this.policy = policy;
         this.isRead = false;
+    }
+
+    public Message() {
     }
 
     public String getOwner() {

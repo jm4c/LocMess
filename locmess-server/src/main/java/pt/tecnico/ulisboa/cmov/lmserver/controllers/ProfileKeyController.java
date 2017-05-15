@@ -41,26 +41,28 @@ public class ProfileKeyController {
     public Boolean addProfileKey(@RequestHeader(value = "session") String sessionID,
                                  @RequestBody String profileKey,
                                  HttpServletResponse response) throws IOException {
-        Singleton singleton = Singleton.getInstance();
-        int id = Integer.valueOf(sessionID);
+        synchronized (this) {
+            Singleton singleton = Singleton.getInstance();
+            int id = Integer.valueOf(sessionID);
 
-        if (singleton.tokenExists(id)) {
-            System.out.println("LOG: " + singleton.getToken(id).getUsername() + " trying to add new profile key. Profile key: " + profileKey);
+            if (singleton.tokenExists(id)) {
+                System.out.println("LOG: " + singleton.getToken(id).getUsername() + " trying to add new profile key. Profile key: " + profileKey);
 
-            try {
-                singleton.addProfileKey(profileKey);
-                return true;
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                try {
+                    singleton.addProfileKey(profileKey, id);
+                    return true;
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("LOG: Failed to add new profile key.");
+
+            } else {
+                System.out.println("LOG: No valid session ID found.");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             }
-            System.out.println("LOG: Failed to add new profile key.");
 
-        } else {
-            System.out.println("LOG: No valid session ID found.");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
         }
-
-        return false;
     }
 
     @RequestMapping(value = "/profilekey", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -75,7 +77,7 @@ public class ProfileKeyController {
             if (singleton.tokenExists(id)) {
                 System.out.println("LOG: " + singleton.getToken(id).getUsername() + " trying to remove a profile key. Profile key: " + profileKey);
                 try {
-                    boolean result = singleton.removeProfileKey(profileKey);
+                    boolean result = singleton.removeProfileKey(profileKey, id);
                     if (result)
                         System.out.println("LOG: Profile key " + profileKey + " removed successfully.");
                     else

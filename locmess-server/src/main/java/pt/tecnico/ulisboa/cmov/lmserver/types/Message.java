@@ -6,52 +6,28 @@ import java.util.HashMap;
 import java.util.List;
 
 
-@XmlRootElement(name = "message")
 public class Message implements Serializable {
-    private int id;
     private String title;
-    private String content;
     private String owner;
     private Location location;
-    private String startTime;
-    private String endTime;
-    private HashMap<String, String> policy;
-    private boolean isWhitelist;
+    private String content;
+    private TimeWindow timeWindow;
+    private boolean isCentralized;
+    private boolean isRead;
+    private Policy policy;
 
-    public Message(int id, String title, String content, String owner, Location location, String startTime, String endTime, HashMap<String, String> policy, boolean isWhitelist) {
-        this.id = id;
+    public Message(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized, Policy policy) {
         this.title = title;
         this.content = content;
         this.owner = owner;
         this.location = location;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.timeWindow = timeWindow;
+        this.isCentralized = isCentralized;
         this.policy = policy;
-        this.isWhitelist = isWhitelist;
+        this.isRead = false;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+    public Message() {
     }
 
     public String getOwner() {
@@ -62,6 +38,22 @@ public class Message implements Serializable {
         this.owner = owner;
     }
 
+    public boolean isCentralized() {
+        return isCentralized;
+    }
+
+    public void setCentralized(boolean centralized) {
+        this.isCentralized = centralized;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public Location getLocation() {
         return location;
     }
@@ -70,35 +62,35 @@ public class Message implements Serializable {
         this.location = location;
     }
 
-    public String getStartTime() {
-        return startTime;
+    public boolean isRead() {
+        return isRead;
     }
 
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
+    public void setRead(boolean read) {
+        isRead = read;
     }
 
-    public String getEndTime() {
-        return endTime;
+    public String getTitle() {
+        return title;
     }
 
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public HashMap<String, String> getPolicy() {
+    public TimeWindow getTimeWindow() {
+        return timeWindow;
+    }
+
+    public void setTimeWindow(TimeWindow timeWindow) {
+        this.timeWindow = timeWindow;
+    }
+
+    public Policy getPolicy() {
         return policy;
     }
 
-    public void setPolicy(HashMap<String, String> policy) {
+    public void setPolicy(Policy policy) {
         this.policy = policy;
-    }
-
-    public boolean isWhitelist() {
-        return isWhitelist;
-    }
-
-    public void setWhitelist(boolean whitelist) {
-        isWhitelist = whitelist;
     }
 }

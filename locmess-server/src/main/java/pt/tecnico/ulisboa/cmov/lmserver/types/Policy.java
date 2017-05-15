@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess.model.types;
+package pt.tecnico.ulisboa.cmov.lmserver.types;
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,5 +33,4 @@ public class Policy implements Serializable{
     public void setWhitelist(boolean whitelist) {
         isWhitelist = whitelist;
     }
-
 }
