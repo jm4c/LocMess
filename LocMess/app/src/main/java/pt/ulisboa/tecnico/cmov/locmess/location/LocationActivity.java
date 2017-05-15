@@ -23,7 +23,7 @@ import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
-import pt.ulisboa.tecnico.cmov.locmess.model.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 
 public class LocationActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
@@ -74,7 +74,7 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
 
     @Override
     protected void onPause() {
-        application.setLocations(listData);
+        application.getLocationsContainer().setLocations(listData);
         super.onPause();
     }
 

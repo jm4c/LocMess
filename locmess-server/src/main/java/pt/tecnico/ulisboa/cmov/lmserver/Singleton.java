@@ -1,17 +1,15 @@
 package pt.tecnico.ulisboa.cmov.lmserver;
 
-import jdk.nashorn.internal.parser.Token;
-import pt.tecnico.ulisboa.cmov.lmserver.types.Account;
-import pt.tecnico.ulisboa.cmov.lmserver.types.Location;
-import pt.tecnico.ulisboa.cmov.lmserver.types.LoginToken;
-import pt.tecnico.ulisboa.cmov.lmserver.types.Message;
+import pt.tecnico.ulisboa.cmov.lmserver.types.*;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static pt.tecnico.ulisboa.cmov.lmserver.utils.CryptoUtils.getSalt;
 import static pt.tecnico.ulisboa.cmov.lmserver.utils.HashUtils.hashInText;
@@ -23,27 +21,20 @@ public class Singleton {
 
     private List<Account> accounts;
     private List<Message> messages;
-    private List<Location> locations;
-    private List<String> profileKeys;
+    private LocationsContainer locationsContainer;
+    private Map<String, Integer> profileKeys;
     private List<LoginToken> tokens;
 
-    private String locationsHash;
     private String profileKeysHash;
 
 
     private Singleton() {
         accounts = new ArrayList<>();
         messages = new ArrayList<>();
-        locations = new ArrayList<>();
-        profileKeys = new ArrayList<>();
+        locationsContainer = new LocationsContainer();
+        profileKeys = new HashMap<>();
         tokens = new ArrayList<>();
 
-        try {
-            locationsHash = hashInText(locations, null);
-            profileKeysHash = hashInText(profileKeys, null);
-        } catch (IOException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
     }
 
     /* Static 'instance' method */
@@ -104,32 +95,28 @@ public class Singleton {
 
     //Locations
     public boolean addLocation(Location location) throws IOException, NoSuchAlgorithmException {
-        boolean result = locations.add(location);
-        locationsHash = hashInText(locations, null);
+        boolean result = locationsContainer.addLocation(location);
+        locationsContainer.setLocationsHash(hashInText(locationsContainer.getLocations(), null));
         return result;
 
     }
 
     public boolean removeLocation(String locationName) throws IOException, NoSuchAlgorithmException {
-        Location location = getLocation(locationName);
-        boolean result = locations.remove(location);
-        profileKeysHash = hashInText(profileKeys, null);
+        boolean result = locationsContainer.removeLocation(locationName);
+        locationsContainer.setLocationsHash(hashInText(profileKeys, null));
         return result;
     }
 
     public Location getLocation(String name) {
-        for (Location location : locations)
-            if (location.getName().equals(name))
-                return location;
-        return null;
+        return locationsContainer.getLocation(name);
     }
 
-    public List<Location> getLocations() {
-        return locations;
+    public LocationsContainer getLocationsContainer() {
+        return locationsContainer;
     }
 
     public String getLocationsHash() {
-        return locationsHash;
+        return locationsContainer.getLocationsHash();
     }
 
     public boolean locationExists(Location location) {
@@ -140,12 +127,30 @@ public class Singleton {
 
     //Profile Keys
     public List<String> getProfileKeys() {
-        return profileKeys;
+        return new ArrayList<>(profileKeys.keySet());
     }
 
-    public void addProfileKey(String profileKey) throws IOException, NoSuchAlgorithmException {
-        profileKeys.add(profileKey);
-        profileKeysHash = hashInText(profileKeys, null);
+    public boolean addProfileKey(String profileKey) throws IOException, NoSuchAlgorithmException {
+        if (profileKeys.containsKey(profileKey)) {
+            profileKeys.put(profileKey, profileKeys.get(profileKey) + 1);
+            return false;
+        } else {
+            profileKeys.put(profileKey, 1);
+            profileKeysHash = hashInText(profileKeys, null);
+            return true;
+        }
+    }
+
+    public boolean removeProfileKey(String profileKey) throws IOException, NoSuchAlgorithmException {
+        profileKeys.put(profileKey, profileKeys.get(profileKey) - 1);
+
+        if (profileKeys.get(profileKey) <= 0) {
+            profileKeys.remove(profileKey);
+            profileKeysHash = hashInText(profileKeys, null);
+            return true;
+        }
+
+        return false;
     }
 
 

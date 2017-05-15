@@ -1,6 +1,9 @@
 package pt.ulisboa.tecnico.cmov.locmess;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -9,12 +12,16 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
-import pt.ulisboa.tecnico.cmov.locmess.model.Location;
-import pt.ulisboa.tecnico.cmov.locmess.model.Message;
-import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
-import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
+import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.TimeWindow;
+import pt.ulisboa.tecnico.cmov.locmess.services.ProfileKeyManagerService;
 
 import static pt.ulisboa.tecnico.cmov.locmess.utils.HashUtils.hashInText;
 
@@ -35,15 +42,15 @@ public class LocMessApplication extends Application {
 
     private List<ProfileKeypair> keypairs;
     private List<String> availableKeys;
+    public Queue<ProfileKeyAction> queueKeyActions; //TODO profile keys handler (in order to be able to change profiles offline) inside a service
     private List<Message> inboxMessages;
     private List<Message> outboxCentralizedMessages;
     private List<Message> outboxDecentralizedMessages;
 
-    private List<Location> locations;
-    private LatLng currentLocation;
+    private LocationsContainer locationsContainer;
 
+    private LatLng currentLocation;
     private String keysHash;
-    private String locationsHash;
 
     public LocMessApplication() {
         //TODO if exists in storage, load it
@@ -53,61 +60,38 @@ public class LocMessApplication extends Application {
         this.outboxCentralizedMessages = new ArrayList<>();
         this.outboxDecentralizedMessages = new ArrayList<>();
 
-        this.locations = new ArrayList<>();
-        try {
-            keysHash = hashInText(availableKeys, null);
-            locationsHash = hashInText(locations, null);
-        } catch (IOException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        this.locationsContainer = new LocationsContainer();
+
     }
 
     // Locations
 
-
     public List<Location> getLocations() {
-        return locations;
+        return locationsContainer.getLocations();
     }
 
-    public void setLocations(List<Location> locations) {
-        this.locations = locations;
-        generateLocationsHash();
+    public LocationsContainer getLocationsContainer() {
+        return locationsContainer;
+    }
+
+    public void setLocationsContainer(LocationsContainer locationsContainer) {
+        this.locationsContainer = locationsContainer;
     }
 
     public void addLocation(Location location) {
-        locations.add(location);
+        locationsContainer.addLocation(location);
     }
 
     public Location getLocation(int pos) {
-        return locations.get(pos);
+        return locationsContainer.getLocation(pos);
     }
 
     public List<String> listLocations() {
-        List<String> locationNames = new ArrayList<>();
-        for (Location location : locations)
-            locationNames.add(location.getName());
-        return locationNames;
+        return locationsContainer.listLocations();
     }
-
-    public void removeLocation(String name) {
-        for (Location loc : locations) {
-            if (loc.getName().equals(name)) {
-                locations.remove(loc);
-            }
-        }
-    }
-
 
     public String getLocationsHash() {
-        return locationsHash;
-    }
-
-    public void generateLocationsHash() {
-        try {
-            this.locationsHash = hashInText(getLocations(), null);
-        } catch (IOException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        return locationsContainer.getLocationsHash();
     }
 
     //Profile keypairs
@@ -115,23 +99,18 @@ public class LocMessApplication extends Application {
         return keypairs;
     }
 
-    public void setKeypairs(List<ProfileKeypair> keypairs) {
+
+    public void setKeyPairs(List<ProfileKeypair> keypairs) {
         this.keypairs = keypairs;
     }
 
-    public void addKeyPair(String keyName, String value) {
-        keypairs.add(new ProfileKeypair(keyName, value));
+    public void addKeyAction(String keyName, Boolean isActionAdding) {
+        queueKeyActions.add(new ProfileKeyAction<>(keyName, isActionAdding));
+        if(!isServiceRunning(ProfileKeyManagerService.class))
+            startService(new Intent(this, ProfileKeyManagerService.class));
     }
 
-    public void removeKeyPair(String keyname) {
-        for (ProfileKeypair keypair : keypairs) {
-            if (keypair.getKey().equals(keyname)) {
-                keypairs.remove(keypair);
-            }
-        }
-    }
-
-    public  List<String> listKeyNames() {
+    public  List<String> listProfileKeys() {
         List<String> keyNames = new ArrayList<>();
         for (ProfileKeypair keypair : keypairs) {
             keyNames.add(keypair.getKey());
@@ -139,7 +118,9 @@ public class LocMessApplication extends Application {
         return keyNames;
     }
 
-    public List<String> listKeyValues(){
+
+
+    public List<String> listProfileValues(){
         List<String> keyValues = new ArrayList<>();
 
         for(ProfileKeypair keyvalue : keypairs){
@@ -148,8 +129,20 @@ public class LocMessApplication extends Application {
         return keyValues;
     }
 
+    public boolean isServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     //Inbox Messages
+
 
     public void addInboxMessage(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized, Policy policy) {
         inboxMessages.add(new Message(title, content, owner, location, timeWindow, isCentralized, policy));
@@ -172,13 +165,13 @@ public class LocMessApplication extends Application {
         this.inboxMessages = inboxMessages;
     }
 
-
     //Outbox Messages
 
 
     public List<Message> getOutboxCentralizedMessages() {
         return outboxCentralizedMessages;
     }
+
 
     public void setOutboxCentralizedMessages(List<Message> outboxCentralizedMessages) {
         this.outboxCentralizedMessages = outboxCentralizedMessages;
@@ -208,7 +201,6 @@ public class LocMessApplication extends Application {
         }
     }
 
-
     public void removeOutboxMessage(String title, Boolean isCentralized) {
         if(isCentralized) {
             for (Message msg : outboxCentralizedMessages) {
@@ -231,15 +223,16 @@ public class LocMessApplication extends Application {
         return availableKeys;
     }
 
+
     public void setAvailableKeys(List<String> availableKeys) {
         this.availableKeys = availableKeys;
         generateKeysHash();
     }
 
-
     public String getKeysHash() {
         return keysHash;
     }
+
 
     public void generateKeysHash() {
         try {
@@ -262,5 +255,33 @@ public class LocMessApplication extends Application {
         Toast.makeText(this, currentLocation.toString(), Toast.LENGTH_LONG).show();
     }
 
+    public final class ProfileKeyAction<String, Boolean> implements Map.Entry<String, Boolean> {
+
+
+        private final String key;
+        private Boolean action;
+        public ProfileKeyAction(String key, Boolean action) {
+            this.key = key;
+            this.action = action;
+        }
+
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+
+        @Override
+        public Boolean getValue() {
+            return action;
+        }
+
+        @Override
+        public Boolean setValue(Boolean value) {
+            Boolean old = this.action;
+            this.action = value;
+            return old;
+        }
+    }
 
 }

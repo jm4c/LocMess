@@ -23,14 +23,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -38,7 +35,8 @@ import java.util.concurrent.ExecutionException;
 import pt.ulisboa.tecnico.cmov.locmess.inbox.InboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.location.LocationActivity;
 import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
-import pt.ulisboa.tecnico.cmov.locmess.model.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.outbox.OutboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.profile.ProfileActivity;
 import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
@@ -171,7 +169,8 @@ public class ToolbarActivity extends AppCompatActivity {
 
     /** HTTP methods******************************************************************************************************/
 
-    private class GetLocationsTask extends AsyncTask<Void, Void, List<Location>> {
+    /** Location methods*/
+    private class GetLocationsTask extends AsyncTask<Void, Void, LocationsContainer> {
         private String locationsHash;
         private int sessionID;
         private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
@@ -192,10 +191,10 @@ public class ToolbarActivity extends AppCompatActivity {
         }
 
         @Override
-        protected List<Location> doInBackground(Void... params) {
+        protected LocationsContainer doInBackground(Void... params) {
 
             // Setup url
-            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/locations";
+            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
 
             // Populate header
             HttpHeaders requestHeaders = new HttpHeaders();
@@ -208,14 +207,11 @@ public class ToolbarActivity extends AppCompatActivity {
             ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
 
             try {
-                ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), List.class);
+                ResponseEntity<LocationsContainer> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), LocationsContainer.class);
                 if(response.getStatusCode() == HttpStatus.UNAUTHORIZED)
                     application.forceLoginFlag = true;
 
-                //convert from LinkedHashMap to locations
-                ObjectMapper mapper = new ObjectMapper();
-                List<Location> locations = mapper.convertValue(response.getBody(), new TypeReference<List<Location>>() { });
-                return locations;
+                return response.getBody();
 
             } catch (Exception e) {
                 Log.e("GetLocationsTask", e.getMessage(), e);
@@ -226,16 +222,16 @@ public class ToolbarActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(List<Location> locations) {
+        protected void onPostExecute(LocationsContainer locationsContainer) {
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
 
-            if(locations != null){
-                application.setLocations(locations);
+            if(locationsContainer != null){
+                application.setLocationsContainer(locationsContainer);
             }
 
-            super.onPostExecute(locations);
+            super.onPostExecute(locationsContainer);
         }
 
 
@@ -365,7 +361,7 @@ public class ToolbarActivity extends AppCompatActivity {
                 return response.getBody();
 
             } catch (Exception e) {
-                Log.e("AddLocationTask", e.getMessage(), e);
+                Log.e("RemoveLocationTask", e.getMessage(), e);
 
                 return null;
             }
@@ -393,7 +389,7 @@ public class ToolbarActivity extends AppCompatActivity {
     }
 
 
-
+    /** Profile key methods*/
     private class GetAvailableKeysTask extends AsyncTask<Void, Void, List<String>> {
         private String availableKeysHash;
         private int sessionID;
@@ -402,14 +398,14 @@ public class ToolbarActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            this.dialog.setMessage("Loading Locations...");
+            this.dialog.setMessage("Loading Profile keys...");
             this.dialog.show();
 
             sessionID  = application
                     .getSharedPreferences("LocMess",MODE_PRIVATE)
                     .getInt("session", 0);
 
-            availableKeysHash = application.getLocationsHash();
+            availableKeysHash = application.getKeysHash();
 
             super.onPreExecute();
         }
@@ -418,7 +414,7 @@ public class ToolbarActivity extends AppCompatActivity {
         protected List<String> doInBackground(Void... params) {
 
             // Setup url
-            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/locations";
+            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/profilekey";
 
             // Populate header
             HttpHeaders requestHeaders = new HttpHeaders();
@@ -435,13 +431,13 @@ public class ToolbarActivity extends AppCompatActivity {
                 if(response.getStatusCode() == HttpStatus.UNAUTHORIZED)
                     application.forceLoginFlag = true;
 
-                //convert from LinkedHashMap to locations
+                //convert from LinkedHashMap to list of strings
                 ObjectMapper mapper = new ObjectMapper();
-                List<String> availableKeys = mapper.convertValue(response.getBody(), new TypeReference<List<Location>>() { });
+                List<String> availableKeys = mapper.convertValue(response.getBody(), new TypeReference<List<String>>() { });
                 return availableKeys;
 
             } catch (Exception e) {
-                Log.e("GetLocationsTask", e.getMessage(), e);
+                Log.e("GetProfileKeysTask", e.getMessage(), e);
 
                 return null;
             }
@@ -473,72 +469,141 @@ public class ToolbarActivity extends AppCompatActivity {
 
     }
 
-    public class AddProfileKeyTask extends AsyncTask<String, Void, Boolean> {
-        private int sessionID;
-        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
+//    public class AddProfileKeyTask extends AsyncTask<String, Void, Boolean> {
+//        private int sessionID;
+//        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
+//
+//
+//        @Override
+//        protected void onPreExecute() {
+//            this.dialog.setMessage("Adding new profile key...");
+//            this.dialog.show();
+//
+//            sessionID  = application
+//                    .getSharedPreferences("LocMess",MODE_PRIVATE)
+//                    .getInt("session", 0);
+//
+//
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected Boolean doInBackground(String... params) {
+//
+//            // Setup url
+//            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/profilekey";
+//
+//            // Populate header
+//            HttpHeaders requestHeaders = new HttpHeaders();
+//            requestHeaders.add("session", String.valueOf(sessionID));
+//
+//            // Create a new RestTemplate instance
+//            RestTemplate restTemplate = new RestTemplate();
+//            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+//            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+//
+//            try {
+//                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(params[0], requestHeaders), Boolean.class);
+//                if(response.getStatusCode() == HttpStatus.UNAUTHORIZED)
+//                    application.forceLoginFlag = true;
+//                return response.getBody();
+//
+//            } catch (Exception e) {
+//                Log.e("AddProfileKeyTask", e.getMessage(), e);
+//
+//                return null;
+//            }
+//
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Boolean aBoolean) {
+//            if (dialog.isShowing()) {
+//                dialog.dismiss();
+//            }
+//            super.onPostExecute(aBoolean);
+//        }
+//
+//
+//        @Override
+//        protected void onCancelled() {
+//            if (dialog.isShowing()) {
+//                dialog.dismiss();
+//            }
+//            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
+//            super.onCancelled();
+//        }
+//
+//    }
+//
+//    public class RemoveProfileKeyTask extends AsyncTask<String, Void, Boolean> {
+//        private int sessionID;
+//        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
+//
+//
+//        @Override
+//        protected void onPreExecute() {
+//            this.dialog.setMessage("Adding new profile key...");
+//            this.dialog.show();
+//
+//            sessionID  = application
+//                    .getSharedPreferences("LocMess",MODE_PRIVATE)
+//                    .getInt("session", 0);
+//
+//
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected Boolean doInBackground(String... params) {
+//
+//            // Setup url
+//            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/profilekey";
+//
+//            // Populate header
+//            HttpHeaders requestHeaders = new HttpHeaders();
+//            requestHeaders.add("session", String.valueOf(sessionID));
+//            requestHeaders.add("key", params[0]);
+//
+//            // Create a new RestTemplate instance
+//            RestTemplate restTemplate = new RestTemplate();
+//            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+//            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+//
+//            try {
+//                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(requestHeaders), Boolean.class);
+//                if(response.getStatusCode() == HttpStatus.UNAUTHORIZED)
+//                    application.forceLoginFlag = true;
+//                return response.getBody();
+//
+//            } catch (Exception e) {
+//                Log.e("RemoveProfileKeyTask", e.getMessage(), e);
+//
+//                return null;
+//            }
+//
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Boolean aBoolean) {
+//            if (dialog.isShowing()) {
+//                dialog.dismiss();
+//            }
+//            super.onPostExecute(aBoolean);
+//        }
+//
+//
+//        @Override
+//        protected void onCancelled() {
+//            if (dialog.isShowing()) {
+//                dialog.dismiss();
+//            }
+//            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
+//            super.onCancelled();
+//        }
+//
+//    }
 
-
-        @Override
-        protected void onPreExecute() {
-            this.dialog.setMessage("Adding new location...");
-            this.dialog.show();
-
-            sessionID  = application
-                    .getSharedPreferences("LocMess",MODE_PRIVATE)
-                    .getInt("session", 0);
-
-
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(String... params) {
-
-            // Setup url
-            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
-
-            // Populate header
-            HttpHeaders requestHeaders = new HttpHeaders();
-            requestHeaders.add("session", String.valueOf(sessionID));
-
-            // Create a new RestTemplate instance
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-            try {
-                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(params[0], requestHeaders), Boolean.class);
-                if(response.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                    application.forceLoginFlag = true;
-                return response.getBody();
-
-            } catch (Exception e) {
-                Log.e("AddProfileKeyTask", e.getMessage(), e);
-
-                return null;
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            super.onPostExecute(aBoolean);
-        }
-
-
-        @Override
-        protected void onCancelled() {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
-            super.onCancelled();
-        }
-
-    }
 
 
 

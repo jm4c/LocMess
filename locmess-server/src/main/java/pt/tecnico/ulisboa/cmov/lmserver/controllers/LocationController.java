@@ -4,28 +4,28 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
 import pt.tecnico.ulisboa.cmov.lmserver.types.Location;
+import pt.tecnico.ulisboa.cmov.lmserver.types.LocationsContainer;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 
 @RestController
 public class LocationController {
-    @RequestMapping(value = "/locations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/location", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public List<Location> getLocations(@RequestHeader(value = "session") String sessionID,
-                                       @RequestHeader(value = "hash") String clientLocationHash,
-                                       HttpServletResponse response) throws IOException {
+    public LocationsContainer getLocations(@RequestHeader(value = "session") String sessionID,
+                                           @RequestHeader(value = "hash") String clientLocationHash,
+                                           HttpServletResponse response) throws IOException {
         Singleton singleton = Singleton.getInstance();
-        List<Location> locations = null;
+        LocationsContainer locationsContainer = null;
         int id = Integer.valueOf(sessionID);
 
         if (singleton.tokenExists(id)) {
             System.out.println("LOG: " + singleton.getToken(id).getUsername() + " checking for new locations. Current hash: " + clientLocationHash);
             if (!(singleton.getLocationsHash().equals(clientLocationHash))) {
-                locations = singleton.getLocations();
+                locationsContainer = singleton.getLocationsContainer();
                 System.out.println("LOG: " + singleton.getToken(id).getUsername() + " downloaded new locations. New hash: " + singleton.getLocationsHash());
             }
         } else {
@@ -33,7 +33,7 @@ public class LocationController {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
-        return locations;
+        return locationsContainer;
     }
 
     @RequestMapping(value = "/location", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)

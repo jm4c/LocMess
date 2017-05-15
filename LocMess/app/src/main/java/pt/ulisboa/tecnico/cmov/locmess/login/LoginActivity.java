@@ -121,7 +121,8 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
 
         //start GPS service
-        startService(new Intent(this, GPSTrackerService.class));
+        if(!((LocMessApplication)getApplication()).isServiceRunning(GPSTrackerService.class))
+            startService(new Intent(this, GPSTrackerService.class));
 
         Intent i = new Intent(getApplicationContext(), InboxActivity.class);
         startActivity(i);

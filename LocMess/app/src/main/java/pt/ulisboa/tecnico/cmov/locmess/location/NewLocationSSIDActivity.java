@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.cmov.locmess.location;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,35 +8,24 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
-import pt.ulisboa.tecnico.cmov.locmess.model.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
-import pt.ulisboa.tecnico.cmov.locmess.outbox.PolicyActivity;
 
 
 public class NewLocationSSIDActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {

@@ -28,7 +28,7 @@ import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
 
 public class ProfileActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
@@ -59,7 +59,7 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
 
     @Override
     protected void onPause() {
-        application.setKeypairs(listData);
+        application.setKeyPairs(listData);
         super.onPause();
     }
 
@@ -263,6 +263,8 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
         ProfileKeypair item = new ProfileKeypair(key, value);
         listData.add(item);
         adapter.notifyItemInserted(listData.indexOf(item));
+        application.addKeyAction(key, true);
+
     }
 
     private void replaceKeyPair(int pos, String value) {
@@ -272,8 +274,10 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
 
 
     private void deleteItem(int pos) {
+        application.addKeyAction(((ProfileKeypair) listData.get(pos)).getKey(), false);
         listData.remove(pos);
         adapter.notifyItemRemoved(pos);
+
     }
 
     @Override

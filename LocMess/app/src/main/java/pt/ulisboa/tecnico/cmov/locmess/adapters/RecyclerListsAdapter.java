@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.model.Location;
-import pt.ulisboa.tecnico.cmov.locmess.model.Message;
-import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
 
 public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdapter.AdapterViewHolder> {
 

@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
-import pt.ulisboa.tecnico.cmov.locmess.model.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 
 
 public class NewLocationGPSActivity extends ToolbarActivity {

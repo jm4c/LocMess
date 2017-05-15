@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Random;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
 
 /**
  * Created by joaod on 03-Apr-17.

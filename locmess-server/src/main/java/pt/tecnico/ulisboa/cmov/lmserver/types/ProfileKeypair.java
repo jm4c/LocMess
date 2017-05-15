@@ -1,11 +1,10 @@
-package pt.ulisboa.tecnico.cmov.locmess.model;
+package pt.tecnico.ulisboa.cmov.lmserver.types;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
-/**
- * Created by joaod on 10-Apr-17.
- */
 
+@XmlRootElement(name = "profile-key")
 public class ProfileKeypair implements Serializable {
     private String key;
     private String value;
@@ -13,6 +12,9 @@ public class ProfileKeypair implements Serializable {
     public ProfileKeypair(String key, String value) {
         this.key = key;
         this.value = value;
+    }
+
+    public ProfileKeypair(){
     }
 
     public String getKey() {

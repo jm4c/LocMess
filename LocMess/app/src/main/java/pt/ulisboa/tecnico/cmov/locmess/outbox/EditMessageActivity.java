@@ -3,7 +3,7 @@ package pt.ulisboa.tecnico.cmov.locmess.outbox;
 import android.os.Bundle;
 import android.util.Log;
 
-import pt.ulisboa.tecnico.cmov.locmess.model.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 
 public class EditMessageActivity extends PostMessageActivity {
 

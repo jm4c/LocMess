@@ -42,9 +42,8 @@
         <activity android:name=".ToolbarActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".inbox.InboxActivity" />
-        <activity android:name=".outbox.OutboxActivity" >
+        <activity android:name=".outbox.OutboxActivity" />
 
-        </activity>
         <activity android:name=".outbox.PostMessageActivity"/>
         <activity android:name=".inbox.ReadMessageActivity" />
         <activity android:name=".outbox.EditMessageActivity" />
@@ -68,9 +67,14 @@
 
         <activity
             android:name=".location.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
 
-        <service android:enabled="true" android:name=".services.GPSTrackerService"></service>
+        <service
+            android:enabled="true"
+            android:name=".services.GPSTrackerService" />
+        <service
+            android:enabled="true"
+            android:name=".services.ProfileKeyManagerService" />
     </application>
 
 </manifest>

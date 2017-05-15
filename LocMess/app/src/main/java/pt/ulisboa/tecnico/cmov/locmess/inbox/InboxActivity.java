@@ -20,7 +20,7 @@ import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.model.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
 public class InboxActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {

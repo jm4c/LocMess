@@ -14,7 +14,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -28,13 +27,12 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.model.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
 
 public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 

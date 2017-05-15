@@ -1,10 +1,8 @@
 package pt.tecnico.ulisboa.cmov.lmserver.types;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
-@XmlRootElement(name = "location")
 public class Location implements Serializable{
     private String name;
     private double latitude;

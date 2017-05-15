@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.cmov.locmess.outbox;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,13 +17,12 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.model.Location;
-import pt.ulisboa.tecnico.cmov.locmess.model.Message;
-import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.model.TimeWindow;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.TimeWindow;
 
 public class PostMessageActivity extends ToolbarActivity {
 

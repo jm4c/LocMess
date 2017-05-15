@@ -57,11 +57,10 @@ public class GPSTrackerService extends Service implements LocationListener {
     private String provider_info;
 
 
-
     @Override
     public void onCreate() {
         super.onCreate();
-        application =(LocMessApplication) getApplicationContext();
+        application = (LocMessApplication) getApplicationContext();
         getLocation();
     }
 
@@ -142,9 +141,7 @@ public class GPSTrackerService extends Service implements LocationListener {
                     updateGPSCoordinates();
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             //e.printStackTrace();
             Log.e(TAG, "Impossible to connect to LocationManager", e);
         }

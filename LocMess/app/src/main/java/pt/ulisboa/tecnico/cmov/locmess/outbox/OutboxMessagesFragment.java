@@ -24,11 +24,7 @@ import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.model.Message;
-import pt.ulisboa.tecnico.cmov.locmess.model.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
-
-import static android.app.Activity.RESULT_OK;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 
 
 public class OutboxMessagesFragment extends Fragment implements RecyclerListsAdapter.activityCallback {
