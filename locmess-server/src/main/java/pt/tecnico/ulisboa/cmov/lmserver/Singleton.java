@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static pt.tecnico.ulisboa.cmov.lmserver.utils.CryptoUtils.getSalt;
 import static pt.tecnico.ulisboa.cmov.lmserver.utils.HashUtils.hashInText;
@@ -20,16 +17,16 @@ public class Singleton {
     private static Singleton singleton = new Singleton();
 
     private List<Account> accounts;
-    private List<Message> messages;
+    private Map<Message,Set<Account>> messages;
     private LocationsContainer locationsContainer;
     private AvailableKeysContainer availableKeysContainer;
-    private Map<String, Integer> profileKeysReferences;
+    private Map<String, Set<Account>> profileKeysReferences;
     private List<LoginToken> tokens;
 
 
     private Singleton() {
         accounts = new ArrayList<>();
-        messages = new ArrayList<>();
+        messages = new HashMap<>();
         locationsContainer = new LocationsContainer();
         availableKeysContainer = new AvailableKeysContainer();
         profileKeysReferences = new HashMap<>();
@@ -91,6 +88,9 @@ public class Singleton {
     }
 
     //Messages
+    public void addMessage(Message message){
+        messages.put(message, new LinkedHashSet<>());
+    }
 
 
     //Locations
@@ -130,14 +130,16 @@ public class Singleton {
         return new ArrayList<>(profileKeysReferences.keySet());
     }
 
-    public boolean addProfileKey(String profileKey) throws IOException, NoSuchAlgorithmException {
+    public boolean addProfileKey(String profileKey, int sessionID) throws IOException, NoSuchAlgorithmException {
+        Account account = getAccountFromToken(sessionID);
         if (profileKeysReferences.containsKey(profileKey)) {
-            profileKeysReferences.put(profileKey, profileKeysReferences.get(profileKey) + 1);
-            System.out.println("LOG: Profile key '" + profileKey + "' reference count was incremented. Count: " + profileKeysReferences.get(profileKey));
+            profileKeysReferences.get(profileKey).add(account);
+            System.out.println("LOG: Profile key '" + profileKey + "' reference count was incremented. Count: " + profileKeysReferences.get(profileKey).size());
 
             return false;
         } else {
-            profileKeysReferences.put(profileKey, 1);
+            profileKeysReferences.put(profileKey, new LinkedHashSet<>());
+            profileKeysReferences.get(profileKey).add(account);
             availableKeysContainer.addKey(profileKey);
             availableKeysContainer.setKeysHash(hashInText(profileKeysReferences, null));
             System.out.println("LOG: Profile key '" + profileKey + "' added successfully.");
@@ -146,11 +148,16 @@ public class Singleton {
         }
     }
 
-    public boolean removeProfileKey(String profileKey) throws IOException, NoSuchAlgorithmException {
-        profileKeysReferences.put(profileKey, profileKeysReferences.get(profileKey) - 1);
-        System.out.println("LOG: Profile key '" + profileKey + "' reference count was decremented. Count: " + profileKeysReferences.get(profileKey));
+    private Account getAccountFromToken(int sessionID) {
+        return getAccount(getToken(sessionID).getUsername());
+    }
 
-        if (profileKeysReferences.get(profileKey) <= 0) {
+    public boolean removeProfileKey(String profileKey, int sessionID) throws IOException, NoSuchAlgorithmException {
+        Account account = getAccountFromToken(sessionID);
+        boolean result = profileKeysReferences.get(profileKey).remove(account);
+        System.out.println("LOG: Profile key '" + profileKey + "' reference count was decremented. Count: " + profileKeysReferences.get(profileKey).size());
+
+        if (profileKeysReferences.get(profileKey).size() <= 0) {
             profileKeysReferences.remove(profileKey);
             availableKeysContainer.removeKey(profileKey);
             availableKeysContainer.setKeysHash(hashInText(profileKeysReferences, null));

@@ -220,7 +220,15 @@ public class LocMessApplication extends Application {
 
 
     public List<String> getAvailableKeys() {
-        return availableKeysContainer.getKeys();
+        List<String> availableKeys = availableKeysContainer.getKeys();
+
+        //removes keys already used from auto-complete
+        for (String key : listProfileKeys()) {
+            if(availableKeys.contains(key)){
+                availableKeys.remove(key);
+            }
+        }
+        return null;
     }
 
     public AvailableKeysContainer getAvailableKeysContainer() {
