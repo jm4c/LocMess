@@ -25,9 +25,14 @@ public class DatePickerFragment extends DialogFragment
 
         if(getTag().equals("dateStartPicker")) {
             dialog.setTitle("Message posting time");
+            dialog.getDatePicker().setMinDate(System.currentTimeMillis());
             Toast.makeText(getActivity(), "Pick message posting time.", Toast.LENGTH_SHORT).show();
         }else{
             dialog.setTitle("Message expiration time");
+            c.set(((PostMessageActivity) getActivity()).timeWindow.getStartYear(),
+                    ((PostMessageActivity) getActivity()).timeWindow.getStartMonth(),
+                    ((PostMessageActivity) getActivity()).timeWindow.getStartDay());
+            dialog.getDatePicker().setMinDate(c.getTimeInMillis());
             Toast.makeText(getActivity(), "Pick message expiration time.", Toast.LENGTH_SHORT).show();
         }
 
