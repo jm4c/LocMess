@@ -38,6 +38,7 @@ import pt.ulisboa.tecnico.cmov.locmess.login.LoginActivity;
 import pt.ulisboa.tecnico.cmov.locmess.model.containers.AvailableKeysContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.outbox.OutboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.profile.ProfileActivity;
 import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
@@ -390,7 +391,7 @@ public class ToolbarActivity extends AppCompatActivity {
     }
 
 
-    /** Profile key methods*/
+    /** Profile key methods (remaining profile methods in ProfileKeyManagerService) */
     private class GetAvailableKeysTask extends AsyncTask<Void, Void, AvailableKeysContainer> {
         private String availableKeysHash;
         private int sessionID;
@@ -470,6 +471,82 @@ public class ToolbarActivity extends AppCompatActivity {
 
     }
 
+
+
+    /** Messages methods*/
+
+    public class SendMessageTask extends AsyncTask<Message, Void, Boolean> {
+        private int sessionID;
+//        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
+
+
+        @Override
+        protected void onPreExecute() {
+//            this.dialog.setMessage("Adding new message...");
+//            this.dialog.show();
+
+            sessionID  = application
+                    .getSharedPreferences("LocMess",MODE_PRIVATE)
+                    .getInt("session", 0);
+
+
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Message... params) {
+
+            // Setup url
+            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/message";
+
+            // Populate header
+            HttpHeaders requestHeaders = new HttpHeaders();
+            requestHeaders.add("session", String.valueOf(sessionID));
+
+            // Create a new RestTemplate instance
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+
+            try {
+                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(params[0], requestHeaders), Boolean.class);
+
+                return response.getBody();
+
+            } catch (HttpClientErrorException e) {
+                Log.e("SendMessageTask", e.getMessage(), e);
+                if(e.getStatusCode() == HttpStatus.UNAUTHORIZED)
+                    application.forceLoginFlag = true;
+
+                return false;
+            }
+            catch (Exception e) {
+                Log.e("SendMessageTask", e.getMessage(), e);
+
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+//            if (dialog.isShowing()) {
+//                dialog.dismiss();
+//            }
+            super.onPostExecute(aBoolean);
+        }
+
+
+        @Override
+        protected void onCancelled() {
+//            if (dialog.isShowing()) {
+//                dialog.dismiss();
+//            }
+            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
+            super.onCancelled();
+        }
+
+    }
 
 
 

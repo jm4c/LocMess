@@ -9,12 +9,13 @@ import pt.tecnico.ulisboa.cmov.lmserver.types.Message;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@RestController
 public class MessageController {
     @RequestMapping(value = "/message", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Boolean getMessages(@RequestHeader(value = "session") String sessionID,
-                                                 @RequestHeader(value = "hash") String availableKeysHash,
-                                                 HttpServletResponse response) throws IOException {
+                               @RequestHeader(value = "hash") String availableKeysHash,
+                               HttpServletResponse response) throws IOException {
         Singleton singleton = Singleton.getInstance();
         int id = Integer.valueOf(sessionID);
 
@@ -31,8 +32,8 @@ public class MessageController {
     @RequestMapping(value = "/message", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Boolean addMessage(@RequestHeader(value = "session") String sessionID,
-                                 @RequestBody Message message,
-                                 HttpServletResponse response) throws IOException {
+                              @RequestBody Message message,
+                              HttpServletResponse response) throws IOException {
         synchronized (this) {
             Singleton singleton = Singleton.getInstance();
             int id = Integer.valueOf(sessionID);
@@ -41,6 +42,10 @@ public class MessageController {
 
             if (singleton.tokenExists(id)) {
                 result = singleton.addMessage(message);
+                if (result)
+                    System.out.println("LOG: Message successfully added to server.");
+                else
+                    System.out.println("LOG: Failed to add message to server.");
             } else {
                 System.out.println("LOG: No valid session ID found.");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -52,8 +57,8 @@ public class MessageController {
     @RequestMapping(value = "/message", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Boolean removeMessage(@RequestHeader(value = "session") String sessionID,
-                                    @RequestHeader(value = "key") String profileKey,
-                                    HttpServletResponse response) throws IOException {
+                                 @RequestHeader(value = "key") String profileKey,
+                                 HttpServletResponse response) throws IOException {
         synchronized (this) {
             Singleton singleton = Singleton.getInstance();
             int id = Integer.valueOf(sessionID);

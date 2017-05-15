@@ -251,17 +251,15 @@ public class PostMessageActivity extends ToolbarActivity {
                 if(!isEditMode) {
                     Log.d("MSG", "add message");
                     application.addOutboxMessage(message);
+
+                    //send message to server
+                    SendMessageTask task = new SendMessageTask();
+                    task.execute(message);
+
                 }else {
                     Log.d("MSG", "replace message");
                     application.replaceOutboxMessage(message, positionInList);
                 }
-
-
-//                Intent resultData = new Intent();
-//                resultData.putExtra("message", message);
-//                resultData.putExtra("position", positionInList);
-//
-//                setResult(Activity.RESULT_OK, resultData);
 
                 finish();
             }
