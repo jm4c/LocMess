@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
 
         //start GPS service
-        if(!((LocMessApplication)getApplication()).isServiceRunning(GPSTrackerService.class))
+        if (!((LocMessApplication) getApplication()).isServiceRunning(GPSTrackerService.class))
             startService(new Intent(this, GPSTrackerService.class));
 
         Intent i = new Intent(getApplicationContext(), InboxActivity.class);
@@ -130,8 +130,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginFailed(int code) {
-        if (code != TIMEOUT_CODE)
-           Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_SHORT).show();
+        if (code == TIMEOUT_CODE)
+            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_SHORT).show();
 
         loginButton.setEnabled(true);
     }
