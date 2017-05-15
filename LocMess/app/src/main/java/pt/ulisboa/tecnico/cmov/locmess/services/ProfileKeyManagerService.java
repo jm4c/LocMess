@@ -22,7 +22,7 @@ import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 
 
 public class ProfileKeyManagerService extends Service {
-    LocMessApplication application;
+    private LocMessApplication application;
 
     @Nullable
     @Override
@@ -52,13 +52,14 @@ public class ProfileKeyManagerService extends Service {
                 // if successful remove key/action from queue
                 if (result)
                     application.queueKeyActions.poll();
-
+                else
+                    stopSelf(); // if problem with server, try again later
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
-                // if problem with server, try again later
-                return;
+                stopSelf(); // if problem with server, try again later
             }
         }
+        stopSelf(); //done for now, turn off service
     }
 
 

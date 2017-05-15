@@ -22,17 +22,17 @@ public class Singleton {
     private List<Account> accounts;
     private List<Message> messages;
     private LocationsContainer locationsContainer;
-    private Map<String, Integer> profileKeys;
+    private AvailableKeysContainer availableKeysContainer;
+    private Map<String, Integer> profileKeysReferences;
     private List<LoginToken> tokens;
-
-    private String profileKeysHash;
 
 
     private Singleton() {
         accounts = new ArrayList<>();
         messages = new ArrayList<>();
         locationsContainer = new LocationsContainer();
-        profileKeys = new HashMap<>();
+        availableKeysContainer = new AvailableKeysContainer();
+        profileKeysReferences = new HashMap<>();
         tokens = new ArrayList<>();
 
     }
@@ -103,7 +103,7 @@ public class Singleton {
 
     public boolean removeLocation(String locationName) throws IOException, NoSuchAlgorithmException {
         boolean result = locationsContainer.removeLocation(locationName);
-        locationsContainer.setLocationsHash(hashInText(profileKeys, null));
+        locationsContainer.setLocationsHash(hashInText(profileKeysReferences, null));
         return result;
     }
 
@@ -126,27 +126,34 @@ public class Singleton {
     }
 
     //Profile Keys
-    public List<String> getProfileKeys() {
-        return new ArrayList<>(profileKeys.keySet());
+    public List<String> getProfileKeysReferences() {
+        return new ArrayList<>(profileKeysReferences.keySet());
     }
 
     public boolean addProfileKey(String profileKey) throws IOException, NoSuchAlgorithmException {
-        if (profileKeys.containsKey(profileKey)) {
-            profileKeys.put(profileKey, profileKeys.get(profileKey) + 1);
+        if (profileKeysReferences.containsKey(profileKey)) {
+            profileKeysReferences.put(profileKey, profileKeysReferences.get(profileKey) + 1);
+            System.out.println("LOG: Profile key '" + profileKey + "' reference count was incremented. Count: " + profileKeysReferences.get(profileKey));
+
             return false;
         } else {
-            profileKeys.put(profileKey, 1);
-            profileKeysHash = hashInText(profileKeys, null);
+            profileKeysReferences.put(profileKey, 1);
+            availableKeysContainer.addKey(profileKey);
+            availableKeysContainer.setKeysHash(hashInText(profileKeysReferences, null));
+            System.out.println("LOG: Profile key '" + profileKey + "' added successfully.");
+
             return true;
         }
     }
 
     public boolean removeProfileKey(String profileKey) throws IOException, NoSuchAlgorithmException {
-        profileKeys.put(profileKey, profileKeys.get(profileKey) - 1);
+        profileKeysReferences.put(profileKey, profileKeysReferences.get(profileKey) - 1);
+        System.out.println("LOG: Profile key '" + profileKey + "' reference count was decremented. Count: " + profileKeysReferences.get(profileKey));
 
-        if (profileKeys.get(profileKey) <= 0) {
-            profileKeys.remove(profileKey);
-            profileKeysHash = hashInText(profileKeys, null);
+        if (profileKeysReferences.get(profileKey) <= 0) {
+            profileKeysReferences.remove(profileKey);
+            availableKeysContainer.removeKey(profileKey);
+            availableKeysContainer.setKeysHash(hashInText(profileKeysReferences, null));
             return true;
         }
 
@@ -154,13 +161,17 @@ public class Singleton {
     }
 
 
+    public AvailableKeysContainer getAvailableKeysContainer() {
+        return availableKeysContainer;
+    }
+
     public String getProfileKeysHash() {
-        return profileKeysHash;
+        return availableKeysContainer.getKeysHash();
     }
 
     public boolean profileKeyExists(String profileKey) {
         for (String key :
-                getProfileKeys()) {
+                getProfileKeysReferences()) {
             if (profileKey.equals(key)) {
                 return true;
             }

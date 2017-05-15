@@ -11,10 +11,12 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import pt.ulisboa.tecnico.cmov.locmess.model.containers.AvailableKeysContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
@@ -38,29 +40,27 @@ public class LocMessApplication extends Application {
     public boolean forceLoginFlag = false;
 
 
-
-
     private List<ProfileKeypair> keypairs;
-    private List<String> availableKeys;
     public Queue<ProfileKeyAction> queueKeyActions; //TODO profile keys handler (in order to be able to change profiles offline) inside a service
     private List<Message> inboxMessages;
     private List<Message> outboxCentralizedMessages;
     private List<Message> outboxDecentralizedMessages;
 
     private LocationsContainer locationsContainer;
+    private AvailableKeysContainer availableKeysContainer;
 
     private LatLng currentLocation;
-    private String keysHash;
 
     public LocMessApplication() {
         //TODO if exists in storage, load it
         this.keypairs = new ArrayList<>();
-        this.availableKeys = new ArrayList<>();
         this.inboxMessages = new ArrayList<>();
         this.outboxCentralizedMessages = new ArrayList<>();
         this.outboxDecentralizedMessages = new ArrayList<>();
+        this.queueKeyActions = new LinkedList<>();
 
         this.locationsContainer = new LocationsContainer();
+        this.availableKeysContainer = new AvailableKeysContainer();
 
     }
 
@@ -218,29 +218,22 @@ public class LocMessApplication extends Application {
     }
 
 
-    //Available Keys (keys that might not used by the user but they exist in the server) ?
+
     public List<String> getAvailableKeys() {
-        return availableKeys;
+        return availableKeysContainer.getKeys();
+    }
+
+    public AvailableKeysContainer getAvailableKeysContainer() {
+        return availableKeysContainer;
     }
 
 
-    public void setAvailableKeys(List<String> availableKeys) {
-        this.availableKeys = availableKeys;
-        generateKeysHash();
-    }
 
-    public String getKeysHash() {
-        return keysHash;
+    public void setAvailableKeysContainer(AvailableKeysContainer availableKeysContainer) {
+        this.availableKeysContainer = availableKeysContainer;
     }
 
 
-    public void generateKeysHash() {
-        try {
-            this.keysHash = hashInText(getAvailableKeys(), null);
-        } catch (IOException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
 
     public String getServerURL() {
         return SERVER_URL;
