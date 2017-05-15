@@ -37,17 +37,15 @@ public class MessageController {
             Singleton singleton = Singleton.getInstance();
             int id = Integer.valueOf(sessionID);
 
-            Boolean
+            Boolean result = null;
 
             if (singleton.tokenExists(id)) {
-                return singleton.addMessage(message);
+                result = singleton.addMessage(message);
             } else {
                 System.out.println("LOG: No valid session ID found.");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                return false;
-
             }
-
+            return result;
         }
     }
 

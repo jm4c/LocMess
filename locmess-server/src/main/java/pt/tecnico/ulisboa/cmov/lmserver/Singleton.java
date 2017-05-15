@@ -89,7 +89,7 @@ public class Singleton {
 
     //Messages
     public boolean addMessage(Message message){
-        messages.put(message, new LinkedHashSet<>())
+        messages.put(message, new LinkedHashSet<>());
         return messages.containsKey(message);
     }
 
