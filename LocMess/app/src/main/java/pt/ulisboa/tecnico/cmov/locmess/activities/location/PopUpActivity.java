@@ -5,70 +5,54 @@ package pt.ulisboa.tecnico.cmov.locmess.activities.location;
  */
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.inbox.InboxActivity;
+
 public class PopUpActivity extends Activity {
 
-        final Context context = this;
-        private Button button;
+    private Button button;
+    NotificationCompat.Builder notification;
+    private static final int uniqueID = 454545;
 
-        public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_popup);
+        button = (Button) findViewById(R.id.msg_received);
 
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_popup);
+        notification = new NotificationCompat.Builder(this);
+        notification.setAutoCancel(true);
 
-            button = (Button) findViewById(R.id.msg_received);
-            // add button listener
-            button.setOnClickListener(new OnClickListener() {
+    }
 
-                @Override
-                public void onClick(View arg0) {
+    public void showNotification(View view) {
+        //Build the notification
+        notification.setSmallIcon(R.drawable.ic_menu_white_48dp);
+        notification.setTicker("This is ticker");
+        notification.setWhen(System.currentTimeMillis());
+        notification.setContentTitle("here is the title");
+        notification.setContentText("Main body dfsjkdfkjhdfkdf");
 
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        Intent intent = new Intent(this, InboxActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.setContentIntent(pendingIntent);
 
-                    // set title
-                    alertDialogBuilder.setTitle("Do you accept the message?");
+        //builds notification and issues it
 
-                    // set dialog message
-                    alertDialogBuilder
-                            .setMessage("Click yes to accept it")
-                            .setCancelable(false)
-                            .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,int id) {
-                                    // if this button is clicked, add message to inbox.
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.notify(uniqueID, notification.build());
 
-
-                                    /*Message msg = new Message();  //Recebo os argumentos do servidor.(ou a msg em si)
-                                    AddMessageToInboxTask task = new AddMessageTask(); //TODO
-                                    task.execute(msg);
-
-                                    dialog.cancel();*/
-
-                                }
-                            })
-                            .setNegativeButton("No",new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,int id) {
-                                    // if this button is clicked, ignore message.
-
-                                    dialog.cancel();
-                                }
-                            });
-
-                    // create alert dialog
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-
-                    // show it
-                    alertDialog.show();
-                }
-            });
-        }
+    }
 }
 
 
