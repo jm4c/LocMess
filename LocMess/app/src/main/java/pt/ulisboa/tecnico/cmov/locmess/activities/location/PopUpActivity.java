@@ -5,15 +5,12 @@ package pt.ulisboa.tecnico.cmov.locmess.activities.location;
  */
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
@@ -36,15 +33,20 @@ public class PopUpActivity extends Activity {
     }
 
     public void showNotification(View view) {
+
+        Intent intent = new Intent(this, InboxActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //Build the notification
-        notification.setSmallIcon(R.drawable.ic_menu_white_48dp);
+        notification.setSmallIcon(R.drawable.ic_email_white_48dp);
         notification.setTicker("This is ticker");
         notification.setWhen(System.currentTimeMillis());
         notification.setContentTitle("here is the title");
         notification.setContentText("Main body dfsjkdfkjhdfkdf");
+        notification.addAction(R.drawable.ic_done_white_24dp, "Accept", pendingIntent);
+        notification.addAction(R.drawable.ic_close_white_24dp, "Decline", pendingIntent);
 
-        Intent intent = new Intent(this, InboxActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
         notification.setContentIntent(pendingIntent);
 
         //builds notification and issues it

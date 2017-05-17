@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess.activities.model;
+package pt.ulisboa.tecnico.cmov.locmess.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Random;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Location;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Message;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
 
 /**
  * Created by joaod on 03-Apr-17.

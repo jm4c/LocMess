@@ -20,8 +20,8 @@ import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Message;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.TestData;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
 public class InboxActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
@@ -29,7 +29,6 @@ public class InboxActivity extends ToolbarActivity implements RecyclerListsAdapt
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
-    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

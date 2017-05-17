@@ -10,20 +10,9 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,10 +23,10 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.inbox.InboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.activities.location.LocationActivity;
 import pt.ulisboa.tecnico.cmov.locmess.activities.login.LoginActivity;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.containers.AvailableKeysContainer;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.containers.LocationsContainer;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Location;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.containers.AvailableKeysContainer;
+import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.activities.outbox.OutboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.activities.profile.ProfileActivity;
 import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
@@ -152,7 +141,7 @@ public class ToolbarActivity extends AppCompatActivity {
                 break;
         }
 
-        if(application.forceLoginFlag){
+        if (application.forceLoginFlag) {
             i = new Intent(ToolbarActivity.this, LoginActivity.class);
             application.forceLoginFlag = false;
         }
@@ -168,9 +157,11 @@ public class ToolbarActivity extends AppCompatActivity {
 
 
 
-    /** HTTP methods******************************************************************************************************/
+    /** HTTP methods Tasks ******************************************************************************************************/
 
-    /** Location methods*/
+    /**
+     * Location methods
+     */
     private class GetLocationsTask extends AsyncTask<Void, Void, LocationsContainer> {
         private String locationsHash;
         private int sessionID;
@@ -182,8 +173,8 @@ public class ToolbarActivity extends AppCompatActivity {
             this.dialog.setMessage("Loading Locations...");
             this.dialog.show();
 
-            sessionID  = application
-                    .getSharedPreferences("LocMess",MODE_PRIVATE)
+            sessionID = application
+                    .getSharedPreferences("LocMess", MODE_PRIVATE)
                     .getInt("session", 0);
 
             locationsHash = application.getLocationsHash();
@@ -193,34 +184,9 @@ public class ToolbarActivity extends AppCompatActivity {
 
         @Override
         protected LocationsContainer doInBackground(Void... params) {
-
-            // Setup url
-            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
-
-            // Populate header
-            HttpHeaders requestHeaders = new HttpHeaders();
-            requestHeaders.add("session", String.valueOf(sessionID));
-            requestHeaders.add("hash", locationsHash);
-
-            // Create a new RestTemplate instance
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-            try {
-                ResponseEntity<LocationsContainer> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), LocationsContainer.class);
-                if(response.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                    application.forceLoginFlag = true;
-
-                return response.getBody();
-
-            } catch (Exception e) {
-                Log.e("GetLocationsTask", e.getMessage(), e);
-
-                return null;
-            }
-
+            return application.getLocationsFromServer(sessionID, locationsHash);
         }
+
 
         @Override
         protected void onPostExecute(LocationsContainer locationsContainer) {
@@ -228,7 +194,7 @@ public class ToolbarActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
 
-            if(locationsContainer != null){
+            if (locationsContainer != null) {
                 application.setLocationsContainer(locationsContainer);
             }
 
@@ -257,8 +223,8 @@ public class ToolbarActivity extends AppCompatActivity {
             this.dialog.setMessage("Adding new location...");
             this.dialog.show();
 
-            sessionID  = application
-                    .getSharedPreferences("LocMess",MODE_PRIVATE)
+            sessionID = application
+                    .getSharedPreferences("LocMess", MODE_PRIVATE)
                     .getInt("session", 0);
 
 
@@ -267,38 +233,9 @@ public class ToolbarActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Location... params) {
-
-            // Setup url
-            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
-
-            // Populate header
-            HttpHeaders requestHeaders = new HttpHeaders();
-            requestHeaders.add("session", String.valueOf(sessionID));
-
-            // Create a new RestTemplate instance
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-            try {
-                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(params[0], requestHeaders), Boolean.class);
-
-                return response.getBody();
-
-            } catch (HttpClientErrorException e) {
-                Log.e("AddLocationTask", e.getMessage(), e);
-                if(e.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                    application.forceLoginFlag = true;
-
-                return false;
-            }
-             catch (Exception e) {
-                Log.e("AddLocationTask", e.getMessage(), e);
-
-                return null;
-            }
-
+            return application.postLocationToServer(sessionID, params[0]);
         }
+
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
@@ -330,8 +267,8 @@ public class ToolbarActivity extends AppCompatActivity {
             this.dialog.setMessage("Removing location...");
             this.dialog.show();
 
-            sessionID  = application
-                    .getSharedPreferences("LocMess",MODE_PRIVATE)
+            sessionID = application
+                    .getSharedPreferences("LocMess", MODE_PRIVATE)
                     .getInt("session", 0);
 
 
@@ -340,34 +277,10 @@ public class ToolbarActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Location... params) {
-
-            // Setup url
-            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
-
-            // Populate header
-            HttpHeaders requestHeaders = new HttpHeaders();
-            requestHeaders.add("session", String.valueOf(sessionID));
-            requestHeaders.add("location", params[0].getName());
-
-
-            // Create a new RestTemplate instance
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-            try {
-                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(requestHeaders), Boolean.class);
-                if(response.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                    application.forceLoginFlag = true;
-                return response.getBody();
-
-            } catch (Exception e) {
-                Log.e("RemoveLocationTask", e.getMessage(), e);
-
-                return null;
-            }
+            return application.deleteLocationFromServer(sessionID, params[0]);
 
         }
+
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
@@ -390,7 +303,9 @@ public class ToolbarActivity extends AppCompatActivity {
     }
 
 
-    /** Profile key methods (remaining profile methods in ProfileKeyManagerService) */
+    /**
+     * Profile key methods (remaining profile methods in ProfileKeyManagerService)
+     */
     private class GetAvailableKeysTask extends AsyncTask<Void, Void, AvailableKeysContainer> {
         private String availableKeysHash;
         private int sessionID;
@@ -402,8 +317,8 @@ public class ToolbarActivity extends AppCompatActivity {
             this.dialog.setMessage("Loading Profile keys...");
             this.dialog.show();
 
-            sessionID  = application
-                    .getSharedPreferences("LocMess",MODE_PRIVATE)
+            sessionID = application
+                    .getSharedPreferences("LocMess", MODE_PRIVATE)
                     .getInt("session", 0);
 
             availableKeysHash = application.getAvailableKeysContainer().getKeysHash();
@@ -413,37 +328,11 @@ public class ToolbarActivity extends AppCompatActivity {
 
         @Override
         protected AvailableKeysContainer doInBackground(Void... params) {
+            return application.getAvailableKeysFromServer(sessionID, availableKeysHash);
 
-            // Setup url
-            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/profilekey";
-
-            // Populate header
-            HttpHeaders requestHeaders = new HttpHeaders();
-            requestHeaders.add("session", String.valueOf(sessionID));
-            requestHeaders.add("hash", availableKeysHash);
-
-            // Create a new RestTemplate instance
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-            try {
-                ResponseEntity<AvailableKeysContainer> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), AvailableKeysContainer.class);
-                if(response.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                    application.forceLoginFlag = true;
-
-                //convert from LinkedHashMap to list of strings
-//                ObjectMapper mapper = new ObjectMapper();
-//                List<String> availableKeys = mapper.convertValue(response.getBody(), new TypeReference<List<String>>() { });
-                return response.getBody();
-
-            } catch (Exception e) {
-                Log.e("GetProfileKeysTask", e.getMessage(), e);
-
-                return null;
-            }
 
         }
+
 
         @Override
         protected void onPostExecute(AvailableKeysContainer availableKeysContainer) {
@@ -451,7 +340,7 @@ public class ToolbarActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
 
-            if(availableKeysContainer != null){
+            if (availableKeysContainer != null) {
                 application.setAvailableKeysContainer(availableKeysContainer);
             }
 
@@ -471,9 +360,9 @@ public class ToolbarActivity extends AppCompatActivity {
     }
 
 
-
-    /** Messages methods*/
-
+    /**
+     * Messages methods
+     */
     public class SendMessageTask extends AsyncTask<Message, Void, Boolean> {
         private int sessionID;
 //        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
@@ -484,8 +373,8 @@ public class ToolbarActivity extends AppCompatActivity {
 //            this.dialog.setMessage("Adding new message...");
 //            this.dialog.show();
 
-            sessionID  = application
-                    .getSharedPreferences("LocMess",MODE_PRIVATE)
+            sessionID = application
+                    .getSharedPreferences("LocMess", MODE_PRIVATE)
                     .getInt("session", 0);
 
 
@@ -494,38 +383,10 @@ public class ToolbarActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Message... params) {
-
-            // Setup url
-            final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/message";
-
-            // Populate header
-            HttpHeaders requestHeaders = new HttpHeaders();
-            requestHeaders.add("session", String.valueOf(sessionID));
-
-            // Create a new RestTemplate instance
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-            try {
-                ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(params[0], requestHeaders), Boolean.class);
-
-                return response.getBody();
-
-            } catch (HttpClientErrorException e) {
-                Log.e("SendMessageTask", e.getMessage(), e);
-                if(e.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                    application.forceLoginFlag = true;
-
-                return false;
-            }
-            catch (Exception e) {
-                Log.e("SendMessageTask", e.getMessage(), e);
-
-                return null;
-            }
+            return application.postMessageToServer(sessionID, params[0]);
 
         }
+
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
@@ -546,9 +407,6 @@ public class ToolbarActivity extends AppCompatActivity {
         }
 
     }
-
-
-
 
 
 

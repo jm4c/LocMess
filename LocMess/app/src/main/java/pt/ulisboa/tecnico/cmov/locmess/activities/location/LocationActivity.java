@@ -23,7 +23,7 @@ import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.activities.login.LoginActivity;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 
 public class LocationActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 

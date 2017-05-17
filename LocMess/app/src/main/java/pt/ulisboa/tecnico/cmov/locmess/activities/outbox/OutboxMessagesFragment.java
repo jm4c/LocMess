@@ -24,7 +24,7 @@ import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 
 
 public class OutboxMessagesFragment extends Fragment implements RecyclerListsAdapter.activityCallback {

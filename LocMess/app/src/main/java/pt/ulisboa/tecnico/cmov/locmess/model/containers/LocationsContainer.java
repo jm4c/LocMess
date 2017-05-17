@@ -1,10 +1,10 @@
-package pt.ulisboa.tecnico.cmov.locmess.activities.model.containers;
+package pt.ulisboa.tecnico.cmov.locmess.model.containers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 
 
 public class LocationsContainer implements Serializable {

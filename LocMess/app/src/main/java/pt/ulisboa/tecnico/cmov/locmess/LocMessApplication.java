@@ -4,9 +4,21 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,13 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.containers.AvailableKeysContainer;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.containers.LocationsContainer;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Location;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Message;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.ProfileKeypair;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.TimeWindow;
+import pt.ulisboa.tecnico.cmov.locmess.model.containers.AvailableKeysContainer;
+import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Profile;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.TimeWindow;
 import pt.ulisboa.tecnico.cmov.locmess.services.ProfileKeyManagerService;
 
 /**
@@ -30,14 +43,15 @@ import pt.ulisboa.tecnico.cmov.locmess.services.ProfileKeyManagerService;
 
 public class LocMessApplication extends Application {
 
+
     private String SERVER_URL = "http://192.168.0.139:38864";
     public static final boolean LOGIN_ACTIVE_FLAG = true;
 
     public boolean forceLoginFlag = false;
 
 
-    private List<ProfileKeypair> keypairs;
-    public Queue<ProfileKeyAction> queueKeyActions; //TODO profile keys handler (in order to be able to change profiles offline) inside a service
+    private Profile profile;
+    public Queue<ProfileKeyAction> queueKeyActions;
     private List<Message> inboxMessages;
     private List<Message> outboxCentralizedMessages;
     private List<Message> outboxDecentralizedMessages;
@@ -49,12 +63,12 @@ public class LocMessApplication extends Application {
 
     public LocMessApplication() {
         //TODO if exists in storage, load it
-        this.keypairs = new ArrayList<>();
         this.inboxMessages = new ArrayList<>();
         this.outboxCentralizedMessages = new ArrayList<>();
         this.outboxDecentralizedMessages = new ArrayList<>();
         this.queueKeyActions = new LinkedList<>();
 
+        this.profile = new Profile();
         this.locationsContainer = new LocationsContainer();
         this.availableKeysContainer = new AvailableKeysContainer();
 
@@ -91,13 +105,17 @@ public class LocMessApplication extends Application {
     }
 
     //Profile keypairs
+
+    public Profile getProfile() {
+        return profile;
+    }
     public List<ProfileKeypair> getProfileKeypairs() {
-        return keypairs;
+        return profile.getProfileKeypairs();
     }
 
 
     public void setKeyPairs(List<ProfileKeypair> keypairs) {
-        this.keypairs = keypairs;
+        profile.setProfileKeypairs(keypairs);
     }
 
     public void addKeyAction(String keyName, Boolean isActionAdding) {
@@ -108,10 +126,14 @@ public class LocMessApplication extends Application {
 
     public  List<String> listProfileKeys() {
         List<String> keyNames = new ArrayList<>();
-        for (ProfileKeypair keypair : keypairs) {
+        for (ProfileKeypair keypair : profile.getProfileKeypairs()) {
             keyNames.add(keypair.getKey());
         }
         return keyNames;
+    }
+
+    public String getKeysHash() {
+        return availableKeysContainer.getKeysHash();
     }
 
 
@@ -119,7 +141,7 @@ public class LocMessApplication extends Application {
     public List<String> listProfileValues(){
         List<String> keyValues = new ArrayList<>();
 
-        for(ProfileKeypair keyvalue : keypairs){
+        for(ProfileKeypair keyvalue : getProfileKeypairs()){
             keyValues.add(keyvalue.getValue());
         }
         return keyValues;
@@ -140,17 +162,12 @@ public class LocMessApplication extends Application {
     //Inbox Messages
 
 
-    public void addInboxMessage(String title, String content, String owner, Location location, TimeWindow timeWindow, boolean isCentralized, Policy policy) {
-        inboxMessages.add(new Message(title, content, owner, location, timeWindow, isCentralized, policy));
+    public boolean addInboxMessage(Message message) {
+        return inboxMessages.add(message);
     }
 
-    public void removeInboxMessage(String title, String owner) { //TODO podem existir mensagens com o mesmo titulo?? se sim ver o owner? ou o mesmo owner pode ter 2 msgs com o mesmo titulo?
-        for (Message msg : inboxMessages) {
-            // if(msg.getTitle().equals(title) && (msg.getOwner().equals(owner)))
-            if (msg.getTitle().equals(title)) {
-                inboxMessages.remove(msg);
-            }
-        }
+    public boolean removeInboxMessage(Message message) {
+        return inboxMessages.remove(message);
     }
 
     public List<Message> getInboxMessages() {
@@ -251,6 +268,175 @@ public class LocMessApplication extends Application {
         this.currentLocation = currentLocation;
         Toast.makeText(this, currentLocation.toString(), Toast.LENGTH_LONG).show();
     }
+
+    /**
+     *  HTTP GET methods
+     */
+
+    @Nullable
+    public LocationsContainer getLocationsFromServer(int sessionID, String locationsHash) {
+        // Setup url
+        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
+
+        // Populate header
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.add("session", String.valueOf(sessionID));
+        requestHeaders.add("hash", locationsHash);
+
+        // Create a new RestTemplate instance
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+
+        try {
+            ResponseEntity<LocationsContainer> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), LocationsContainer.class);
+            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
+                forceLoginFlag = true;
+
+            return response.getBody();
+
+        } catch (Exception e) {
+            Log.e("GetLocationsTask", e.getMessage(), e);
+
+            return null;
+        }
+    }
+
+    @Nullable
+    public AvailableKeysContainer getAvailableKeysFromServer(int sessionID, String availableKeysHash) {
+        // Setup url
+        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/profilekey";
+
+        // Populate header
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.add("session", String.valueOf(sessionID));
+        requestHeaders.add("hash", availableKeysHash);
+
+        // Create a new RestTemplate instance
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+
+        try {
+            ResponseEntity<AvailableKeysContainer> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), AvailableKeysContainer.class);
+            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
+                forceLoginFlag = true;
+
+            //convert from LinkedHashMap to list of strings
+//                ObjectMapper mapper = new ObjectMapper();
+//                List<String> availableKeys = mapper.convertValue(response.getBody(), new TypeReference<List<String>>() { });
+            return response.getBody();
+
+        } catch (Exception e) {
+            Log.e("GetProfileKeysTask", e.getMessage(), e);
+
+            return null;
+        }
+    }
+
+
+    /**
+     *  HTTP POST methods
+     */
+    @Nullable
+    public Boolean postLocationToServer(int sessionID, Location location) {
+        // Setup url
+        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
+
+        // Populate header
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.add("session", String.valueOf(sessionID));
+
+        // Create a new RestTemplate instance
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+
+        try {
+            ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(location, requestHeaders), Boolean.class);
+
+            return response.getBody();
+
+        } catch (HttpClientErrorException e) {
+            Log.e("AddLocationTask", e.getMessage(), e);
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED)
+                forceLoginFlag = true;
+
+            return false;
+        } catch (Exception e) {
+            Log.e("AddLocationTask", e.getMessage(), e);
+
+            return null;
+        }
+    }
+
+    @Nullable
+    public Boolean postMessageToServer(int sessionID, Message param) {
+        // Setup url
+        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/message";
+
+        // Populate header
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.add("session", String.valueOf(sessionID));
+
+        // Create a new RestTemplate instance
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+
+        try {
+            ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(param, requestHeaders), Boolean.class);
+
+            return response.getBody();
+
+        } catch (HttpClientErrorException e) {
+            Log.e("SendMessageTask", e.getMessage(), e);
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED)
+                forceLoginFlag = true;
+
+            return false;
+        } catch (Exception e) {
+            Log.e("SendMessageTask", e.getMessage(), e);
+
+            return null;
+        }
+    }
+
+
+    /**
+     *  HTTP DELETE methods
+     */
+    @Nullable
+    public Boolean deleteLocationFromServer(int sessionID, Location location) {
+        // Setup url
+        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
+
+        // Populate header
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.add("session", String.valueOf(sessionID));
+        requestHeaders.add("location", location.getName());
+
+
+        // Create a new RestTemplate instance
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+
+        try {
+            ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(requestHeaders), Boolean.class);
+            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
+                forceLoginFlag = true;
+            return response.getBody();
+
+        } catch (Exception e) {
+            Log.e("RemoveLocationTask", e.getMessage(), e);
+
+            return null;
+        }
+    }
+
+
+
 
     public final class ProfileKeyAction<String, Boolean> implements Map.Entry<String, Boolean> {
 

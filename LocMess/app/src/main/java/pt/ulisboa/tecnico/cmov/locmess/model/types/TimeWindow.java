@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess.activities.model.types;
+package pt.ulisboa.tecnico.cmov.locmess.model.types;
 
 import java.io.Serializable;
 import java.text.DateFormatSymbols;

@@ -19,10 +19,10 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Location;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Message;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.TimeWindow;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.TimeWindow;
 
 public class PostMessageActivity extends ToolbarActivity {
 

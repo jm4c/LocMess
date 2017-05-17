@@ -31,8 +31,8 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Policy;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
 
 public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess.activities.model.containers;
+package pt.ulisboa.tecnico.cmov.locmess.model.containers;
 
 import java.util.ArrayList;
 import java.util.List;

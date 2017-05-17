@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.locmess.activities.login.LoginActivity;
-import pt.ulisboa.tecnico.cmov.locmess.activities.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
