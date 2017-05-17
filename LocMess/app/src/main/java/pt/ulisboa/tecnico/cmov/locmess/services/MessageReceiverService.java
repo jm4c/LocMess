@@ -4,10 +4,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -105,22 +108,19 @@ public class MessageReceiverService extends Service {
         double currentLatitude = application.getCurrentLocation().latitude;
         double currentLongitude = application.getCurrentLocation().longitude;
 
-        List<Location> locations = null;
+        List<Location> locations = new ArrayList<>();
+        float[] distance = new float[2];
 
         for (Location location : application.getLocations()) {
-            if (isInsideCircle(currentLatitude, currentLongitude, location.getLatitude(), location.getLongitude(), location.getRadius()))
+            android.location.Location.distanceBetween(currentLatitude, currentLongitude,location.getLatitude(), location.getLongitude(), distance);
+            if (distance[0] < location.getRadius()) {
                 locations.add(location);
+            }
         }
 
         return locations;
     }
 
-    private boolean isInsideCircle(double pointX, double pointY, double circleCenterX, double circleCenterY, int radius) {
-        //(x - center_x)^2 + (y - center_y)^2 < radius^2
-        if (Math.sqrt(Math.pow(pointX - circleCenterX, 2) + Math.pow(pointY - circleCenterY, 2)) < radius)
-            return true;
-        return false;
-    }
 
 
     private void updateLocations() {
@@ -154,7 +154,7 @@ public class MessageReceiverService extends Service {
             return response.getBody();
 
         } catch (Exception e) {
-            Log.e("GetLocationsTask", e.getMessage(), e);
+            Log.e("GetMessagesFromServer", e.getMessage(), e);
             return null;
         }
     }
