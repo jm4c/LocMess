@@ -1,9 +1,5 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities.location;
 
-/**
- * Created by SONY on 10/05/2017.
- */
-
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

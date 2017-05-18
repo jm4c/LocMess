@@ -96,12 +96,14 @@ public class MessageReceiverService extends Service {
 
             Intent acceptIntent = new Intent(this, NotificationReceiver.class); //switch for broadcast receiver
             acceptIntent.putExtra("message", message);
+            acceptIntent.putExtra("ID", uniqueID);
             acceptIntent.setAction(ACCEPTED_MESSAGE);
-            PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, uniqueID++, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, uniqueID, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent declineIntent = new Intent(this, NotificationReceiver.class); //switch for broadcast receiver
-            acceptIntent.setAction(DECLINED_MESSAGE);
-            PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, uniqueID, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            acceptIntent.putExtra("ID", uniqueID);
+            declineIntent.setAction(DECLINED_MESSAGE);
+            PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, uniqueID + 10000, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
             notification.setAutoCancel(true).setSmallIcon(R.drawable.ic_email_white_48dp)
@@ -114,7 +116,8 @@ public class MessageReceiverService extends Service {
                     .setAutoCancel(true);
 
             notificationManager.notify(uniqueID, notification.build());
-            if (uniqueID + 1 >= MAX_UNIQUE_ID)
+            uniqueID++;
+            if (uniqueID >= MAX_UNIQUE_ID)
                 uniqueID = MIN_UNIQUE_ID;
 
         }
