@@ -418,7 +418,7 @@ public class PolicyActivity extends ToolbarActivity implements RecyclerListsAdap
     }
 
     private List<String> getExistingKeys() {
-        return application.getAvailableKeysContainer().getKeys();
+        return application.getAvailableKeys(listData);
     }
 
 

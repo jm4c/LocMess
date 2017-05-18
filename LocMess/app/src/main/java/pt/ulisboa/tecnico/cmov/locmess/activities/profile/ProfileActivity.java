@@ -390,7 +390,7 @@ public class ProfileActivity extends ToolbarActivity implements RecyclerListsAda
     }
 
     private List<String> getExistingKeys(){
-        return application.getAvailableKeys();
+        return application.getAvailableKeys(listData);
     }
 
 

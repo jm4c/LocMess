@@ -233,16 +233,22 @@ public class LocMessApplication extends Application {
 
 
 
-    public List<String> getAvailableKeys() {
+    public List<String> getAvailableKeys(List<ProfileKeypair> profileKeypairs) {
+
+        List<String> keys = new ArrayList<>();
+        for (ProfileKeypair keypair: profileKeypairs) {
+            keys.add(keypair.getKey());
+        }
+
         List<String> availableKeys = availableKeysContainer.getKeys();
 
         //removes keys already used from auto-complete
-        for (String key : listProfileKeys()) {
+        for (String key : keys) {
             if(availableKeys.contains(key)){
                 availableKeys.remove(key);
             }
         }
-        return null;
+        return availableKeys;
     }
 
     public AvailableKeysContainer getAvailableKeysContainer() {
