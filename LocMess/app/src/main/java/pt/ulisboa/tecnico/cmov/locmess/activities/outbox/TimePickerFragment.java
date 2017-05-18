@@ -98,8 +98,8 @@ public class TimePickerFragment extends DialogFragment
 
             Toast.makeText(getActivity(),
                     "Message Duration\n"
-                            + "From: " + ((PostMessageActivity) getActivity()).timeWindow.getFormattedStartTime() + "\n"
-                            + "To: " + ((PostMessageActivity) getActivity()).timeWindow.getFormattedEndTime(),
+                            + "From: " + ((PostMessageActivity) getActivity()).timeWindow.printFormattedStartTime() + "\n"
+                            + "To: " + ((PostMessageActivity) getActivity()).timeWindow.printFormattedEndTime(),
                     Toast.LENGTH_LONG).show();
 
         }

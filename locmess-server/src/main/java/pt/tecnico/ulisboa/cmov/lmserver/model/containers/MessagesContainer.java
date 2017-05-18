@@ -1,6 +1,7 @@
 package pt.tecnico.ulisboa.cmov.lmserver.model.containers;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import pt.tecnico.ulisboa.cmov.lmserver.model.types.Message;
 
 import java.io.Serializable;
@@ -12,7 +13,6 @@ import java.util.List;
 public class MessagesContainer implements Serializable {
 
     private List<Message> messages;
-    private final long whenReceived = System.currentTimeMillis();
 
     public MessagesContainer() {
         messages = new ArrayList<>();
@@ -34,14 +34,11 @@ public class MessagesContainer implements Serializable {
         return messages.add(message);
     }
 
-    public long getWhenReceived() {
-        return whenReceived;
-    }
-
     public boolean addMessageContainer(MessagesContainer messagesContainer){
         return messages.addAll(messagesContainer.getMessages());
     }
 
+    @JsonIgnore
     public boolean isEmpty(){
         return messages.isEmpty();
     }

@@ -104,7 +104,7 @@ public class Singleton {
         return messagesMap;
     }
 
-    public MessagesContainer getUserMessagesContainer(String sessionID, String location, Profile profile) {
+    public MessagesContainer getUserMessagesContainer(int sessionID, String location, Profile profile) {
         Account account = getAccount(getToken(sessionID).getUsername());
 
         MessagesContainer messagesContainer = new MessagesContainer();
@@ -123,6 +123,7 @@ public class Singleton {
                 messagesContainer.addMessage(message);
             }
         }
+
         return messagesContainer;
     }
 

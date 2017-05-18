@@ -98,7 +98,7 @@ public class TimeWindow implements Serializable{
     }
 
     @JsonIgnoreProperties
-    public String getFormattedStartTime(){
+    public String printFormattedStartTime(){
         return  String.format("%02d", startDay) + " " +
                 new DateFormatSymbols().getMonths()[startMonth] + " " +
                 String.valueOf(startYear) + " " +
@@ -107,7 +107,7 @@ public class TimeWindow implements Serializable{
     }
 
     @JsonIgnoreProperties
-    public String getFormattedEndTime(){
+    public String printFormattedEndTime(){
         return String.format("%02d", endDay) + " " +
                 new DateFormatSymbols().getMonths()[endMonth] + " " +
                 String.valueOf(endYear) + " " +

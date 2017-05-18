@@ -23,8 +23,6 @@ public class NotificationReceiver extends BroadcastReceiver {
         if(message != null){
             Log.d("NotificationReceiver", "Added new message to inbox");
             application.addInboxMessage(message);
-            Intent i = new Intent(application, InboxActivity.class);
-            application.startActivity(i);
         }
 
     }

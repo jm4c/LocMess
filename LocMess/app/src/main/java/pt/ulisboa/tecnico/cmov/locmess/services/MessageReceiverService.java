@@ -31,6 +31,7 @@ import pt.ulisboa.tecnico.cmov.locmess.model.containers.MessagesContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Profile;
+import pt.ulisboa.tecnico.cmov.locmess.receivers.NotificationReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.locations.GetLocationsTask;
 import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages.GetMessageTask;
 
@@ -93,12 +94,12 @@ public class MessageReceiverService extends Service {
         for (Message message : messageContainer.getMessages()) {
             NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
 
-            Intent acceptIntent = new Intent(this, InboxActivity.class); //switch for broadcast receiver
+            Intent acceptIntent = new Intent(this, NotificationReceiver.class); //switch for broadcast receiver
             acceptIntent.putExtra("message", message);
             acceptIntent.setAction(ACCEPTED_MESSAGE);
             PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, uniqueID++, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            Intent declineIntent = new Intent(this, InboxActivity.class); //switch for broadcast receiver
+            Intent declineIntent = new Intent(this, NotificationReceiver.class); //switch for broadcast receiver
             acceptIntent.setAction(DECLINED_MESSAGE);
             PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, uniqueID, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -109,7 +110,8 @@ public class MessageReceiverService extends Service {
                     .setContentTitle(message.getTitle())
                     .setContentText(message.getOwner())
                     .addAction(R.drawable.ic_done_white_24dp, "Accept", acceptPendingIntent)
-                    .addAction(R.drawable.ic_close_white_24dp, "Decline", declinePendingIntent);
+                    .addAction(R.drawable.ic_close_white_24dp, "Decline", declinePendingIntent)
+                    .setAutoCancel(true);
 
             notificationManager.notify(uniqueID, notification.build());
             if (uniqueID + 1 >= MAX_UNIQUE_ID)
@@ -119,14 +121,18 @@ public class MessageReceiverService extends Service {
     }
 
     private List<Location> getUserCurrentLocations() {
-        double currentLatitude = application.getCurrentLocation().latitude;
-        double currentLongitude = application.getCurrentLocation().longitude;
+        double currentLatitude = 0;
+        double currentLongitude = 0;
+        if (application.getCurrentLocation() != null) {
+            currentLatitude = application.getCurrentLocation().latitude;
+            currentLongitude = application.getCurrentLocation().longitude;
+        }
 
         List<Location> locations = new ArrayList<>();
         float[] distance = new float[2];
 
         for (Location location : application.getLocations()) {
-            android.location.Location.distanceBetween(currentLatitude, currentLongitude,location.getLatitude(), location.getLongitude(), distance);
+            android.location.Location.distanceBetween(currentLatitude, currentLongitude, location.getLatitude(), location.getLongitude(), distance);
             if (distance[0] < location.getRadius()) {
                 locations.add(location);
             }
@@ -134,7 +140,6 @@ public class MessageReceiverService extends Service {
 
         return locations;
     }
-
 
 
     private void updateLocations() {

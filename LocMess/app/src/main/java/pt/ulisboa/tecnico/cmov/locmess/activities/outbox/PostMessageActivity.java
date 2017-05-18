@@ -211,8 +211,8 @@ public class PostMessageActivity extends ToolbarActivity {
                 if (timeWindow.isTimeWindowSet()) {
                     Toast.makeText(PostMessageActivity.this,
                             "Message Duration\n"
-                                    + "From: " + PostMessageActivity.this.timeWindow.getFormattedStartTime() + "\n"
-                                    + "To: " + PostMessageActivity.this.timeWindow.getFormattedEndTime(),
+                                    + "From: " + PostMessageActivity.this.timeWindow.printFormattedStartTime() + "\n"
+                                    + "To: " + PostMessageActivity.this.timeWindow.printFormattedEndTime(),
                             Toast.LENGTH_LONG).show();
                     return true;
                 } else {

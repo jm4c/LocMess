@@ -103,7 +103,7 @@ public class RecyclerListsAdapter extends RecyclerView.Adapter<RecyclerListsAdap
                 message = (Message) item;
                 holder.title.setText(message.getTitle());
                 holder.subtitle.setText(message.getContent());
-                holder.timestamp.setText(message.getTimeWindow().getFormattedStartTime() + " to " + message.getTimeWindow().getFormattedEndTime()); //"02 April 19:00 to 03 April 18:00");
+                holder.timestamp.setText(message.getTimeWindow().printFormattedStartTime() + " to " + message.getTimeWindow().printFormattedEndTime()); //"02 April 19:00 to 03 April 18:00");
 
                 if (((Message) item).isCentralized())
                     holder.thumbnail.setImageResource(R.drawable.ic_cloud_black_36dp);

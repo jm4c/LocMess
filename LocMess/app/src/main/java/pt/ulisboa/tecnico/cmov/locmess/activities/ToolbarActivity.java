@@ -123,6 +123,7 @@ public class ToolbarActivity extends AppCompatActivity {
                 break;
             default: //LOGOUT
                 stopService(new Intent(this, GPSTrackerService.class));
+                application.cancelAlarmManager();
 
                 SharedPreferences sharedPreferences = this.getSharedPreferences("LocMess", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();

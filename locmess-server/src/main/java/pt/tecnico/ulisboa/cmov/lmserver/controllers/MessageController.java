@@ -25,7 +25,7 @@ public class MessageController {
         MessagesContainer messagesContainer = null;
 
         if (singleton.tokenExists(id)) {
-            messagesContainer = singleton.getUserMessagesContainer(sessionID, location, profile);
+            messagesContainer = singleton.getUserMessagesContainer(Integer.valueOf(sessionID), location, profile);
         } else {
             System.out.println("LOG: No valid session ID found.");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

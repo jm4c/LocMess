@@ -1,13 +1,16 @@
 package pt.tecnico.ulisboa.cmov.lmserver.model.types;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.io.Serializable;
+import java.text.DateFormatSymbols;
 
 /**
  * Created by joaod on 12-Apr-17.
  */
 
-@XmlRootElement(name = "time-window")
-public class TimeWindow {
+
+public class TimeWindow implements Serializable {
     private boolean isTimeWindowSet;
 
     private int startYear;
@@ -54,7 +57,7 @@ public class TimeWindow {
 
     public void setEndTime(int endHour, int endMinute){
         this.endHour = endHour;
-        this.endMinute = startMinute;
+        this.endMinute = endMinute;
     }
 
     public int getStartYear() {
@@ -97,19 +100,21 @@ public class TimeWindow {
         return endMinute;
     }
 
-    public String getFormattedStartTime(){
-        return String.valueOf(startDay) + "/" +
-                String.valueOf(startMonth) + "/" +
+    @JsonIgnoreProperties
+    public String printFormattedStartTime(){
+        return  String.format("%02d", startDay) + " " +
+                new DateFormatSymbols().getMonths()[startMonth] + " " +
                 String.valueOf(startYear) + " " +
-                String.valueOf(startHour) + ":" +
-                String.valueOf(startMinute);
+                String.format("%02d", startHour) + ":" +
+                String.format("%02d", startMinute);
     }
 
-    public String getFormattedEndTime(){
-        return String.valueOf(endDay) + "/" +
-                String.valueOf(endMonth) + "/" +
+    @JsonIgnoreProperties
+    public String printFormattedEndTime(){
+        return String.format("%02d", endDay) + " " +
+                new DateFormatSymbols().getMonths()[endMonth] + " " +
                 String.valueOf(endYear) + " " +
-                String.valueOf(endHour) + ":" +
-                String.valueOf(endMinute);
+                String.format("%02d", endHour) + ":" +
+                String.format("%02d", endMinute);
     }
 }

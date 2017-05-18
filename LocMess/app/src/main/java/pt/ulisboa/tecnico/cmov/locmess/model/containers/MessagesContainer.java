@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.cmov.locmess.model.containers;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,7 @@ public class MessagesContainer implements Serializable {
         return messages.addAll(messagesContainer.getMessages());
     }
 
+    @JsonIgnore
     public boolean isEmpty(){
         return messages.isEmpty();
     }

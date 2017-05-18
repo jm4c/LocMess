@@ -35,13 +35,26 @@ public class InboxActivity extends ToolbarActivity implements RecyclerListsAdapt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inbox);
         setupToolbar("LocMess - Inbox");
-        listData = (ArrayList) TestData.getDummyMessages();
+
+        listData = (ArrayList) application.getInboxMessages();
 
         setUpRecyclerView();
 
 
     }
 
+    @Override
+    protected void onResume() {
+        listData = (ArrayList) application.getInboxMessages();
+        adapter.notifyDataSetChanged();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        application.setInboxMessages(listData);
+        super.onPause();
+    }
 
     private void setUpRecyclerView() {
         //LayoutManager: GridLayout or StaggeredGridLayoutManager
