@@ -3,12 +3,11 @@ package pt.tecnico.ulisboa.cmov.lmserver.controllers;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
-import pt.tecnico.ulisboa.cmov.lmserver.types.AvailableKeysContainer;
+import pt.tecnico.ulisboa.cmov.lmserver.model.containers.AvailableKeysContainer;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 
 @RestController

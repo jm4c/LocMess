@@ -1,4 +1,4 @@
-package pt.tecnico.ulisboa.cmov.lmserver.types;
+package pt.tecnico.ulisboa.cmov.lmserver.model.types;
 
 import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
 

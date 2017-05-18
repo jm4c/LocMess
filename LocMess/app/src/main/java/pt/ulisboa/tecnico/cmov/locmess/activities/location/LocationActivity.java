@@ -24,6 +24,7 @@ import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.activities.login.LoginActivity;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.locations.RemoveLocationTask;
 
 public class LocationActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
@@ -269,7 +270,7 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
 
     private void deleteItem(int pos) {
 
-        RemoveLocationTask task = new RemoveLocationTask();
+        RemoveLocationTask task = new RemoveLocationTask(this);
 
         Location location = (Location) listData.get(pos);
         task.execute(location);

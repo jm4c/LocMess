@@ -1,4 +1,4 @@
-package pt.tecnico.ulisboa.cmov.lmserver.types;
+package pt.tecnico.ulisboa.cmov.lmserver.model.types;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

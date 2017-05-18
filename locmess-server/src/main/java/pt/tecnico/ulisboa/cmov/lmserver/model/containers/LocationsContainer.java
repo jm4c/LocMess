@@ -1,4 +1,6 @@
-package pt.tecnico.ulisboa.cmov.lmserver.types;
+package pt.tecnico.ulisboa.cmov.lmserver.model.containers;
+
+import pt.tecnico.ulisboa.cmov.lmserver.model.types.Location;
 
 import java.io.Serializable;
 import java.util.ArrayList;

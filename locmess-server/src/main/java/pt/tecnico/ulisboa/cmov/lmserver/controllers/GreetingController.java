@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pt.tecnico.ulisboa.cmov.lmserver.Greeting;
-import pt.tecnico.ulisboa.cmov.lmserver.types.Location;
-import pt.tecnico.ulisboa.cmov.lmserver.types.Message;
 
 @RestController
 public class GreetingController {

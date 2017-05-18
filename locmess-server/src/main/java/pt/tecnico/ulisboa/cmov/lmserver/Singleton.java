@@ -1,6 +1,11 @@
 package pt.tecnico.ulisboa.cmov.lmserver;
 
-import pt.tecnico.ulisboa.cmov.lmserver.types.*;
+import pt.tecnico.ulisboa.cmov.lmserver.model.containers.AvailableKeysContainer;
+import pt.tecnico.ulisboa.cmov.lmserver.model.containers.LocationsContainer;
+
+import pt.tecnico.ulisboa.cmov.lmserver.model.containers.MessagesContainer;
+import pt.tecnico.ulisboa.cmov.lmserver.model.types.*;
+
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -17,7 +22,7 @@ public class Singleton {
     private static Singleton singleton = new Singleton();
 
     private List<Account> accounts;
-    private Map<Message,Set<Account>> messages;
+    private Map<Message, Set<Account>> messagesMap;
     private LocationsContainer locationsContainer;
     private AvailableKeysContainer availableKeysContainer;
     private Map<String, Set<Account>> profileKeysReferences;
@@ -26,7 +31,7 @@ public class Singleton {
 
     private Singleton() {
         accounts = new ArrayList<>();
-        messages = new HashMap<>();
+        messagesMap = new HashMap<>();
         locationsContainer = new LocationsContainer();
         availableKeysContainer = new AvailableKeysContainer();
         profileKeysReferences = new HashMap<>();
@@ -88,11 +93,38 @@ public class Singleton {
     }
 
     //Messages
-    public boolean addMessage(Message message){
-        messages.put(message, new LinkedHashSet<>());
-        return messages.containsKey(message);
+    public boolean addMessage(Message message) {
+        Set<Account> accountsToSkip = new LinkedHashSet<>(); //account is owner or has already received notification
+        accountsToSkip.add(getAccount(message.getOwner())); //adding owner
+        messagesMap.put(message, accountsToSkip);
+        return messagesMap.containsKey(message);
     }
 
+    public Map<Message, Set<Account>> getMessagesMap() {
+        return messagesMap;
+    }
+
+    public MessagesContainer getUserMessagesContainer(String sessionID, String location, Profile profile) {
+        Account account = getAccount(getToken(sessionID).getUsername());
+
+        MessagesContainer messagesContainer = new MessagesContainer();
+        System.out.println("LOG: Looking for messages for '" + account.getUsername() + "' in '" + location + "'.");
+
+        for (Message message : messagesMap.keySet()) {
+            if (!message.getLocation().getName().equals(location)) {
+                System.out.println("LOG: '" + account.getUsername() + "' not in the same location as the message.");
+                continue;
+            }
+            if (messagesMap.get(message).contains(account)) {
+                System.out.println("LOG: '" + account.getUsername() + "' in the \"to skip list\" for this message.");
+                continue;
+            }
+            if (message.getPolicy().matches(profile)) {
+                messagesContainer.addMessage(message);
+            }
+        }
+        return messagesContainer;
+    }
 
     //Locations
     public boolean addLocation(Location location) throws IOException, NoSuchAlgorithmException {
@@ -153,6 +185,7 @@ public class Singleton {
         return getAccount(getToken(sessionID).getUsername());
     }
 
+
     public boolean removeProfileKey(String profileKey, int sessionID) throws IOException, NoSuchAlgorithmException {
         Account account = getAccountFromToken(sessionID);
         boolean result = profileKeysReferences.get(profileKey).remove(account);
@@ -167,7 +200,6 @@ public class Singleton {
 
         return false;
     }
-
 
     public AvailableKeysContainer getAvailableKeysContainer() {
         return availableKeysContainer;
@@ -229,6 +261,7 @@ public class Singleton {
                 return true;
         return false;
     }
+
 
     public void removeToken(LoginToken token) {
         tokens.remove(token);

@@ -3,8 +3,8 @@ package pt.tecnico.ulisboa.cmov.lmserver.controllers;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
-import pt.tecnico.ulisboa.cmov.lmserver.types.Location;
-import pt.tecnico.ulisboa.cmov.lmserver.types.LocationsContainer;
+import pt.tecnico.ulisboa.cmov.lmserver.model.containers.LocationsContainer;
+import pt.tecnico.ulisboa.cmov.lmserver.model.types.Location;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

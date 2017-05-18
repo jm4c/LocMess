@@ -1,10 +1,10 @@
-package pt.ulisboa.tecnico.cmov.locmess.model.containers;
+package pt.tecnico.ulisboa.cmov.lmserver.model.containers;
 
+
+import pt.tecnico.ulisboa.cmov.lmserver.model.types.Message;
 
 import java.io.Serializable;
 import java.util.List;
-
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 
 
 public class MessagesContainer implements Serializable {
@@ -33,5 +33,9 @@ public class MessagesContainer implements Serializable {
 
     public long getWhenReceived() {
         return whenReceived;
+    }
+
+    public boolean isEmpty(){
+        return messages.isEmpty();
     }
 }

@@ -1,7 +1,9 @@
 package pt.ulisboa.tecnico.cmov.locmess;
 
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
@@ -21,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +33,9 @@ import pt.ulisboa.tecnico.cmov.locmess.model.containers.AvailableKeysContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Profile;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.TimeWindow;
+import pt.ulisboa.tecnico.cmov.locmess.services.MessageReceiverService;
 import pt.ulisboa.tecnico.cmov.locmess.services.ProfileKeyManagerService;
 
 /**
@@ -44,8 +46,7 @@ import pt.ulisboa.tecnico.cmov.locmess.services.ProfileKeyManagerService;
 public class LocMessApplication extends Application {
 
 
-    private String SERVER_URL = "http://192.168.0.139:38864";
-    public static final boolean LOGIN_ACTIVE_FLAG = true;
+    private String SERVER_URL = "http://192.168.1.7:38864";
 
     public boolean forceLoginFlag = false;
 
@@ -269,173 +270,41 @@ public class LocMessApplication extends Application {
         Toast.makeText(this, currentLocation.toString(), Toast.LENGTH_LONG).show();
     }
 
-    /**
-     *  HTTP GET methods
-     */
+    public void startAlarmManager() {
+        Log.d("AlarmManager", "inside");
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        long interval = 1000 * 60; // 1 min in milliseconds
 
-    @Nullable
-    public LocationsContainer getLocationsFromServer(int sessionID, String locationsHash) {
-        // Setup url
-        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
-
-        // Populate header
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.add("session", String.valueOf(sessionID));
-        requestHeaders.add("hash", locationsHash);
-
-        // Create a new RestTemplate instance
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-        try {
-            ResponseEntity<LocationsContainer> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), LocationsContainer.class);
-            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                forceLoginFlag = true;
-
-            return response.getBody();
-
-        } catch (Exception e) {
-            Log.e("GetLocationsTask", e.getMessage(), e);
-
-            return null;
-        }
+        Intent serviceIntent = new Intent(this, MessageReceiverService.class);
+        PendingIntent servicePendingIntent =
+                PendingIntent.getService(this,
+                        999, // integer constant used to identify the service
+                        serviceIntent,
+                        PendingIntent.FLAG_CANCEL_CURRENT);  // FLAG to avoid creating a second service if there's already one running
+        // there are other options like setInexactRepeating, check the docs
+        alarmManager.setRepeating(
+                AlarmManager.RTC,
+                Calendar.getInstance().getTimeInMillis(),
+                interval,
+                servicePendingIntent
+        );
     }
 
-    @Nullable
-    public AvailableKeysContainer getAvailableKeysFromServer(int sessionID, String availableKeysHash) {
-        // Setup url
-        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/profilekey";
+    public void cancelAlarmManager(){
+        AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
-        // Populate header
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.add("session", String.valueOf(sessionID));
-        requestHeaders.add("hash", availableKeysHash);
+        Intent serviceIntent = new Intent(this, MessageReceiverService.class);
+        PendingIntent servicePendingIntent =
+                PendingIntent.getService(this,
+                        999, // integer constant used to identify the service
+                        serviceIntent,
+                        PendingIntent.FLAG_CANCEL_CURRENT);  // FLAG to avoid creating a second service if there's already one running
 
-        // Create a new RestTemplate instance
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
+        alarmManager.cancel(servicePendingIntent);
 
-        try {
-            ResponseEntity<AvailableKeysContainer> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(requestHeaders), AvailableKeysContainer.class);
-            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                forceLoginFlag = true;
 
-            //convert from LinkedHashMap to list of strings
-//                ObjectMapper mapper = new ObjectMapper();
-//                List<String> availableKeys = mapper.convertValue(response.getBody(), new TypeReference<List<String>>() { });
-            return response.getBody();
 
-        } catch (Exception e) {
-            Log.e("GetProfileKeysTask", e.getMessage(), e);
-
-            return null;
-        }
     }
-
-
-    /**
-     *  HTTP POST methods
-     */
-    @Nullable
-    public Boolean postLocationToServer(int sessionID, Location location) {
-        // Setup url
-        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
-
-        // Populate header
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.add("session", String.valueOf(sessionID));
-
-        // Create a new RestTemplate instance
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-        try {
-            ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(location, requestHeaders), Boolean.class);
-
-            return response.getBody();
-
-        } catch (HttpClientErrorException e) {
-            Log.e("AddLocationTask", e.getMessage(), e);
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                forceLoginFlag = true;
-
-            return false;
-        } catch (Exception e) {
-            Log.e("AddLocationTask", e.getMessage(), e);
-
-            return null;
-        }
-    }
-
-    @Nullable
-    public Boolean postMessageToServer(int sessionID, Message param) {
-        // Setup url
-        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/message";
-
-        // Populate header
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.add("session", String.valueOf(sessionID));
-
-        // Create a new RestTemplate instance
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-        try {
-            ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(param, requestHeaders), Boolean.class);
-
-            return response.getBody();
-
-        } catch (HttpClientErrorException e) {
-            Log.e("SendMessageTask", e.getMessage(), e);
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                forceLoginFlag = true;
-
-            return false;
-        } catch (Exception e) {
-            Log.e("SendMessageTask", e.getMessage(), e);
-
-            return null;
-        }
-    }
-
-
-    /**
-     *  HTTP DELETE methods
-     */
-    @Nullable
-    public Boolean deleteLocationFromServer(int sessionID, Location location) {
-        // Setup url
-        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
-
-        // Populate header
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.add("session", String.valueOf(sessionID));
-        requestHeaders.add("location", location.getName());
-
-
-        // Create a new RestTemplate instance
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
-
-        try {
-            ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(requestHeaders), Boolean.class);
-            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                forceLoginFlag = true;
-            return response.getBody();
-
-        } catch (Exception e) {
-            Log.e("RemoveLocationTask", e.getMessage(), e);
-
-            return null;
-        }
-    }
-
-
 
 
     public final class ProfileKeyAction<String, Boolean> implements Map.Entry<String, Boolean> {

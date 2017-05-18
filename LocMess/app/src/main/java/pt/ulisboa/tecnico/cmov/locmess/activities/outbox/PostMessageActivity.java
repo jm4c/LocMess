@@ -16,6 +16,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
@@ -23,6 +24,7 @@ import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.TimeWindow;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages.SendMessageTask;
 
 public class PostMessageActivity extends ToolbarActivity {
 
@@ -253,10 +255,16 @@ public class PostMessageActivity extends ToolbarActivity {
                     application.addOutboxMessage(message);
 
                     //send message to server
-                    SendMessageTask task = new SendMessageTask();
+                    SendMessageTask task = new SendMessageTask(PostMessageActivity.this);
                     task.execute(message);
+                    try {
+                        task.get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
 
                 }else {
+                    //TODO remove or just keep for wifi id
                     Log.d("MSG", "replace message");
                     application.replaceOutboxMessage(message, positionInList);
                 }

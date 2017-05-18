@@ -4,13 +4,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,21 +20,27 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.activities.inbox.InboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.containers.MessagesContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Profile;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.locations.GetLocationsTask;
 
 
 public class MessageReceiverService extends Service {
 
     private final static int MIN_UNIQUE_ID = 2000;
     private final static int MAX_UNIQUE_ID = 3999;
+    private static final String ACCEPTED_MESSAGE = "locmess.intent.action.RECEIVED_MESSAGE";
+    private static final String DECLINED_MESSAGE = "locmess.intent.action.DECLINED_MESSAGE";
+
     private LocMessApplication application;
     private int sessionID;
     private static int uniqueID;
@@ -83,9 +86,11 @@ public class MessageReceiverService extends Service {
 
             Intent acceptIntent = new Intent(this, InboxActivity.class); //switch for broadcast receiver
             acceptIntent.putExtra("message", message);
+            acceptIntent.setAction(ACCEPTED_MESSAGE);
             PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, uniqueID++, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent declineIntent = new Intent(this, InboxActivity.class); //switch for broadcast receiver
+            acceptIntent.setAction(DECLINED_MESSAGE);
             PendingIntent declinePendingIntent = PendingIntent.getBroadcast(this, uniqueID, declineIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
@@ -124,7 +129,15 @@ public class MessageReceiverService extends Service {
 
 
     private void updateLocations() {
-        LocationsContainer serverResult = application.getLocationsFromServer(sessionID, application.getLocationsHash());
+        GetLocationsTask task = new GetLocationsTask(application);
+        task.execute();
+        LocationsContainer serverResult = null;
+        try {
+            serverResult = task.get();
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
         if (serverResult != null) {
             application.setLocationsContainer(serverResult);
         }

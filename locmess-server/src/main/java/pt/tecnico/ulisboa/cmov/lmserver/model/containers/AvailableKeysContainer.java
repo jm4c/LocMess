@@ -1,4 +1,4 @@
-package pt.tecnico.ulisboa.cmov.lmserver.types;
+package pt.tecnico.ulisboa.cmov.lmserver.model.containers;
 
 import java.util.ArrayList;
 import java.util.List;

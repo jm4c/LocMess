@@ -1,9 +1,6 @@
-package pt.tecnico.ulisboa.cmov.lmserver.types;
+package pt.tecnico.ulisboa.cmov.lmserver.model.types;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
 
 
 public class Message implements Serializable {

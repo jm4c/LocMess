@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.login.LoginActivity;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.locations.AddLocationTask;
 
 
 public class NewLocationGPSActivity extends ToolbarActivity {
@@ -85,7 +86,7 @@ public class NewLocationGPSActivity extends ToolbarActivity {
                         Double.valueOf(longitudeEditText.getText().toString()),
                         Integer.parseInt(radiusEditText.getText().toString()));
 
-                AddLocationTask task = new AddLocationTask();
+                AddLocationTask task = new AddLocationTask(NewLocationGPSActivity.this);
                 task.execute(location);
                 try {
                     Boolean result = task.get();

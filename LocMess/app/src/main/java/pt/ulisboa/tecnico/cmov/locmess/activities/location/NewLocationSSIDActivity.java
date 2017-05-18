@@ -26,6 +26,7 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.locations.AddLocationTask;
 
 
 public class NewLocationSSIDActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
@@ -87,7 +88,7 @@ public class NewLocationSSIDActivity extends ToolbarActivity implements Recycler
             public void onClick(View view) {
 
                 Location location = new Location(nameEditText.getText().toString(), listData);
-                AddLocationTask task = new AddLocationTask();
+                AddLocationTask task = new AddLocationTask(NewLocationSSIDActivity.this);
                 task.execute(location);
 
                 try {

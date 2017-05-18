@@ -1,18 +1,15 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,13 +20,11 @@ import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.inbox.InboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.activities.location.LocationActivity;
 import pt.ulisboa.tecnico.cmov.locmess.activities.login.LoginActivity;
-import pt.ulisboa.tecnico.cmov.locmess.model.containers.AvailableKeysContainer;
-import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.activities.outbox.OutboxActivity;
 import pt.ulisboa.tecnico.cmov.locmess.activities.profile.ProfileActivity;
 import pt.ulisboa.tecnico.cmov.locmess.services.GPSTrackerService;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.profiles.GetAvailableKeysTask;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.locations.GetLocationsTask;
 
 public class ToolbarActivity extends AppCompatActivity {
 
@@ -112,7 +107,7 @@ public class ToolbarActivity extends AppCompatActivity {
             case MENU_LOCATIONS:
                 if (ToolbarActivity.this instanceof LocationActivity)
                     return;
-                GetLocationsTask getLocationsTask = new GetLocationsTask();
+                GetLocationsTask getLocationsTask = new GetLocationsTask(this);
                 getLocationsTask.execute();
                 getLocationsTask.get();
                 i = new Intent(ToolbarActivity.this, LocationActivity.class);
@@ -120,9 +115,9 @@ public class ToolbarActivity extends AppCompatActivity {
             case MENU_PROFILE:
                 if (ToolbarActivity.this instanceof ProfileActivity)
                     return;
-                GetAvailableKeysTask getAvailableKeysTask = new GetAvailableKeysTask();
+                GetAvailableKeysTask getAvailableKeysTask = new GetAvailableKeysTask(this);
                 getAvailableKeysTask.execute();
-                //getAvailableKeysTask.get(); // No need wait for the task to finish for now
+                getAvailableKeysTask.get();
 
                 i = new Intent(ToolbarActivity.this, ProfileActivity.class);
                 break;
@@ -153,261 +148,6 @@ public class ToolbarActivity extends AppCompatActivity {
     public List<String> getMenu() {
         return Arrays.asList(menu);
     }
-
-
-
-
-    /** HTTP methods Tasks ******************************************************************************************************/
-
-    /**
-     * Location methods
-     */
-    private class GetLocationsTask extends AsyncTask<Void, Void, LocationsContainer> {
-        private String locationsHash;
-        private int sessionID;
-        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
-
-
-        @Override
-        protected void onPreExecute() {
-            this.dialog.setMessage("Loading Locations...");
-            this.dialog.show();
-
-            sessionID = application
-                    .getSharedPreferences("LocMess", MODE_PRIVATE)
-                    .getInt("session", 0);
-
-            locationsHash = application.getLocationsHash();
-
-            super.onPreExecute();
-        }
-
-        @Override
-        protected LocationsContainer doInBackground(Void... params) {
-            return application.getLocationsFromServer(sessionID, locationsHash);
-        }
-
-
-        @Override
-        protected void onPostExecute(LocationsContainer locationsContainer) {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-
-            if (locationsContainer != null) {
-                application.setLocationsContainer(locationsContainer);
-            }
-
-            super.onPostExecute(locationsContainer);
-        }
-
-
-        @Override
-        protected void onCancelled() {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
-            super.onCancelled();
-        }
-
-    }
-
-    public class AddLocationTask extends AsyncTask<Location, Void, Boolean> {
-        private int sessionID;
-        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
-
-
-        @Override
-        protected void onPreExecute() {
-            this.dialog.setMessage("Adding new location...");
-            this.dialog.show();
-
-            sessionID = application
-                    .getSharedPreferences("LocMess", MODE_PRIVATE)
-                    .getInt("session", 0);
-
-
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(Location... params) {
-            return application.postLocationToServer(sessionID, params[0]);
-        }
-
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            super.onPostExecute(aBoolean);
-        }
-
-
-        @Override
-        protected void onCancelled() {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
-            super.onCancelled();
-        }
-
-    }
-
-    public class RemoveLocationTask extends AsyncTask<Location, Void, Boolean> {
-        private int sessionID;
-        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
-
-
-        @Override
-        protected void onPreExecute() {
-            this.dialog.setMessage("Removing location...");
-            this.dialog.show();
-
-            sessionID = application
-                    .getSharedPreferences("LocMess", MODE_PRIVATE)
-                    .getInt("session", 0);
-
-
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(Location... params) {
-            return application.deleteLocationFromServer(sessionID, params[0]);
-
-        }
-
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            super.onPostExecute(aBoolean);
-        }
-
-
-        @Override
-        protected void onCancelled() {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
-            super.onCancelled();
-        }
-
-    }
-
-
-    /**
-     * Profile key methods (remaining profile methods in ProfileKeyManagerService)
-     */
-    private class GetAvailableKeysTask extends AsyncTask<Void, Void, AvailableKeysContainer> {
-        private String availableKeysHash;
-        private int sessionID;
-        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
-
-
-        @Override
-        protected void onPreExecute() {
-            this.dialog.setMessage("Loading Profile keys...");
-            this.dialog.show();
-
-            sessionID = application
-                    .getSharedPreferences("LocMess", MODE_PRIVATE)
-                    .getInt("session", 0);
-
-            availableKeysHash = application.getAvailableKeysContainer().getKeysHash();
-
-            super.onPreExecute();
-        }
-
-        @Override
-        protected AvailableKeysContainer doInBackground(Void... params) {
-            return application.getAvailableKeysFromServer(sessionID, availableKeysHash);
-
-
-        }
-
-
-        @Override
-        protected void onPostExecute(AvailableKeysContainer availableKeysContainer) {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-
-            if (availableKeysContainer != null) {
-                application.setAvailableKeysContainer(availableKeysContainer);
-            }
-
-            super.onPostExecute(availableKeysContainer);
-        }
-
-
-        @Override
-        protected void onCancelled() {
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
-            super.onCancelled();
-        }
-
-    }
-
-
-    /**
-     * Messages methods
-     */
-    public class SendMessageTask extends AsyncTask<Message, Void, Boolean> {
-        private int sessionID;
-//        private ProgressDialog dialog = new ProgressDialog(ToolbarActivity.this);
-
-
-        @Override
-        protected void onPreExecute() {
-//            this.dialog.setMessage("Adding new message...");
-//            this.dialog.show();
-
-            sessionID = application
-                    .getSharedPreferences("LocMess", MODE_PRIVATE)
-                    .getInt("session", 0);
-
-
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(Message... params) {
-            return application.postMessageToServer(sessionID, params[0]);
-
-        }
-
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-//            if (dialog.isShowing()) {
-//                dialog.dismiss();
-//            }
-            super.onPostExecute(aBoolean);
-        }
-
-
-        @Override
-        protected void onCancelled() {
-//            if (dialog.isShowing()) {
-//                dialog.dismiss();
-//            }
-            Toast.makeText(getBaseContext(), "Failed to connect to server", Toast.LENGTH_SHORT).show();
-            super.onCancelled();
-        }
-
-    }
-
 
 
 }

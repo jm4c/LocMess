@@ -4,29 +4,34 @@ package pt.tecnico.ulisboa.cmov.lmserver.controllers;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
-import pt.tecnico.ulisboa.cmov.lmserver.types.Message;
+import pt.tecnico.ulisboa.cmov.lmserver.model.containers.MessagesContainer;
+import pt.tecnico.ulisboa.cmov.lmserver.model.types.Message;
+import pt.tecnico.ulisboa.cmov.lmserver.model.types.Profile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
 public class MessageController {
-    @RequestMapping(value = "/message", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/message", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Boolean getMessages(@RequestHeader(value = "session") String sessionID,
-                               @RequestHeader(value = "hash") String availableKeysHash,
-                               HttpServletResponse response) throws IOException {
+    public MessagesContainer getMessages(@RequestHeader(value = "session") String sessionID,
+                                         @RequestHeader(value = "location") String location,
+                                         @RequestBody Profile profile,
+                                         HttpServletResponse response) throws IOException {
         Singleton singleton = Singleton.getInstance();
         int id = Integer.valueOf(sessionID);
 
-        if (singleton.tokenExists(id)) {
+        MessagesContainer messagesContainer = null;
 
+        if (singleton.tokenExists(id)) {
+            messagesContainer = singleton.getUserMessagesContainer(sessionID, location, profile);
         } else {
             System.out.println("LOG: No valid session ID found.");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
-        return false;
+        return messagesContainer;
     }
 
     @RequestMapping(value = "/message", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -30,10 +30,10 @@
             android:name=".activities.login.LoginActivity"
             android:label="LocMess"
             android:theme="@style/AppThemeDefault">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activities.login.NewUserActivity"
@@ -54,12 +54,7 @@
         <activity android:name=".activities.location.LocationActivity" />
         <activity android:name=".activities.location.NewLocationGPSActivity" />
         <activity android:name=".activities.location.NewLocationSSIDActivity" />
-        <activity android:name=".activities.location.PopUpActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".activities.location.PopUpActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -82,6 +77,16 @@
         <service
             android:name=".services.ProfileKeyManagerService"
             android:enabled="true" />
+        <service android:name=".services.MessageReceiverService"
+            android:enabled="true" />
+
+        <receiver android:name=".receivers.NotificationReceiver">
+            <intent-filter>
+                <action android:name="locmess.intent.action.RECEIVED_MESSAGE" />
+                <action android:name="locmess.intent.action.DECLINED_MESSAGE" />
+
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
