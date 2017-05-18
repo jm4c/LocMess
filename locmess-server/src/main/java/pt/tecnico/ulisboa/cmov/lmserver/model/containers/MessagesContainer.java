@@ -4,7 +4,9 @@ package pt.tecnico.ulisboa.cmov.lmserver.model.containers;
 import pt.tecnico.ulisboa.cmov.lmserver.model.types.Message;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
 
 
 public class MessagesContainer implements Serializable {
@@ -13,6 +15,7 @@ public class MessagesContainer implements Serializable {
     private final long whenReceived = System.currentTimeMillis();
 
     public MessagesContainer() {
+        messages = new ArrayList<>();
     }
 
     public MessagesContainer(List<Message> messages) {
@@ -35,7 +38,12 @@ public class MessagesContainer implements Serializable {
         return whenReceived;
     }
 
+    public boolean addMessageContainer(MessagesContainer messagesContainer){
+        return messages.addAll(messagesContainer.getMessages());
+    }
+
     public boolean isEmpty(){
         return messages.isEmpty();
     }
 }
+

@@ -107,11 +107,11 @@ public class LoginTask extends AsyncTask<Void, Void, Integer> {
         editor.apply();
 
 
-        //start GPS service
-//        if (!application.isServiceRunning(GPSTrackerService.class))
-//            loginActivity.startService(new Intent(application, GPSTrackerService.class));
+//        start GPS service
+        if (!application.isServiceRunning(GPSTrackerService.class))
+            loginActivity.startService(new Intent(application, GPSTrackerService.class));
 
-//        application.startAlarmManager();
+        application.startAlarmManager();
 
         Intent i = new Intent(loginActivity.getApplicationContext(), InboxActivity.class);
         loginActivity.startActivity(i);

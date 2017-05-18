@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.cmov.locmess.model.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.text.DateFormatSymbols;
 
@@ -95,6 +97,7 @@ public class TimeWindow implements Serializable{
         return endMinute;
     }
 
+    @JsonIgnoreProperties
     public String getFormattedStartTime(){
         return  String.format("%02d", startDay) + " " +
                 new DateFormatSymbols().getMonths()[startMonth] + " " +
@@ -103,6 +106,7 @@ public class TimeWindow implements Serializable{
                 String.format("%02d", startMinute);
     }
 
+    @JsonIgnoreProperties
     public String getFormattedEndTime(){
         return String.format("%02d", endDay) + " " +
                 new DateFormatSymbols().getMonths()[endMonth] + " " +

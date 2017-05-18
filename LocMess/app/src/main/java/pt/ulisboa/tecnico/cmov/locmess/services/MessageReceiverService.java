@@ -32,6 +32,7 @@ import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Profile;
 import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.locations.GetLocationsTask;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages.GetMessageTask;
 
 
 public class MessageReceiverService extends Service {
@@ -64,24 +65,32 @@ public class MessageReceiverService extends Service {
         if (currentLocations != null) {
             getNewMessages(currentLocations);
         }
+        stopSelf();
     }
 
     private void getNewMessages(List<Location> currentLocations) {
-        List<Message> messages = new ArrayList<>();
+        MessagesContainer bigMessagesContainer = new MessagesContainer();
         for (Location location : currentLocations) {
-            MessagesContainer messageContainer = getMessagesFromServer(sessionID, location, application.getProfile());
+            GetMessageTask task = new GetMessageTask(this, location, application.getProfile());
+            task.execute();
+            MessagesContainer messageContainer = null;
+            try {
+                messageContainer = task.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
             if (messageContainer != null)
-                messages.addAll(messageContainer.getMessages());
+                bigMessagesContainer.addMessageContainer(messageContainer);
         }
 
-        if (!messages.isEmpty()) {
-            createNotifications(messages);
+        if (!bigMessagesContainer.isEmpty()) {
+            createNotifications(bigMessagesContainer);
         }
     }
 
-    private void createNotifications(List<Message> messages) {
+    private void createNotifications(MessagesContainer messageContainer) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        for (Message message : messages) {
+        for (Message message : messageContainer.getMessages()) {
             NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
 
             Intent acceptIntent = new Intent(this, InboxActivity.class); //switch for broadcast receiver
@@ -142,35 +151,5 @@ public class MessageReceiverService extends Service {
             application.setLocationsContainer(serverResult);
         }
     }
-
-
-    private MessagesContainer getMessagesFromServer(int sessionID, Location location, Profile profile) {
-        // Setup url
-        final String url = ((LocMessApplication) getApplicationContext()).getServerURL() + "/location";
-
-        // Populate header
-        HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.add("session", String.valueOf(sessionID));
-        requestHeaders.add("location", location.getName());
-
-        // Create a new RestTemplate instance
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(10000);
-
-        try {
-            //using PUT since a value in the server will be changed and GET does not support body a request body
-            ResponseEntity<MessagesContainer> response = restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(profile, requestHeaders), MessagesContainer.class);
-            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
-                application.forceLoginFlag = true;
-
-            return response.getBody();
-
-        } catch (Exception e) {
-            Log.e("GetMessagesFromServer", e.getMessage(), e);
-            return null;
-        }
-    }
-
 
 }

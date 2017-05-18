@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.cmov.locmess.model.containers;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
@@ -10,9 +11,9 @@ import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 public class MessagesContainer implements Serializable {
 
     private List<Message> messages;
-    private final long whenReceived = System.currentTimeMillis();
 
     public MessagesContainer() {
+        messages = new ArrayList<>();
     }
 
     public MessagesContainer(List<Message> messages) {
@@ -31,7 +32,11 @@ public class MessagesContainer implements Serializable {
         return messages.add(message);
     }
 
-    public long getWhenReceived() {
-        return whenReceived;
+    public boolean addMessageContainer(MessagesContainer messagesContainer){
+        return messages.addAll(messagesContainer.getMessages());
+    }
+
+    public boolean isEmpty(){
+        return messages.isEmpty();
     }
 }
