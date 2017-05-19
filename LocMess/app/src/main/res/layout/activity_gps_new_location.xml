@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -94,7 +93,8 @@
                 android:layout_margin="10dp"
                 android:padding="15dp"
                 android:background="@drawable/background_icon_enabled_button"
-                android:src="@drawable/ic_location_on_white_48dp"/>
+                android:src="@drawable/ic_location_on_white_48dp"
+                android:contentDescription="@string/pick_location_on_map" />
         </LinearLayout>
 
         <!-- Radius Label -->
