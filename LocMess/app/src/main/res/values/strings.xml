@@ -80,5 +80,7 @@
     <string name="addButton">Add</string>
     <string name="ssid">New SSID Location</string>
     <string name="gps">New GPS location</string>
+    <string name="pick_location_on_map">Pick Location on Map</string>
+    <string name="timestamp">Timestamp</string>
 
 </resources>
