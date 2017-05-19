@@ -3,7 +3,13 @@ package pt.ulisboa.tecnico.cmov.locmess.services;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.bluetooth.BluetoothManager;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -135,9 +141,17 @@ public class ServerMessageReceiverService extends Service {
         float[] distance = new float[2];
 
         for (Location location : application.getLocations()) {
-            android.location.Location.distanceBetween(currentLatitude, currentLongitude, location.getLatitude(), location.getLongitude(), distance);
-            if (distance[0] < location.getRadius()) {
-                locations.add(location);
+            if (location.getSsidList() == null) { //if geo location compare to current geo location
+                android.location.Location.distanceBetween(currentLatitude, currentLongitude, location.getLatitude(), location.getLongitude(), distance);
+                if (distance[0] < location.getRadius()) {
+                    locations.add(location);
+                }
+            } else { //if ssid check if a ssid in the list matches
+                List<String> locationSSIDsInRange = location.getSsidList();
+                locationSSIDsInRange.retainAll(getCurrentSsids());
+                if(!locationSSIDsInRange.isEmpty()){
+                    locations.add(location);
+                }
             }
         }
 
@@ -159,5 +173,18 @@ public class ServerMessageReceiverService extends Service {
             application.setLocationsContainer(serverResult);
         }
     }
+    public List<String> getCurrentSsids() {
+        List<String> ssids = new ArrayList<>();
+
+        // get the wifi name
+        final WifiManager wifiManager = (WifiManager) application.getSystemService(WIFI_SERVICE);
+
+        for (ScanResult scanResult: wifiManager.getScanResults()) {
+            ssids.add(scanResult.SSID);
+        }
+
+        return ssids;
+    }
+
 
 }
