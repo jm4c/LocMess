@@ -36,7 +36,7 @@ import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.locations.GetLocationsT
 import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages.GetMessageTask;
 
 
-public class MessageReceiverService extends Service {
+public class ServerMessageReceiverService extends Service {
 
     private final static int MIN_UNIQUE_ID = 2000;
     private final static int MAX_UNIQUE_ID = 3999;

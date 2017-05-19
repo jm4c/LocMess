@@ -14,20 +14,18 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 
 public class NotificationReceiver extends BroadcastReceiver {
-    LocMessApplication application;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        application = (LocMessApplication) context.getApplicationContext();
         NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-
         int notificationID = intent.getIntExtra("ID", 0);
         nm.cancel(notificationID);
 
         Message message = (Message) intent.getSerializableExtra("message");
 
         if(message != null){
+            LocMessApplication application = (LocMessApplication) context.getApplicationContext();
             Log.d("NotificationReceiver", "Added new message to inbox");
             application.addInboxMessage(message);
         }

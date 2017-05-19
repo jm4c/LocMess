@@ -54,7 +54,6 @@
         <activity android:name=".activities.location.LocationActivity" />
         <activity android:name=".activities.location.NewLocationGPSActivity" />
         <activity android:name=".activities.location.NewLocationSSIDActivity" />
-        <activity android:name=".activities.location.PopUpActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -77,7 +76,7 @@
         <service
             android:name=".services.ProfileKeyManagerService"
             android:enabled="true" />
-        <service android:name=".services.MessageReceiverService"
+        <service android:name=".services.ServerMessageReceiverService"
             android:enabled="true" />
 
         <receiver android:name=".receivers.NotificationReceiver">

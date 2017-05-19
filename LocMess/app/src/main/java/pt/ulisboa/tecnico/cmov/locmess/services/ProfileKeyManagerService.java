@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
@@ -25,9 +26,10 @@ public class ProfileKeyManagerService extends Service {
     public void onCreate() {
         super.onCreate();
         application = (LocMessApplication) getApplicationContext();
+        Queue<LocMessApplication.ProfileKeyAction> queueKeyActions = application.getQueueKeyActions();
 
-        while (!application.queueKeyActions.isEmpty()) {
-            LocMessApplication.ProfileKeyAction keyAction = application.queueKeyActions.peek();
+        while (!queueKeyActions.isEmpty()) {
+            LocMessApplication.ProfileKeyAction keyAction = queueKeyActions.peek();
             try {
                 Boolean result;
                 if ((Boolean) keyAction.getValue()) { // if true add to server
@@ -41,8 +43,10 @@ public class ProfileKeyManagerService extends Service {
                 }
 
                 // if successful remove key/action from queue
-                if (result)
-                    application.queueKeyActions.poll();
+                if (result) {
+                    queueKeyActions.poll();
+                    application.setQueueKeyActions(queueKeyActions);
+                }
                 else
                     stopSelf(); // if problem with server, try again later
             } catch (InterruptedException | ExecutionException e) {

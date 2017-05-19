@@ -35,18 +35,38 @@ public class Policy implements Serializable {
     }
 
     public boolean matches(Profile profile) {
-        for (ProfileKeypair keypair : keyValues) {
-
-            if (isWhitelist) { // true if profile contains all values in policy (one key pair not contained results in false)
-                if (!profile.getProfileKeypairs().contains(keypair))
+        if (isWhitelist) {
+            for (ProfileKeypair policyKeyPair : keyValues) {
+                boolean foundPair = false;
+                for (ProfileKeypair profileKeypair : profile.getProfileKeypairs()) {
+                    if (policyKeyPair.getKey().equals(profileKeypair.getKey()))
+                        if (policyKeyPair.getValue().equals(profileKeypair.getValue())) {
+                            foundPair = true;
+                        } else {
+                            System.out.println("WHITELIST: " + policyKeyPair.getKey() + "=" + policyKeyPair.getValue() + " in policy does \n" +
+                                    "not match  " + profileKeypair.getKey() + "=" + profileKeypair.getValue() + " in profile.");
+                            return false;
+                        }
+                }
+                if (!foundPair) {
+                    System.out.println("WHITELIST: " + policyKeyPair.getKey() + "=" + policyKeyPair.getValue() + " not found in profile.");
                     return false;
+                }
+            }
 
-            } else { // true if profile does not contain any value in the policy (one key pair contained results in false)
-                if (profile.getProfileKeypairs().contains(keypair))
-                    return false;
+        } else {
+            for (ProfileKeypair policyKeyPair : keyValues) {
+                for (ProfileKeypair profileKeypair : profile.getProfileKeypairs()) {
+                    if (policyKeyPair.getKey().equals(profileKeypair.getKey())
+                            && policyKeyPair.getValue().equals(profileKeypair.getValue())) {
+                        System.out.println("BLACKLIST: " + policyKeyPair.getKey() + "=" + policyKeyPair.getValue() + " found in profile.");
+                        return false;
+                    }
 
+                }
             }
         }
         return true;
     }
 }
+

@@ -14,7 +14,7 @@ public class Policy implements Serializable{
         this.isWhitelist = isWhitelist;
     }
 
-    public Policy(){
+    public Policy() {
 
     }
 
@@ -34,4 +34,38 @@ public class Policy implements Serializable{
         isWhitelist = whitelist;
     }
 
+    public boolean matches(Profile profile) {
+        if (isWhitelist) {
+            for (ProfileKeypair policyKeyPair : keyValues) {
+                boolean foundPair = false;
+                for (ProfileKeypair profileKeypair : profile.getProfileKeypairs()) {
+                    if (policyKeyPair.getKey().equals(profileKeypair.getKey()))
+                        if (policyKeyPair.getValue().equals(profileKeypair.getValue())) {
+                            foundPair = true;
+                        } else {
+                            System.out.println("WHITELIST: " + policyKeyPair.getKey() + "=" + policyKeyPair.getValue() + " in policy does \n" +
+                                    "not match  " + profileKeypair.getKey() + "=" + profileKeypair.getValue() + " in profile.");
+                            return false;
+                        }
+                }
+                if (!foundPair) {
+                    System.out.println("WHITELIST: " + policyKeyPair.getKey() + "=" + policyKeyPair.getValue() + " not found in profile.");
+                    return false;
+                }
+            }
+
+        } else {
+            for (ProfileKeypair policyKeyPair : keyValues) {
+                for (ProfileKeypair profileKeypair : profile.getProfileKeypairs()) {
+                    if (policyKeyPair.getKey().equals(profileKeypair.getKey())
+                            && policyKeyPair.getValue().equals(profileKeypair.getValue())) {
+                        System.out.println("BLACKLIST: " + policyKeyPair.getKey() + "=" + policyKeyPair.getValue() + " found in profile.");
+                        return false;
+                    }
+
+                }
+            }
+        }
+        return true;
+    }
 }

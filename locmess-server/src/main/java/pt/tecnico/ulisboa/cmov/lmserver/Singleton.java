@@ -94,9 +94,8 @@ public class Singleton {
 
     //Messages
     public boolean addMessage(Message message) {
-        Set<Account> accountsToSkip = new LinkedHashSet<>(); //account is owner or has already received notification
-        accountsToSkip.add(getAccount(message.getOwner())); //adding owner
-        messagesMap.put(message, accountsToSkip);
+        Set<Account> alreadyReceived = new LinkedHashSet<>(); //account is owner or has already received notification
+        messagesMap.put(message, alreadyReceived);
         return messagesMap.containsKey(message);
     }
 
@@ -106,8 +105,11 @@ public class Singleton {
 
     public MessagesContainer getUserMessagesContainer(int sessionID, String location, Profile profile) {
         Account account = getAccount(getToken(sessionID).getUsername());
+        Calendar calendar = Calendar.getInstance();
 
         MessagesContainer messagesContainer = new MessagesContainer();
+        List<Message> expiredMessages = new ArrayList<>();
+
         System.out.println("LOG: Looking for messages for '" + account.getUsername() + "' in '" + location + "'.");
 
         for (Message message : messagesMap.keySet()) {
@@ -115,16 +117,58 @@ public class Singleton {
                 System.out.println("LOG: '" + account.getUsername() + "' not in the same location as the message.");
                 continue;
             }
+            if(message.getOwner().equals(account.getUsername()))
+                continue;
             if (messagesMap.get(message).contains(account)) {
-                System.out.println("LOG: '" + account.getUsername() + "' in the \"to skip list\" for this message.");
+                System.out.println("LOG: '" + account.getUsername() + "' already received this message.");
                 continue;
             }
-            if (message.getPolicy().matches(profile)) {
-                messagesContainer.addMessage(message);
+
+            try {
+                if(!isTimeWindowValid(calendar, message.getTimeWindow())) {
+                    continue;
+                }
+            } catch (Exception e) {
+                System.out.println("LOG: Message expired. Removing it.");
+                expiredMessages.add(message);
+                continue;
             }
+            if (!message.getPolicy().matches(profile)) {
+                System.out.println("LOG: '" + account.getUsername() + "' doesn't match policy.");
+
+                continue;
+            }
+
+            messagesContainer.addMessage(message);
+            messagesMap.get(message).add(account);
+
+        }
+
+        for (Message message :
+                expiredMessages) {
+            messagesMap.remove(message);
         }
 
         return messagesContainer;
+    }
+
+    private Boolean isTimeWindowValid(Calendar currentTime, TimeWindow timeWindow) throws Exception {
+        Calendar startTimeWindow = Calendar.getInstance();
+        startTimeWindow.set(timeWindow.getStartYear(),
+                timeWindow.getStartMonth(),
+                timeWindow.getStartDay(),
+                timeWindow.getStartHour(),
+                timeWindow.getStartMinute());
+
+        Calendar endTimeWindow = Calendar.getInstance();
+        endTimeWindow.set(timeWindow.getEndYear(),
+                timeWindow.getEndMonth(),
+                timeWindow.getEndDay(),
+                timeWindow.getEndHour(),
+                timeWindow.getEndMinute());
+        if (currentTime.after(endTimeWindow))
+            throw new Exception();
+        return currentTime.after(startTimeWindow) && currentTime.before(endTimeWindow);
     }
 
     //Locations

@@ -239,7 +239,7 @@ public class PostMessageActivity extends ToolbarActivity {
                     return;
                 }
 
-                String owner = PostMessageActivity.this.getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", "");
+                String owner = application.getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", "");
 
                 Message message = new Message(
                         titleEditText.getText().toString(),
@@ -262,11 +262,6 @@ public class PostMessageActivity extends ToolbarActivity {
                     } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
                     }
-
-                }else {
-                    //TODO remove or just keep for wifi id
-                    Log.d("MSG", "replace message");
-                    application.replaceOutboxMessage(message, positionInList);
                 }
 
                 finish();

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -43,17 +44,25 @@ public class ToolbarActivity extends AppCompatActivity {
             "Profile",
             "Logout"
     };
+    private static boolean  loggingOut = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         application = (LocMessApplication) getApplicationContext();
-
         setContentView(R.layout.activity_main_menu);
         setupToolbar("LocMess - Main Menu");
-
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (loggingOut) {
+            loggingOut = false;
+            logout();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -91,18 +100,18 @@ public class ToolbarActivity extends AppCompatActivity {
     }
 
     private void changeActivity(int which) throws ExecutionException, InterruptedException {
-        Intent i;
+        Intent intent;
         switch (which) {
             case MENU_INBOX:
                 if (ToolbarActivity.this instanceof InboxActivity)
                     return;
-                i = new Intent(ToolbarActivity.this, InboxActivity.class);
+                intent = new Intent(ToolbarActivity.this, InboxActivity.class);
                 break;
             case MENU_OUTBOX:
                 if (ToolbarActivity.this instanceof OutboxActivity)
                     return;
 
-                i = new Intent(ToolbarActivity.this, OutboxActivity.class);
+                intent = new Intent(ToolbarActivity.this, OutboxActivity.class);
                 break;
             case MENU_LOCATIONS:
                 if (ToolbarActivity.this instanceof LocationActivity)
@@ -110,7 +119,7 @@ public class ToolbarActivity extends AppCompatActivity {
                 GetLocationsTask getLocationsTask = new GetLocationsTask(this);
                 getLocationsTask.execute();
                 getLocationsTask.get();
-                i = new Intent(ToolbarActivity.this, LocationActivity.class);
+                intent = new Intent(ToolbarActivity.this, LocationActivity.class);
                 break;
             case MENU_PROFILE:
                 if (ToolbarActivity.this instanceof ProfileActivity)
@@ -119,31 +128,41 @@ public class ToolbarActivity extends AppCompatActivity {
                 getAvailableKeysTask.execute();
                 getAvailableKeysTask.get();
 
-                i = new Intent(ToolbarActivity.this, ProfileActivity.class);
+                intent = new Intent(ToolbarActivity.this, ProfileActivity.class);
                 break;
-            default: //LOGOUT
-                stopService(new Intent(this, GPSTrackerService.class));
-                application.cancelAlarmManager();
-
-                SharedPreferences sharedPreferences = this.getSharedPreferences("LocMess", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                // To avoid automatically login
-                editor.remove("username");
-                editor.remove("password");
-                editor.remove("session");
-                editor.apply();
-
-                i = new Intent(ToolbarActivity.this, LoginActivity.class);
+            default:
+                loggingOut = true;
+                intent = new Intent(ToolbarActivity.this, LoginActivity.class);
+                finish();
                 break;
         }
 
         if (application.forceLoginFlag) {
-            i = new Intent(ToolbarActivity.this, LoginActivity.class);
+            intent = new Intent(ToolbarActivity.this, LoginActivity.class);
             application.forceLoginFlag = false;
         }
 
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    private void logout() {
+        Log.d("LOGOUT", "Logging out from application.");
+
+        stopService(new Intent(this, GPSTrackerService.class));
+        application.cancelAlarmManager();
+
+        SharedPreferences sharedPreferences = application.getSharedPreferences("LocMess", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        // To avoid automatically login
+        editor.remove("username");
+        editor.remove("password");
+        editor.remove("session");
+        editor.apply();
+        application.clearPersonalData();
+
+        Intent intent = new Intent(ToolbarActivity.this, LoginActivity.class);
+        startService(intent);
     }
 
     public List<String> getMenu() {

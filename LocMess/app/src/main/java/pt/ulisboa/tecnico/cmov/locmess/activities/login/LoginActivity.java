@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.accounts.LoginTask;
 
@@ -55,10 +56,11 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        if (getSharedPreferences("LocMess", MODE_PRIVATE).contains("username") &&
-                getSharedPreferences("LocMess", MODE_PRIVATE).contains("password")) {
-            username = getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", null);
-            password = getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null);
+        LocMessApplication application = (LocMessApplication) getApplication().getApplicationContext();
+        if (application.getSharedPreferences("LocMess", MODE_PRIVATE).contains("username") &&
+                application.getSharedPreferences("LocMess", MODE_PRIVATE).contains("password")) {
+            username = application.getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", null);
+            password = application.getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null);
             login(username, password);
         }
         super.onResume();
