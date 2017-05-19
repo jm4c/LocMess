@@ -9,6 +9,7 @@ import pt.tecnico.ulisboa.cmov.lmserver.model.types.*;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -358,4 +359,14 @@ public class Singleton {
     }
 
 
+    //SECURITY
+    public boolean addPublicKey(int id, PublicKey publicKey) {
+        if(!getAccount(getToken(id).getUsername()).getCurrentPublicKey().equals(publicKey)) {
+            getAccount(getToken(id).getUsername()).setCurrentPublicKey(publicKey);
+            System.out.println("LOG: '" + getToken(id).getUsername() + "' added a new public key.");
+            return true;
+        }else {
+            return false;
+        }
+    }
 }
