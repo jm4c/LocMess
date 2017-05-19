@@ -1,10 +1,15 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities.outbox;
 
 import android.app.DialogFragment;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -13,41 +18,70 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
+import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
+import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.TimeWindow;
+import pt.ulisboa.tecnico.cmov.locmess.services.WifiMessageReceiver;
 import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages.SendMessageTask;
 
-public class PostMessageActivity extends ToolbarActivity {
+public class PostMessageActivity extends ToolbarActivity implements
+        SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
     private static final int POLICY_ACTIVITY = 1;
-
-    Button createButton;
-    ImageButton locationButton;
-    ImageButton policyButton;
-    ImageButton scheduleButton;
+    private Button createButton;
+    private ImageButton locationButton;
+    private ImageButton policyButton;
+    private ImageButton scheduleButton;
+    private Switch deliveryModeSwitch;
 
     EditText contentEditText;
     EditText titleEditText;
+
+    boolean isViewMode = false;
 
     Location location;
     TimeWindow timeWindow;
     Policy policy;
 
-    Switch deliveryModeSwitch;
-
-    boolean isViewMode = false;
-
+    boolean isEditMode = false;
     int positionInList; //used when editing a message
+
     boolean isCentralized = true;
+
+    public static final String TAG = "msgsender";
+    private SimWifiP2pManager mManager = null;
+    private SimWifiP2pManager.Channel mChannel = null;
+    private Messenger mService = null;
+    private boolean mBound = false;
+    private static SimWifiP2pSocketServer mSrvSocket = null;
+    private WifiMessageReceiver mReceiver;
+    private SimWifiP2pSocket mCliSocket;
+
+    private ArrayList<String> ipList= new ArrayList<>();
 
 
     @Override
@@ -120,6 +154,7 @@ public class PostMessageActivity extends ToolbarActivity {
         scheduleButton = (ImageButton) findViewById(R.id.bt_schedule);
 
 
+        final Switch deliveryModeSwitch = (Switch) findViewById(R.id.switch_delivery_mode);
         createButton = (Button) findViewById(R.id.btn_create);
 
         timeWindow = new TimeWindow();
@@ -246,7 +281,7 @@ public class PostMessageActivity extends ToolbarActivity {
                     return;
                 }
 
-                String owner = application.getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", "");
+                String owner = PostMessageActivity.this.getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", "");
 
                 Message message = new Message(
                         titleEditText.getText().toString(),
@@ -256,22 +291,38 @@ public class PostMessageActivity extends ToolbarActivity {
                         timeWindow,
                         isCentralized,
                         policy);
+                if(isCentralized) {
+                    if(!isViewMode) {
+                        Log.d("MSG", "add message");
+                        application.addOutboxMessage(message);
 
-                if(!isViewMode) {
-                    Log.d("MSG", "add message");
-                    application.addOutboxMessage(message);
-
-                    //send message to server
-                    SendMessageTask task = new SendMessageTask(PostMessageActivity.this);
-                    task.execute(message);
-                    try {
-                        task.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
+                        //send message to server
+                        SendMessageTask task = new SendMessageTask(PostMessageActivity.this);
+                        task.execute(message);
+                        try {
+                            task.get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-                finish();
+                        finish();
+                     }
+                    else{
+
+                        //Encontra ip´s de todos os devices
+                        mManager.requestGroupInfo(mChannel, PostMessageActivity.this);
+
+
+                        for(String ip : ipList){
+                            new OutgoingCommTask().executeOnExecutor(
+                                    AsyncTask.THREAD_POOL_EXECUTOR, ip);  //liga-se a todos os ip´s
+
+                            //new SendCommTask().executeOnExecutor(
+                                  //  AsyncTask.THREAD_POOL_EXECUTOR,message. );  //Envia msg para o ip respectivo
+                        }
+                        finish();
+                }
             }
         });
 
@@ -287,4 +338,146 @@ public class PostMessageActivity extends ToolbarActivity {
             }
         });
     }
+
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList devices, SimWifiP2pInfo groupInfo) {
+        // compile list of network members
+        StringBuilder peersStr = new StringBuilder();
+        for (String deviceName : groupInfo.getDevicesInNetwork()) {
+            SimWifiP2pDevice device = devices.getByName(deviceName);
+            String devstr = "" + deviceName + " (" +
+                    ((device == null)?"??":device.getVirtIp()) + ")\n";
+            peersStr.append(devstr);
+        }
+
+        // display list of network members
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Devices in WiFi Network")
+                .setMessage(peersStr.toString())
+                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
+        StringBuilder peersStr = new StringBuilder();
+
+        // compile list of devices in range
+        for (SimWifiP2pDevice device : peers.getDeviceList()) {
+            String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+            peersStr.append(devstr);
+        }
+
+        // display list of devices in range
+        new android.app.AlertDialog.Builder(this)
+                .setTitle("Devices in WiFi Range")
+                .setMessage(peersStr.toString())
+                .setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
+
+
+    public static class IncommingCommTask extends AsyncTask<Void, String, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
+
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(10001);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    try {
+
+                        BufferedReader sockIn = new BufferedReader(
+                                new InputStreamReader(sock.getInputStream()));
+                        String st = sockIn.readLine();
+                        publishProgress(st);
+                        sock.getOutputStream().write(("\n").getBytes());
+                    } catch (IOException e) {
+                        Log.d("Error reading socket:", e.getMessage());
+                    } finally {
+                        sock.close();
+                    }
+                } catch (IOException e) {
+                    Log.d("Error socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            //mTextOutput.append(values[0] + "\n");
+        }
+    }
+
+    public class OutgoingCommTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            //mTextOutput.setText("Connecting...");
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                mCliSocket = new SimWifiP2pSocket(params[0],10001);
+            } catch (UnknownHostException e) {
+                return "Unknown Host:" + e.getMessage();
+            } catch (IOException e) {
+                return "IO error:" + e.getMessage();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+    }
+
+
+    public class SendCommTask extends AsyncTask<String, String, Void> {
+
+        @Override
+        protected Void doInBackground(String... msg) {
+
+            try {
+                mCliSocket.getOutputStream().write((msg[0] + "\n").getBytes());
+                BufferedReader sockIn = new BufferedReader(
+                        new InputStreamReader(mCliSocket.getInputStream()));
+                sockIn.readLine();
+                mCliSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mCliSocket = null;
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+        }
+    }
+
+	/*
+	 * Listeners associated to Termite
+	 */
+
+
+
 }

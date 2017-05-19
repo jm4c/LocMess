@@ -1,27 +1,41 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities.inbox;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pManager;
+import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.outbox.PostMessageActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
-import pt.ulisboa.tecnico.cmov.locmess.model.TestData;
 
 public class InboxActivity extends ToolbarActivity implements RecyclerListsAdapter.activityCallback {
 
@@ -29,6 +43,10 @@ public class InboxActivity extends ToolbarActivity implements RecyclerListsAdapt
     private RecyclerView recView;
     private RecyclerListsAdapter adapter;
     private ArrayList listData;
+
+    private SimWifiP2pManager mManager = null;
+    private SimWifiP2pManager.Channel mChannel = null;
+    private Messenger mService = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +58,16 @@ public class InboxActivity extends ToolbarActivity implements RecyclerListsAdapt
 
         setUpRecyclerView();
 
+        //Ligar o wifi logo que entra
+
+
+        Intent intent = new Intent(this ,SimWifiP2pService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+
+        new PostMessageActivity.IncommingCommTask().executeOnExecutor(
+                AsyncTask.THREAD_POOL_EXECUTOR
+        );
 
     }
 
@@ -280,5 +308,27 @@ public class InboxActivity extends ToolbarActivity implements RecyclerListsAdapt
     public void onUndoTimeout(int p) {
         deleteItem(p);
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = new Messenger(service);
+            mManager = new SimWifiP2pManager(mService);
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mService = null;
+            mManager = null;
+            mChannel = null;
+
+        }
+    };
+
+
+
 
 }

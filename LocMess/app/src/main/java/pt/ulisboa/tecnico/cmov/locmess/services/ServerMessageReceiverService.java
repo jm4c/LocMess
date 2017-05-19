@@ -106,6 +106,7 @@ public class ServerMessageReceiverService extends Service {
             acceptIntent.setAction(ACCEPTED_MESSAGE);
             PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, uniqueID, acceptIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+
             Intent declineIntent = new Intent(this, NotificationReceiver.class); //switch for broadcast receiver
             acceptIntent.putExtra("ID", uniqueID);
             declineIntent.setAction(DECLINED_MESSAGE);
