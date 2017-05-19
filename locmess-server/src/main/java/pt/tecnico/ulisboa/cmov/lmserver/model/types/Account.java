@@ -2,6 +2,7 @@ package pt.tecnico.ulisboa.cmov.lmserver.model.types;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.security.PublicKey;
 import java.util.HashMap;
 
 @XmlRootElement(name = "account")
@@ -9,6 +10,7 @@ public class Account implements Serializable{
 
     private String username;
     private String hashedPassword;
+    private PublicKey currentPublicKey;
     private byte[] salt;
     private HashMap<String, String> profile;
 
@@ -45,5 +47,14 @@ public class Account implements Serializable{
 
     public void setProfile(HashMap<String, String> profile) {
         this.profile = profile;
+    }
+
+    //SECURITY
+    public PublicKey getCurrentPublicKey() {
+        return currentPublicKey;
+    }
+
+    public void setCurrentPublicKey(PublicKey currentPublicKey) {
+        this.currentPublicKey = currentPublicKey;
     }
 }
