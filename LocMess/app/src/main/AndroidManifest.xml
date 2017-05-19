@@ -47,7 +47,7 @@
 
         <activity android:name=".activities.outbox.PostMessageActivity" />
         <activity android:name=".activities.inbox.ReadMessageActivity" />
-        <activity android:name=".activities.outbox.EditMessageActivity" />
+        <activity android:name=".activities.outbox.ViewOutboxMessageActivity" />
         <activity android:name=".activities.profile.ProfileActivity" />
         <activity android:name=".activities.outbox.PolicyActivity" />
 
