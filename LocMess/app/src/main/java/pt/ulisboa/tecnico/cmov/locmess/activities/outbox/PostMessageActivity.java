@@ -1,14 +1,11 @@
 package pt.ulisboa.tecnico.cmov.locmess.activities.outbox;
 
 import android.app.DialogFragment;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Messenger;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -18,29 +15,24 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
-import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
-import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
@@ -52,11 +44,11 @@ public class PostMessageActivity extends ToolbarActivity implements
         SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
     private static final int POLICY_ACTIVITY = 1;
-    private Button createButton;
-    private ImageButton locationButton;
-    private ImageButton policyButton;
-    private ImageButton scheduleButton;
-    private Switch deliveryModeSwitch;
+    Button createButton;
+    ImageButton locationButton;
+    ImageButton policyButton;
+    ImageButton scheduleButton;
+    Switch deliveryModeSwitch;
 
     EditText contentEditText;
     EditText titleEditText;
@@ -67,7 +59,6 @@ public class PostMessageActivity extends ToolbarActivity implements
     TimeWindow timeWindow;
     Policy policy;
 
-    boolean isEditMode = false;
     int positionInList; //used when editing a message
 
     boolean isCentralized = true;
