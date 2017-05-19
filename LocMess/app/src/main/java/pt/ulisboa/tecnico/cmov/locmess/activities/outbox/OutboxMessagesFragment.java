@@ -289,7 +289,7 @@ public class OutboxMessagesFragment extends Fragment implements RecyclerListsAda
         Log.d("OUT", message.getTitle());
 
 
-        Intent intent = new Intent(this.getActivity(), EditMessageActivity.class);
+        Intent intent = new Intent(this.getActivity(), ViewOutboxMessageActivity.class);
         intent.putExtra("message", message);
         intent.putExtra("position", p);
         startActivityForResult(intent, EDIT_MESSAGE);

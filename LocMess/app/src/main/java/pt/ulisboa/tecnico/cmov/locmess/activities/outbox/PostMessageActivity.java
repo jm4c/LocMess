@@ -29,10 +29,11 @@ import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages.SendMessageTas
 public class PostMessageActivity extends ToolbarActivity {
 
     private static final int POLICY_ACTIVITY = 1;
-    private Button createButton;
-    private ImageButton locationButton;
-    private ImageButton policyButton;
-    private ImageButton scheduleButton;
+
+    Button createButton;
+    ImageButton locationButton;
+    ImageButton policyButton;
+    ImageButton scheduleButton;
 
     EditText contentEditText;
     EditText titleEditText;
@@ -41,9 +42,11 @@ public class PostMessageActivity extends ToolbarActivity {
     TimeWindow timeWindow;
     Policy policy;
 
-    boolean isEditMode = false;
-    int positionInList; //used when editing a message
+    Switch deliveryModeSwitch;
 
+    boolean isViewMode = false;
+
+    int positionInList; //used when editing a message
     boolean isCentralized = true;
 
 
@@ -52,7 +55,11 @@ public class PostMessageActivity extends ToolbarActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_post_message);
-        setupToolbar("LocMess - Post Message");
+        if(!isViewMode) {
+            setupToolbar("LocMess - Post Message");
+        }else {
+            setupToolbar("LocMess - View Outbox Message");
+        }
         setupButtons();
     }
 
@@ -107,12 +114,12 @@ public class PostMessageActivity extends ToolbarActivity {
     }
 
     protected void setupButtons() {
+        deliveryModeSwitch = (Switch) findViewById(R.id.switch_delivery_mode);
         locationButton = (ImageButton) findViewById(R.id.bt_location);
         policyButton = (ImageButton) findViewById(R.id.bt_policy);
         scheduleButton = (ImageButton) findViewById(R.id.bt_schedule);
 
 
-        final Switch deliveryModeSwitch = (Switch) findViewById(R.id.switch_delivery_mode);
         createButton = (Button) findViewById(R.id.btn_create);
 
         timeWindow = new TimeWindow();
@@ -250,7 +257,7 @@ public class PostMessageActivity extends ToolbarActivity {
                         isCentralized,
                         policy);
 
-                if(!isEditMode) {
+                if(!isViewMode) {
                     Log.d("MSG", "add message");
                     application.addOutboxMessage(message);
 
