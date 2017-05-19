@@ -115,7 +115,7 @@ public class Singleton {
                 System.out.println("LOG: '" + account.getUsername() + "' not in the same location as the message.");
                 continue;
             }
-            if(message.getOwner().equals(account.getUsername()))
+            if (message.getOwner().equals(account.getUsername()))
                 continue;
             if (messagesMap.get(message).contains(account)) {
                 System.out.println("LOG: '" + account.getUsername() + "' already received this message.");
@@ -123,7 +123,7 @@ public class Singleton {
             }
 
             try {
-                if(!isTimeWindowValid(message.getTimeWindow())) {
+                if (!isTimeWindowValid(message.getTimeWindow())) {
                     continue;
                 }
             } catch (Exception e) {
@@ -142,6 +142,26 @@ public class Singleton {
         }
 
         return messagesContainer;
+    }
+
+    public boolean removeMessage(int sessionID, String messageTitle) {
+        Message message = getMessage(messageTitle, getToken(sessionID).getUsername());
+        if (message != null) {
+            // if return from removing in HashMap is not null
+            if (messagesMap.remove(message) != null) {
+                System.out.println("LOG: " + getToken(sessionID).getUsername() + " removed the message \"" + message.getTitle() + "\".");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Message getMessage(String messageTitle, String owner) {
+        for (Message message: messagesMap.keySet()) {
+            if(message.getTitle().equals(messageTitle) && message.getOwner().equals(owner))
+                return message;
+        }
+        return null;
     }
 
     private Boolean isTimeWindowValid(TimeWindow timeWindow) throws Exception {
@@ -175,7 +195,7 @@ public class Singleton {
     public boolean removeLocation(String locationName) throws IOException, NoSuchAlgorithmException {
         boolean result = false;
         //check if location is used in any message being broadcast
-        if(isLocationInMessage()) {
+        if (isLocationInMessage()) {
             result = locationsContainer.removeLocation(locationName);
             locationsContainer.setLocationsHash(hashInText(profileKeysReferences, null));
         }
@@ -204,7 +224,7 @@ public class Singleton {
                 messagesToRemove.add(message);
         }
 
-        for (Message message: messagesToRemove) {
+        for (Message message : messagesToRemove) {
             messagesMap.remove(message);
         }
 
@@ -336,4 +356,6 @@ public class Singleton {
     public void removeToken(LoginToken token) {
         tokens.remove(token);
     }
+
+
 }

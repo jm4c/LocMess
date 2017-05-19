@@ -17,14 +17,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 import pt.ulisboa.tecnico.cmov.locmess.R;
+import pt.ulisboa.tecnico.cmov.locmess.activities.login.LoginActivity;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.RecyclerListsAdapter;
 import pt.ulisboa.tecnico.cmov.locmess.adapters.SimpleDividerItemDecoration;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages.RemoveMessageTask;
 
 
 public class OutboxMessagesFragment extends Fragment implements RecyclerListsAdapter.activityCallback {
@@ -279,8 +283,40 @@ public class OutboxMessagesFragment extends Fragment implements RecyclerListsAda
 
 
     private void deleteItem(int pos) {
-        listData.remove(pos);
-        adapter.notifyItemRemoved(pos);
+
+        Message message = (Message) listData.get(pos);
+
+        if (message.isCentralized()) {
+            RemoveMessageTask task = new RemoveMessageTask(getContext());
+            task.execute(message.getTitle());
+
+            try {
+                Boolean result = task.get();
+                if (result == null){
+                    Toast.makeText(this.getActivity(), "Can't reach server, no actions done.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (result) {
+                    listData.remove(pos);
+                    adapter.notifyItemRemoved(pos);
+                } else {
+                    if (application.forceLoginFlag) {
+                        Intent i = new Intent(this.getActivity(), LoginActivity.class);
+                        application.forceLoginFlag = false;
+                        Toast.makeText(this.getActivity(), "This session was invalid. Logging into new session.", Toast.LENGTH_LONG).show();
+                        startActivity(i);
+                    } else {
+                        Toast.makeText(this.getActivity(), "Failed to remove message from server. Try again later.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        } else {
+            listData.remove(pos);
+            adapter.notifyItemRemoved(pos);
+        }
     }
 
     @Override

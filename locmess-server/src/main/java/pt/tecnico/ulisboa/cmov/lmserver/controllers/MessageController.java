@@ -62,14 +62,13 @@ public class MessageController {
     @RequestMapping(value = "/message", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Boolean removeMessage(@RequestHeader(value = "session") String sessionID,
-                                 @RequestHeader(value = "key") String profileKey,
+                                 @RequestHeader(value = "message") String messageTitle,
                                  HttpServletResponse response) throws IOException {
         synchronized (this) {
             Singleton singleton = Singleton.getInstance();
             int id = Integer.valueOf(sessionID);
-
             if (singleton.tokenExists(id)) {
-
+                return singleton.removeMessage(id, messageTitle);
             } else {
                 System.out.println("LOG: No valid session ID found.");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
