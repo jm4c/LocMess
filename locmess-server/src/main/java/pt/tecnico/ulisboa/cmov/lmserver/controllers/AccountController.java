@@ -3,6 +3,7 @@ package pt.tecnico.ulisboa.cmov.lmserver.controllers;
 import org.springframework.web.bind.annotation.*;
 import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
 import pt.tecnico.ulisboa.cmov.lmserver.model.containers.AvailableKeysContainer;
+import pt.tecnico.ulisboa.cmov.lmserver.utils.CryptoUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -50,8 +51,14 @@ public class AccountController {
     @RequestMapping(value = "/publickey", method = RequestMethod.POST, produces = "application/json")
     public @ResponseBody
     boolean addPublicKey(@RequestHeader(value = "session") String sessionID,
-                             @RequestBody PublicKey publicKey,
+                             @RequestBody byte[] serializedPublicKey,
                              HttpServletResponse response) throws IOException {
+        PublicKey publicKey = null;
+        try {
+            publicKey = (PublicKey) CryptoUtils.deserialize(serializedPublicKey);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         Singleton singleton = Singleton.getInstance();
         int id = Integer.valueOf(sessionID);
         if (singleton.tokenExists(id)) {

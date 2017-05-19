@@ -158,8 +158,8 @@ public class Singleton {
     }
 
     private Message getMessage(String messageTitle, String owner) {
-        for (Message message: messagesMap.keySet()) {
-            if(message.getTitle().equals(messageTitle) && message.getOwner().equals(owner))
+        for (Message message : messagesMap.keySet()) {
+            if (message.getTitle().equals(messageTitle) && message.getOwner().equals(owner))
                 return message;
         }
         return null;
@@ -361,11 +361,15 @@ public class Singleton {
 
     //SECURITY
     public boolean addPublicKey(int id, PublicKey publicKey) {
-        if(!getAccount(getToken(id).getUsername()).getCurrentPublicKey().equals(publicKey)) {
+        if (getAccount(getToken(id).getUsername()).getCurrentPublicKey() == null) {
             getAccount(getToken(id).getUsername()).setCurrentPublicKey(publicKey);
             System.out.println("LOG: '" + getToken(id).getUsername() + "' added a new public key.");
             return true;
-        }else {
+        } else if (!getAccount(getToken(id).getUsername()).getCurrentPublicKey().equals(publicKey)) {
+            getAccount(getToken(id).getUsername()).setCurrentPublicKey(publicKey);
+            System.out.println("LOG: '" + getToken(id).getUsername() + "' added a new public key.");
+            return true;
+        } else {
             return false;
         }
     }

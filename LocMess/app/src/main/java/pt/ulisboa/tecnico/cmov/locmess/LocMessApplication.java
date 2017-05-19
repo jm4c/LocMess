@@ -16,24 +16,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 
 import pt.ulisboa.tecnico.cmov.locmess.model.containers.AvailableKeysContainer;
 import pt.ulisboa.tecnico.cmov.locmess.model.containers.LocationsContainer;
@@ -60,7 +51,7 @@ public class LocMessApplication extends Application {
     private final static int TYPE_OUTBOX_CENTRALIZED_MESSAGES = 3;
     private final static int TYPE_OUTBOX_DECENTRALIZED_MESSAGES = 4;
     private final static int TYPE_QUEUE_PROFILE_ACTIONS = 5;
-    private final static int TYPE_ENCRYPTED_KEY_PAIR = 6;
+    private final static int TYPE_KEY_PAIR = 6;
 
 
     public boolean forceLoginFlag = false;
@@ -127,9 +118,9 @@ public class LocMessApplication extends Application {
     //Profile keypairs
 
     public Profile getProfile() {
-        if(profile == null){
+        if (profile == null) {
             profile = (Profile) load(TYPE_PROFILE);
-            if(profile == null){
+            if (profile == null) {
                 profile = new Profile();
             }
             setProfile(profile);
@@ -147,9 +138,9 @@ public class LocMessApplication extends Application {
     }
 
     public Queue<ProfileKeyAction> getQueueKeyActions() {
-        if(queueKeyActions == null){
+        if (queueKeyActions == null) {
             queueKeyActions = (Queue<ProfileKeyAction>) load(TYPE_QUEUE_PROFILE_ACTIONS);
-            if(queueKeyActions == null){
+            if (queueKeyActions == null) {
                 queueKeyActions = new LinkedList<>();
             }
             setProfile(profile);
@@ -180,7 +171,6 @@ public class LocMessApplication extends Application {
         }
         return keyNames;
     }
-
 
 
     public List<String> listProfileValues() {
@@ -217,9 +207,9 @@ public class LocMessApplication extends Application {
     }
 
     public List<Message> getInboxMessages() {
-        if(inboxMessages == null){
+        if (inboxMessages == null) {
             inboxMessages = (List<Message>) load(TYPE_INBOX_MESSAGES);
-            if(inboxMessages == null){
+            if (inboxMessages == null) {
                 inboxMessages = new ArrayList<>();
             }
             setInboxMessages(inboxMessages);
@@ -236,9 +226,9 @@ public class LocMessApplication extends Application {
 
 
     public List<Message> getOutboxCentralizedMessages() {
-        if(outboxCentralizedMessages == null){
+        if (outboxCentralizedMessages == null) {
             outboxCentralizedMessages = (List<Message>) load(TYPE_OUTBOX_CENTRALIZED_MESSAGES);
-            if(outboxCentralizedMessages == null){
+            if (outboxCentralizedMessages == null) {
                 outboxCentralizedMessages = new ArrayList<>();
             }
             setOutboxCentralizedMessages(outboxCentralizedMessages);
@@ -253,9 +243,9 @@ public class LocMessApplication extends Application {
     }
 
     public List<Message> getOutboxDecentralizedMessages() {
-        if(outboxDecentralizedMessages == null){
+        if (outboxDecentralizedMessages == null) {
             outboxDecentralizedMessages = (List<Message>) load(TYPE_OUTBOX_DECENTRALIZED_MESSAGES);
-            if(outboxDecentralizedMessages == null){
+            if (outboxDecentralizedMessages == null) {
                 outboxDecentralizedMessages = new ArrayList<>();
             }
             setOutboxDecentralizedMessages(outboxDecentralizedMessages);
@@ -379,7 +369,7 @@ public class LocMessApplication extends Application {
 
     public void save(Object object, int type) {
         String filename = getFilename(type);
-        if(filename == null)
+        if (filename == null)
             return;
         try {
             FileOutputStream fos = openFileOutput(filename, MODE_PRIVATE);
@@ -396,7 +386,7 @@ public class LocMessApplication extends Application {
     public Object load(int type) {
         String filename = getFilename(type);
 
-        if(filename == null)
+        if (filename == null)
             return null;
         try {
             FileInputStream fis = openFileInput(filename);
@@ -415,7 +405,7 @@ public class LocMessApplication extends Application {
 
     private String getFilename(int type) {
         String username = getSharedPreferences("LocMess", MODE_PRIVATE).getString("username", null);
-        if(username == null)
+        if (username == null)
             return null;
         String filename = "";
         switch (type) {
@@ -434,8 +424,8 @@ public class LocMessApplication extends Application {
             case TYPE_QUEUE_PROFILE_ACTIONS:
                 filename = username + "_queue_profile_actions.dat";
                 break;
-            case TYPE_ENCRYPTED_KEY_PAIR:
-                filename = username + "_encrypted_keypair.dat";
+            case TYPE_KEY_PAIR:
+                filename = username + "_keypair.dat";
         }
         return filename;
     }
@@ -474,24 +464,24 @@ public class LocMessApplication extends Application {
     // SECURITY
 
     public KeyPair getKeyPair() {
-        if(keyPair == null){
-            byte[] encryptedKeyPair = (byte[]) load(TYPE_ENCRYPTED_KEY_PAIR);
-            if(encryptedKeyPair == null){
+        if (keyPair == null) {
+            keyPair = (KeyPair) load(TYPE_KEY_PAIR);
+            if (keyPair == null) {
                 keyPair = CryptoUtils.generateKeyPair();
-            }else {
-                try {
-                    //secret key based on password
-                    SecretKey secretKey = CryptoUtils.getSecretKey(
-                            getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null),
-                            null);
-                    //init vector based on username
-                    byte[] initVector = CryptoUtils.serialize(getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null));
-                    keyPair = (KeyPair) CryptoUtils.decrypt(secretKey, initVector, encryptedKeyPair);
-                } catch (InvalidKeySpecException | ClassNotFoundException | BadPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException
-                        | InvalidKeyException | IOException | NoSuchPaddingException | IllegalBlockSizeException e) {
-                    e.printStackTrace();
-                }
             }
+//            }else {
+//                try {
+//                    //secret key based on password
+//                    SecretKey secretKey = CryptoUtils.getSecretKey(
+//                            getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null));
+//
+//                    //init vector based on username
+//                    byte[] initVector = CryptoUtils.serialize(getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null));
+//                    keyPair = (KeyPair) CryptoUtils.decrypt(secretKey, initVector, encryptedKeyPair);
+//                } catch (InvalidKeySpecException | ClassNotFoundException | BadPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException
+//                        | InvalidKeyException | IOException | NoSuchPaddingException | IllegalBlockSizeException e) {
+//                    e.printStackTrace();
+//                }
             setKeyPair(keyPair);
         }
         return keyPair;
@@ -499,26 +489,25 @@ public class LocMessApplication extends Application {
 
     public void setKeyPair(KeyPair keyPair) {
         this.keyPair = keyPair;
-        try {
-            //secret key based on password
-            SecretKey secretKey = CryptoUtils.getSecretKey(
-                    getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null),
-                    null);
-            //init vector based on username
-            byte[] initVector = CryptoUtils.serialize(getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null));
-            byte[] encryptedKeyPair = CryptoUtils.encrypt(secretKey, initVector, keyPair);
-            save(encryptedKeyPair, TYPE_ENCRYPTED_KEY_PAIR);
-        } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException | NoSuchPaddingException | InvalidAlgorithmParameterException
-                | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            //secret key based on password
+//            SecretKey secretKey = CryptoUtils.getSecretKey(
+//                    getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null));
+//            //init vector based on username
+//            byte[] initVector = CryptoUtils.serialize(getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null));
+//            byte[] encryptedKeyPair = CryptoUtils.encrypt(secretKey, initVector, keyPair);
+            save(keyPair, TYPE_KEY_PAIR);
+//        } catch (NoSuchAlgorithmException | IOException | NoSuchPaddingException | InvalidAlgorithmParameterException
+//                | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException e) {
+//            e.printStackTrace();
+//        }
     }
 
-    public PublicKey getPublicKey(){
+    public PublicKey getPublicKey() {
         return getKeyPair().getPublic();
     }
 
-    public PrivateKey getPrivateKey(){
+    public PrivateKey getPrivateKey() {
         return getKeyPair().getPrivate();
     }
 

@@ -17,6 +17,8 @@ import java.security.PublicKey;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
 
+import static pt.ulisboa.tecnico.cmov.locmess.utils.CryptoUtils.serialize;
+
 // SECURITY
 public class AddPublicKeyTask extends AsyncTask<PublicKey, Void, Boolean> {
     private LocMessApplication application;
@@ -54,7 +56,7 @@ public class AddPublicKeyTask extends AsyncTask<PublicKey, Void, Boolean> {
         ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
 
         try {
-            ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(params[0], requestHeaders), Boolean.class);
+            ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(serialize(params[0]), requestHeaders), Boolean.class);
             if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
                 application.forceLoginFlag = true;
             return response.getBody();
