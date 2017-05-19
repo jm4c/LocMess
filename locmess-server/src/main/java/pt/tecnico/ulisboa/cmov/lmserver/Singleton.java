@@ -94,8 +94,7 @@ public class Singleton {
 
     //Messages
     public boolean addMessage(Message message) {
-        Set<Account> alreadyReceived = new LinkedHashSet<>(); //account is owner or has already received notification
-        messagesMap.put(message, alreadyReceived);
+        messagesMap.put(message, new LinkedHashSet<>());
         return messagesMap.containsKey(message);
     }
 
@@ -105,10 +104,9 @@ public class Singleton {
 
     public MessagesContainer getUserMessagesContainer(int sessionID, String location, Profile profile) {
         Account account = getAccount(getToken(sessionID).getUsername());
-        Calendar calendar = Calendar.getInstance();
-
         MessagesContainer messagesContainer = new MessagesContainer();
-        List<Message> expiredMessages = new ArrayList<>();
+
+        removeExpiredMessages();
 
         System.out.println("LOG: Looking for messages for '" + account.getUsername() + "' in '" + location + "'.");
 
@@ -125,12 +123,11 @@ public class Singleton {
             }
 
             try {
-                if(!isTimeWindowValid(calendar, message.getTimeWindow())) {
+                if(!isTimeWindowValid(message.getTimeWindow())) {
                     continue;
                 }
             } catch (Exception e) {
-                System.out.println("LOG: Message expired. Removing it.");
-                expiredMessages.add(message);
+                System.out.println("LOG: Expired message caught!");
                 continue;
             }
             if (!message.getPolicy().matches(profile)) {
@@ -144,15 +141,11 @@ public class Singleton {
 
         }
 
-        for (Message message :
-                expiredMessages) {
-            messagesMap.remove(message);
-        }
-
         return messagesContainer;
     }
 
-    private Boolean isTimeWindowValid(Calendar currentTime, TimeWindow timeWindow) throws Exception {
+    private Boolean isTimeWindowValid(TimeWindow timeWindow) throws Exception {
+        Calendar currentTime = Calendar.getInstance();
         Calendar startTimeWindow = Calendar.getInstance();
         startTimeWindow.set(timeWindow.getStartYear(),
                 timeWindow.getStartMonth(),
@@ -180,9 +173,41 @@ public class Singleton {
     }
 
     public boolean removeLocation(String locationName) throws IOException, NoSuchAlgorithmException {
-        boolean result = locationsContainer.removeLocation(locationName);
-        locationsContainer.setLocationsHash(hashInText(profileKeysReferences, null));
+        boolean result = false;
+        //check if location is used in any message being broadcast
+        if(isLocationInMessage()) {
+            result = locationsContainer.removeLocation(locationName);
+            locationsContainer.setLocationsHash(hashInText(profileKeysReferences, null));
+        }
         return result;
+    }
+
+    private boolean isLocationInMessage() {
+        removeExpiredMessages();
+        return false;
+    }
+
+    private void removeExpiredMessages() {
+        Calendar currentTime = Calendar.getInstance();
+        List<Message> messagesToRemove = new ArrayList<>();
+        for (Message message :
+                messagesMap.keySet()) {
+            TimeWindow timeWindow = message.getTimeWindow();
+            Calendar endTimeWindow = Calendar.getInstance();
+            endTimeWindow.set(timeWindow.getEndYear(),
+                    timeWindow.getEndMonth(),
+                    timeWindow.getEndDay(),
+                    timeWindow.getEndHour(),
+                    timeWindow.getEndMinute());
+
+            if (currentTime.after(endTimeWindow))
+                messagesToRemove.add(message);
+        }
+
+        for (Message message: messagesToRemove) {
+            messagesMap.remove(message);
+        }
+
     }
 
     public Location getLocation(String name) {

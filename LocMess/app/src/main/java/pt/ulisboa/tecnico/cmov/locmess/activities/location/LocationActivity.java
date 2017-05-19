@@ -292,7 +292,7 @@ public class LocationActivity extends ToolbarActivity implements RecyclerListsAd
                     Toast.makeText(LocationActivity.this, "This session was invalid. Logging into new session.", Toast.LENGTH_LONG).show();
                     startActivity(i);
                 } else {
-                    Toast.makeText(LocationActivity.this, "Failed to remove location.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LocationActivity.this, "Failed to remove location. Currently being used by a message.", Toast.LENGTH_SHORT).show();
                 }
             }
         } catch (InterruptedException | ExecutionException e) {
