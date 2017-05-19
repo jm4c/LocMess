@@ -16,11 +16,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,7 @@ import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Profile;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.ProfileKeypair;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.SecureMessage;
 import pt.ulisboa.tecnico.cmov.locmess.services.ProfileKeyManagerService;
 import pt.ulisboa.tecnico.cmov.locmess.services.ServerMessageReceiverService;
 import pt.ulisboa.tecnico.cmov.locmess.utils.CryptoUtils;
@@ -70,6 +75,8 @@ public class LocMessApplication extends Application {
     private LatLng currentLocation;
 
     private KeyPair keyPair;
+
+    private HashMap<String, PublicKey> publicKeys;
 
     public LocMessApplication() {
         clearPersonalData();
@@ -430,11 +437,12 @@ public class LocMessApplication extends Application {
         return filename;
     }
 
-
     public final class ProfileKeyAction<String, Boolean> implements Map.Entry<String, Boolean> {
 
 
         private final String key;
+
+
         private Boolean action;
 
         public ProfileKeyAction(String key, Boolean action) {
@@ -447,11 +455,11 @@ public class LocMessApplication extends Application {
             return key;
         }
 
-
         @Override
         public Boolean getValue() {
             return action;
         }
+
 
         @Override
         public Boolean setValue(Boolean value) {
@@ -459,8 +467,8 @@ public class LocMessApplication extends Application {
             this.action = value;
             return old;
         }
-    }
 
+    }
     // SECURITY
 
     public KeyPair getKeyPair() {
@@ -496,19 +504,51 @@ public class LocMessApplication extends Application {
 //            //init vector based on username
 //            byte[] initVector = CryptoUtils.serialize(getSharedPreferences("LocMess", MODE_PRIVATE).getString("password", null));
 //            byte[] encryptedKeyPair = CryptoUtils.encrypt(secretKey, initVector, keyPair);
-            save(keyPair, TYPE_KEY_PAIR);
+        save(keyPair, TYPE_KEY_PAIR);
 //        } catch (NoSuchAlgorithmException | IOException | NoSuchPaddingException | InvalidAlgorithmParameterException
 //                | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException e) {
 //            e.printStackTrace();
 //        }
     }
 
-    public PublicKey getPublicKey() {
+    public PublicKey getOwnPublicKey() {
         return getKeyPair().getPublic();
     }
 
-    public PrivateKey getPrivateKey() {
+    public PrivateKey getOwnPrivateKey() {
         return getKeyPair().getPrivate();
     }
 
+    public boolean addInboxSecureMessage(SecureMessage secureMessage) {
+        boolean integrity = secureMessage.checkIntegrity();
+        boolean authentication = false;
+        try {
+            authentication = CryptoUtils.verify(secureMessage.getSignedHash(),
+                    getPublicKey(secureMessage.getMessage().getOwner()),
+                    secureMessage.getSignature());
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+            e.printStackTrace();
+        }
+        String owner = secureMessage.getMessage().getOwner();
+        if (integrity && authentication)
+            owner = owner + "--- [with integrity and authentication]";
+        else if (integrity)
+            owner = owner + "--- [with integrity but no authentication]";
+        else
+            owner = owner + "--- [no integrity nor authentication]";
+        secureMessage.getMessage().setOwner(owner);
+        return addInboxMessage(secureMessage.getMessage());
+    }
+
+    public void setPublicKeys(HashMap<String, PublicKey> publicKeys) {
+        this.publicKeys = publicKeys;
+    }
+
+    public HashMap<String, PublicKey> getPublicKeys() {
+        return publicKeys;
+    }
+
+    public PublicKey getPublicKey(String author) {
+        return getPublicKeys().get(author);
+    }
 }

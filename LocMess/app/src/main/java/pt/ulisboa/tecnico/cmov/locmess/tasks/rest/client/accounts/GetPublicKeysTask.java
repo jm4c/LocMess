@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages;
+package pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.accounts;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -13,24 +13,21 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
-import pt.ulisboa.tecnico.cmov.locmess.model.containers.SecureMessagesContainer;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Profile;
+import java.security.PublicKey;
+import java.util.HashMap;
 
-/**
- * Created by joaod on 18-May-17.
- */
-public class GetMessageTask extends AsyncTask<Void, Void, SecureMessagesContainer> {
+import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
+
+import static pt.ulisboa.tecnico.cmov.locmess.utils.CryptoUtils.deserialize;
+import static pt.ulisboa.tecnico.cmov.locmess.utils.CryptoUtils.serialize;
+
+// SECURITY
+public class GetPublicKeysTask extends AsyncTask<Void, Void, HashMap<String, PublicKey>> {
     private LocMessApplication application;
     private int sessionID;
-    private Location location;
-    private Profile profile;
 
-    public GetMessageTask(Context context, Location location, Profile profile) {
+    public GetPublicKeysTask(Context context) {
         application = (LocMessApplication) context.getApplicationContext();
-        this.location = location;
-        this.profile = profile;
     }
 
 
@@ -46,34 +43,41 @@ public class GetMessageTask extends AsyncTask<Void, Void, SecureMessagesContaine
     }
 
     @Override
-    protected SecureMessagesContainer doInBackground(Void... params) {
+    protected HashMap<String, PublicKey> doInBackground(Void... params) {
 
         // Setup url
-        final String url = application.getServerURL() + "/message";
+        final String url = application.getServerURL() + "/publickey";
 
         // Populate header
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("session", String.valueOf(sessionID));
-        requestHeaders.add("location", location.getName());
 
         // Create a new RestTemplate instance
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(10000);
+        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
 
         try {
-            //using PUT since a value in the server will be changed and GET does not support body a request body
-            ResponseEntity<SecureMessagesContainer> response = restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(profile, requestHeaders), SecureMessagesContainer.class);
+            ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(serialize(params[0]), requestHeaders), byte[].class);
             if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
                 application.forceLoginFlag = true;
-
-            return response.getBody();
+            if (response.getBody() != null) {
+                HashMap<String, byte[]> serializedPublicKeys = (HashMap<String, byte[]>) deserialize(response.getBody());
+                HashMap<String, PublicKey> publicKeys = new HashMap<>();
+                for (String owner : serializedPublicKeys.keySet()) {
+                    publicKeys.put(owner, (PublicKey) deserialize(serializedPublicKeys.get(owner)));
+                }
+                return publicKeys;
+            }else {
+                return null;
+            }
 
         } catch (Exception e) {
-            Log.e("GetMessagesFromServer", e.getMessage(), e);
+            Log.e("GetPublicKeysTask", e.getMessage(), e);
+
             return null;
         }
+
     }
 
 }
-

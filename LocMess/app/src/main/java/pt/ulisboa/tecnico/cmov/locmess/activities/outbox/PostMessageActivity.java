@@ -33,12 +33,14 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.cmov.locmess.R;
 import pt.ulisboa.tecnico.cmov.locmess.activities.ToolbarActivity;
+import pt.ulisboa.tecnico.cmov.locmess.activities.login.LoginActivity;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.Policy;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.SecureMessage;
 import pt.ulisboa.tecnico.cmov.locmess.model.types.TimeWindow;
 import pt.ulisboa.tecnico.cmov.locmess.services.WifiMessageReceiver;
-import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages.SendMessageTask;
+import pt.ulisboa.tecnico.cmov.locmess.tasks.rest.client.messages.SendSecureMessageTask;
 
 public class PostMessageActivity extends ToolbarActivity implements
         SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
@@ -72,7 +74,7 @@ public class PostMessageActivity extends ToolbarActivity implements
     private WifiMessageReceiver mReceiver;
     private SimWifiP2pSocket mCliSocket;
 
-    private ArrayList<String> ipList= new ArrayList<>();
+    private ArrayList<String> ipList = new ArrayList<>();
 
 
     @Override
@@ -80,9 +82,9 @@ public class PostMessageActivity extends ToolbarActivity implements
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_post_message);
-        if(!isViewMode) {
+        if (!isViewMode) {
             setupToolbar("LocMess - Post Message");
-        }else {
+        } else {
             setupToolbar("LocMess - View Outbox Message");
         }
         setupButtons();
@@ -97,7 +99,9 @@ public class PostMessageActivity extends ToolbarActivity implements
         refreshButtons();
     }
 
-    /** changes buttons background according to the PostMessageActivity state*/
+    /**
+     * changes buttons background according to the PostMessageActivity state
+     */
     public void refreshButtons() {
 
         if (isCentralized) {
@@ -132,7 +136,7 @@ public class PostMessageActivity extends ToolbarActivity implements
         }
     }
 
-    private boolean isPostMessageReady(){
+    private boolean isPostMessageReady() {
         return timeWindow.isTimeWindowSet() &&
                 (!isCentralized || (location != null)) &&
                 policy != null;
@@ -267,7 +271,7 @@ public class PostMessageActivity extends ToolbarActivity implements
                     return;
                 }
 
-                if(titleEditText.getText().length() == 0) {
+                if (titleEditText.getText().length() == 0) {
                     titleEditText.setError("Title cannot be empty.");
                     return;
                 }
@@ -282,37 +286,49 @@ public class PostMessageActivity extends ToolbarActivity implements
                         timeWindow,
                         isCentralized,
                         policy);
-                if(isCentralized) {
-                    if(!isViewMode) {
+                if (isCentralized) {
+                    if (!isViewMode) {
                         Log.d("MSG", "add message");
-                        application.addOutboxMessage(message);
 
                         //send message to server
-                        SendMessageTask task = new SendMessageTask(PostMessageActivity.this);
-                        task.execute(message);
+                        SendSecureMessageTask task = new SendSecureMessageTask(PostMessageActivity.this);
+                        task.execute(new SecureMessage(message, application.getOwnPrivateKey()));
                         try {
-                            task.get();
+                            Boolean result = task.get();
+                            if (result == null){
+                                Toast.makeText(PostMessageActivity.this, "Can't reach server, no actions done.", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            if(result)
+                                application.addLocation(location);
+                            else{
+                                if (application.forceLoginFlag){
+                                    Intent i = new Intent(PostMessageActivity.this, LoginActivity.class);
+                                    application.forceLoginFlag = false;
+                                    Toast.makeText(PostMessageActivity.this, "This session was invalid. Logging into new session.", Toast.LENGTH_LONG).show();
+                                    startActivity(i);
+                                }
+                            }
                         } catch (InterruptedException | ExecutionException e) {
                             e.printStackTrace();
                         }
                     }
 
-                        finish();
-                     }
-                    else{
+                    finish();
+                } else {
 
-                        //Encontra ip´s de todos os devices
-                        mManager.requestGroupInfo(mChannel, PostMessageActivity.this);
+                    //Encontra ip´s de todos os devices
+                    mManager.requestGroupInfo(mChannel, PostMessageActivity.this);
 
 
-                        for(String ip : ipList){
-                            new OutgoingCommTask().executeOnExecutor(
-                                    AsyncTask.THREAD_POOL_EXECUTOR, ip);  //liga-se a todos os ip´s
+                    for (String ip : ipList) {
+                        new OutgoingCommTask().executeOnExecutor(
+                                AsyncTask.THREAD_POOL_EXECUTOR, ip);  //liga-se a todos os ip´s
 
-                            //new SendCommTask().executeOnExecutor(
-                                  //  AsyncTask.THREAD_POOL_EXECUTOR,message. );  //Envia msg para o ip respectivo
-                        }
-                        finish();
+                        //new SendCommTask().executeOnExecutor(
+                        //  AsyncTask.THREAD_POOL_EXECUTOR,message. );  //Envia msg para o ip respectivo
+                    }
+                    finish();
                 }
             }
         });
@@ -337,7 +353,7 @@ public class PostMessageActivity extends ToolbarActivity implements
         for (String deviceName : groupInfo.getDevicesInNetwork()) {
             SimWifiP2pDevice device = devices.getByName(deviceName);
             String devstr = "" + deviceName + " (" +
-                    ((device == null)?"??":device.getVirtIp()) + ")\n";
+                    ((device == null) ? "??" : device.getVirtIp()) + ")\n";
             peersStr.append(devstr);
         }
 
@@ -426,7 +442,7 @@ public class PostMessageActivity extends ToolbarActivity implements
         @Override
         protected String doInBackground(String... params) {
             try {
-                mCliSocket = new SimWifiP2pSocket(params[0],10001);
+                mCliSocket = new SimWifiP2pSocket(params[0], 10001);
             } catch (UnknownHostException e) {
                 return "Unknown Host:" + e.getMessage();
             } catch (IOException e) {
@@ -466,9 +482,8 @@ public class PostMessageActivity extends ToolbarActivity implements
     }
 
 	/*
-	 * Listeners associated to Termite
+     * Listeners associated to Termite
 	 */
-
 
 
 }

@@ -108,7 +108,7 @@ public class LoginTask extends AsyncTask<Void, Void, Integer> {
 
         //SECURITY
         AddPublicKeyTask task = new AddPublicKeyTask(loginActivity);
-        task.execute(application.getPublicKey());
+        task.execute(application.getOwnPublicKey());
 
 
         // start GPS service

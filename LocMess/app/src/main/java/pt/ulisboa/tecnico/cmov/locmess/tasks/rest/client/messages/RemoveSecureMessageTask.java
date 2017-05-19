@@ -14,25 +14,14 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
-import pt.ulisboa.tecnico.cmov.locmess.model.containers.SecureMessagesContainer;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Location;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Profile;
 
-/**
- * Created by joaod on 18-May-17.
- */
-public class GetMessageTask extends AsyncTask<Void, Void, SecureMessagesContainer> {
+public class RemoveSecureMessageTask extends AsyncTask<String, Void, Boolean> {
     private LocMessApplication application;
     private int sessionID;
-    private Location location;
-    private Profile profile;
 
-    public GetMessageTask(Context context, Location location, Profile profile) {
-        application = (LocMessApplication) context.getApplicationContext();
-        this.location = location;
-        this.profile = profile;
+    public RemoveSecureMessageTask(Context context) {
+        this.application = (LocMessApplication) context.getApplicationContext();
     }
-
 
     @Override
     protected void onPreExecute() {
@@ -41,39 +30,37 @@ public class GetMessageTask extends AsyncTask<Void, Void, SecureMessagesContaine
                 .getSharedPreferences("LocMess", Context.MODE_PRIVATE)
                 .getInt("session", 0);
 
-
         super.onPreExecute();
     }
 
     @Override
-    protected SecureMessagesContainer doInBackground(Void... params) {
+    protected Boolean doInBackground(String... params) {
 
         // Setup url
-        final String url = application.getServerURL() + "/message";
+        final String url = application.getServerURL() + "/securemessage";
 
         // Populate header
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("session", String.valueOf(sessionID));
-        requestHeaders.add("location", location.getName());
+        requestHeaders.add("message", params[0]);
 
         // Create a new RestTemplate instance
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(10000);
+        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(4000);
 
         try {
-            //using PUT since a value in the server will be changed and GET does not support body a request body
-            ResponseEntity<SecureMessagesContainer> response = restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(profile, requestHeaders), SecureMessagesContainer.class);
+            ResponseEntity<Boolean> response = restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(requestHeaders), Boolean.class);
             if (response.getStatusCode() == HttpStatus.UNAUTHORIZED)
                 application.forceLoginFlag = true;
-
             return response.getBody();
 
         } catch (Exception e) {
-            Log.e("GetMessagesFromServer", e.getMessage(), e);
+            Log.e("RemoveSecureMessageTask", e.getMessage(), e);
+
             return null;
         }
+
     }
 
 }
-

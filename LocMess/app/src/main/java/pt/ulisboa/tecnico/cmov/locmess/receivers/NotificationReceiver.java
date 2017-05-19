@@ -7,8 +7,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import pt.ulisboa.tecnico.cmov.locmess.LocMessApplication;
-import pt.ulisboa.tecnico.cmov.locmess.activities.inbox.InboxActivity;
-import pt.ulisboa.tecnico.cmov.locmess.model.types.Message;
+import pt.ulisboa.tecnico.cmov.locmess.model.types.SecureMessage;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -22,12 +21,13 @@ public class NotificationReceiver extends BroadcastReceiver {
         int notificationID = intent.getIntExtra("ID", 0);
         nm.cancel(notificationID);
 
-        Message message = (Message) intent.getSerializableExtra("message");
+        SecureMessage secureMessage = (SecureMessage) intent.getSerializableExtra("message");
 
-        if(message != null){
+        if(secureMessage != null){
             LocMessApplication application = (LocMessApplication) context.getApplicationContext();
             Log.d("NotificationReceiver", "Added new message to inbox");
-            application.addInboxMessage(message);
+            application.addInboxSecureMessage(secureMessage);
+            application.addInboxMessage(secureMessage.getMessage());
         }
 
     }

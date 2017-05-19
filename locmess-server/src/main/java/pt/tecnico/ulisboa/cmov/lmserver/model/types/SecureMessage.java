@@ -57,23 +57,4 @@ public class SecureMessage implements Serializable {
         this.signature = signature;
     }
 
-    @JsonIgnore
-    public boolean checkIntegrity() {
-        try {
-            return Arrays.equals(hash(message, null), signedHash);
-        } catch (IOException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @JsonIgnore
-    public boolean verifySignature(PublicKey publicKey) {
-        try {
-            return verify(signedHash, publicKey, signature);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 }

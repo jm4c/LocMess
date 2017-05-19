@@ -2,13 +2,14 @@ package pt.tecnico.ulisboa.cmov.lmserver.controllers;
 
 import org.springframework.web.bind.annotation.*;
 import pt.tecnico.ulisboa.cmov.lmserver.Singleton;
-import pt.tecnico.ulisboa.cmov.lmserver.model.containers.AvailableKeysContainer;
-import pt.tecnico.ulisboa.cmov.lmserver.utils.CryptoUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.util.HashMap;
+
+import static pt.tecnico.ulisboa.cmov.lmserver.utils.CryptoUtils.serialize;
 
 
 @RestController
@@ -53,16 +54,11 @@ public class AccountController {
     boolean addPublicKey(@RequestHeader(value = "session") String sessionID,
                              @RequestBody byte[] serializedPublicKey,
                              HttpServletResponse response) throws IOException {
-        PublicKey publicKey = null;
-        try {
-            publicKey = (PublicKey) CryptoUtils.deserialize(serializedPublicKey);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+
         Singleton singleton = Singleton.getInstance();
         int id = Integer.valueOf(sessionID);
         if (singleton.tokenExists(id)) {
-            return singleton.addPublicKey(id, publicKey);
+            return singleton.addPublicKey(id, serializedPublicKey);
         } else {
             System.out.println("LOG: No valid session ID found.");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -72,7 +68,24 @@ public class AccountController {
         return false;
     }
 
+    @RequestMapping(value = "/publickey", method = RequestMethod.GET, produces = "application/json")
+    public @ResponseBody
+    byte[] getPublicKey(@RequestHeader(value = "session") String sessionID,
+                         HttpServletResponse response) throws IOException {
 
+        Singleton singleton = Singleton.getInstance();
+        int id = Integer.valueOf(sessionID);
+        if (singleton.tokenExists(id)) {
+            HashMap<String, byte[]> serializedPublicKeys = singleton.getSerializedPublicKeys(id);
+                if(serializedPublicKeys.isEmpty())
+                    return null;
+            return serialize(serializedPublicKeys);
+        } else {
+            System.out.println("LOG: No valid session ID found.");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        return null;
+    }
 }
 
 

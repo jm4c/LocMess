@@ -4,6 +4,7 @@ import pt.tecnico.ulisboa.cmov.lmserver.model.containers.AvailableKeysContainer;
 import pt.tecnico.ulisboa.cmov.lmserver.model.containers.LocationsContainer;
 
 import pt.tecnico.ulisboa.cmov.lmserver.model.containers.MessagesContainer;
+import pt.tecnico.ulisboa.cmov.lmserver.model.containers.SecureMessagesContainer;
 import pt.tecnico.ulisboa.cmov.lmserver.model.types.*;
 
 
@@ -24,6 +25,8 @@ public class Singleton {
 
     private List<Account> accounts;
     private Map<Message, Set<Account>> messagesMap;
+    private Map<SecureMessage, Set<Account>> secureMessagesMap;
+
     private LocationsContainer locationsContainer;
     private AvailableKeysContainer availableKeysContainer;
     private Map<String, Set<Account>> profileKeysReferences;
@@ -33,6 +36,7 @@ public class Singleton {
     private Singleton() {
         accounts = new ArrayList<>();
         messagesMap = new HashMap<>();
+        secureMessagesMap = new HashMap<>();
         locationsContainer = new LocationsContainer();
         availableKeysContainer = new AvailableKeysContainer();
         profileKeysReferences = new HashMap<>();
@@ -360,17 +364,92 @@ public class Singleton {
 
 
     //SECURITY
-    public boolean addPublicKey(int id, PublicKey publicKey) {
-        if (getAccount(getToken(id).getUsername()).getCurrentPublicKey() == null) {
-            getAccount(getToken(id).getUsername()).setCurrentPublicKey(publicKey);
-            System.out.println("LOG: '" + getToken(id).getUsername() + "' added a new public key.");
-            return true;
-        } else if (!getAccount(getToken(id).getUsername()).getCurrentPublicKey().equals(publicKey)) {
-            getAccount(getToken(id).getUsername()).setCurrentPublicKey(publicKey);
-            System.out.println("LOG: '" + getToken(id).getUsername() + "' added a new public key.");
-            return true;
-        } else {
-            return false;
+    public boolean addPublicKey(int sessionID, byte[] serializedPublicKey) {
+        getAccount(getToken(sessionID).getUsername()).setSerializedCurrentPublicKey(serializedPublicKey);
+        System.out.println("LOG: '" + getToken(sessionID).getUsername() + "' added a new public key.");
+        return true;
+    }
+
+    public HashMap<String,byte[]> getSerializedPublicKeys(int sessionID){
+        Account requesterAccount = getAccount(getToken(sessionID).getUsername());
+        HashMap<String, byte[]> serializedPublicKeys = new HashMap<>();
+
+        for (Account account: accounts) {
+            if(!requesterAccount.equals(account))
+                serializedPublicKeys.put(account.getUsername(), account.getSerializedCurrentPublicKey());
         }
+        return serializedPublicKeys;
+    }
+
+    public SecureMessagesContainer getUserSecureMessagesContainer(int sessionID, String location, Profile profile) {
+        Account account = getAccount(getToken(sessionID).getUsername());
+
+        SecureMessagesContainer secureMessagesContainer = new SecureMessagesContainer();
+
+        removeExpiredMessages();
+
+        System.out.println("LOG: Looking for messages for '" + account.getUsername() + "' in '" + location + "'.");
+
+        for (SecureMessage secureMessage : secureMessagesMap.keySet()) {
+            if (!secureMessage.getMessage().getLocation().getName().equals(location)) {
+                System.out.println("LOG: '" + account.getUsername() + "' not in the same location as the secureMessage.");
+                continue;
+            }
+            if (secureMessage.getMessage().getOwner().equals(account.getUsername()))
+                continue;
+            if (secureMessagesMap.get(secureMessage).contains(account)) {
+                System.out.println("LOG: '" + account.getUsername() + "' already received this secureMessage.");
+                continue;
+            }
+
+            try {
+                if (!isTimeWindowValid(secureMessage.getMessage().getTimeWindow())) {
+                    continue;
+                }
+            } catch (Exception e) {
+                System.out.println("LOG: Expired secureMessage caught!");
+                continue;
+            }
+            if (!secureMessage.getMessage().getPolicy().matches(profile)) {
+                System.out.println("LOG: '" + account.getUsername() + "' doesn't match policy.");
+
+                continue;
+            }
+
+            secureMessagesContainer.addSecureMessage(secureMessage);
+            secureMessagesMap.get(secureMessage).add(account);
+
+        }
+
+        return secureMessagesContainer;
+    }
+
+
+    public Boolean addSecureMessage(SecureMessage secureMessage) {
+        secureMessagesMap.put(secureMessage, new LinkedHashSet<>());
+        return secureMessagesMap.containsKey(secureMessage);
+
+    }
+
+    public Boolean removeSecureMessage(int sessionID, String secureMessageTitle) {
+
+        SecureMessage secureMessage = getSecureMessage(secureMessageTitle, getToken(sessionID).getUsername());
+        if (secureMessage != null) {
+            // if return from removing in HashMap is not null
+            if (secureMessagesMap.remove(secureMessage) != null) {
+                System.out.println("LOG: " + getToken(sessionID).getUsername() + " removed the secure message \"" + secureMessage.getMessage().getTitle() + "\".");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private SecureMessage getSecureMessage(String messageTitle, String owner) {
+        for (SecureMessage secureMessage : secureMessagesMap.keySet()) {
+            if (secureMessage.getMessage().getTitle().equals(messageTitle)
+                    && secureMessage.getMessage().getOwner().equals(owner))
+                return secureMessage;
+        }
+        return null;
     }
 }
